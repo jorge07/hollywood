@@ -4,14 +4,15 @@ const DomainEventStream_1 = require("../Domain/Event/DomainEventStream");
 const AggregateRootNotFoundException_1 = require("./Exception/AggregateRootNotFoundException");
 const DomainMessage_1 = require("../Domain/Event/DomainMessage");
 class InMemoryEventStore {
-    constructor() {
+    constructor(eventBus) {
         this._events = [];
+        this._eventBus = eventBus;
     }
     load(aggregateId) {
         if (this._events[aggregateId]) {
             const stream = new DomainEventStream_1.DomainEventStream();
             let events = this._events[aggregateId];
-            events.map((event) => stream.events.push(DomainMessage_1.DomainMessage.create(aggregateId, event)));
+            events.forEach((event) => stream.events.push(DomainMessage_1.DomainMessage.create(aggregateId, event)));
             return stream;
         }
         throw new AggregateRootNotFoundException_1.AggregateRootNotFoundException();
@@ -20,7 +21,10 @@ class InMemoryEventStore {
         if (!this._events[aggregateId]) {
             this._events[aggregateId] = [];
         }
-        stream.events.forEach((message) => (this._events[aggregateId].push(message.event)));
+        stream.events.forEach((message) => {
+            this._events[aggregateId].push(message.event);
+            this._eventBus.publish(message);
+        });
     }
 }
 exports.InMemoryEventStore = InMemoryEventStore;

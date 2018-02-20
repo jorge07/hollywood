@@ -1,11 +1,11 @@
 import * as Domain from "../../../"
 import {EvenStore, InMemoryEventStore} from "../../../src/EventStore"
 import {Dog} from "../AggregateRoot.test";
+import {EventBus} from "../../../src/EventStore/EventBus";
 
 export class DogRepository implements Domain.Repository {
 
-    constructor(private eventStore: EventStore) {
-    }
+    constructor(private eventStore: EventStore) {}
 
     save(aggregateRoot: Dog): void {
         this
@@ -25,7 +25,7 @@ export class DogRepository implements Domain.Repository {
 
 describe('Repository', () => {
     it('Repository should store and retieve AggregateRoots', () => {
-        const repo = new DogRepository(new InMemoryEventStore());
+        const repo = new DogRepository(new InMemoryEventStore(new EventBus()));
         const pluto = new Dog(Math.random().toString());
 
         pluto.sayWolf();

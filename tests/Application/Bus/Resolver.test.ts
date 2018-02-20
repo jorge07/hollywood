@@ -9,8 +9,8 @@ describe('HandlerResolver test suite', () => {
         let demoHandler = new DemoHandler();
 
         resolver
-            .addHandler(new DemoCommand(), demoHandler)
-            .addHandler(new DemoQuery(), new DemoQueryHandler());
+            .addHandler(DemoCommand, demoHandler)
+            .addHandler(DemoQuery, new DemoQueryHandler());
 
         const caller = async (command: Request) => {
             return await resolver.resolve(command)

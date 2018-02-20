@@ -12,8 +12,6 @@ class AggregateRoot {
         return this._playhead;
     }
     raise(event) {
-        this._playhead++;
-        event.playhead = this._playhead;
         this.applyEvent(event);
         this._events.push(event);
     }
@@ -24,10 +22,12 @@ class AggregateRoot {
         return new DomainEventStream_1.DomainEventStream(events);
     }
     fromHistory(stream) {
-        stream.events.forEach((message) => this.raise(message.event));
+        stream.events.forEach((message) => this.applyEvent(message.event));
         return this;
     }
     applyEvent(event) {
+        this._playhead++;
+        event.playhead = this._playhead;
         const method = this.methodToApplyEvent(event);
         if (this[method]) {
             this[method](event);

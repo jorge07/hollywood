@@ -65,7 +65,7 @@ describe('AggregateRoot', () => {
 
     const pluto = <Dog> dog.fromHistory(stream);
 
-    expect(pluto.getUncommitedEvents().events.length).toBe(1);
+    expect(pluto.getUncommitedEvents().events.length).toBe(0);
 
     expect(pluto.wolfCount).toBe(1)
   })

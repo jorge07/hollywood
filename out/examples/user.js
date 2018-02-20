@@ -3,31 +3,39 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const DomainEvent_1 = require("../src/Domain/Event/DomainEvent");
 const AggregateRoot_1 = require("../src/Domain/AggregateRoot");
 class UserWasCreated extends DomainEvent_1.DomainEvent {
-    constructor(email) {
+    constructor(uuid, email) {
         super();
+        this.uuid = uuid;
         this.email = email;
     }
 }
+exports.UserWasCreated = UserWasCreated;
 class UserSayHello extends DomainEvent_1.DomainEvent {
+    constructor(uuid, email) {
+        super();
+        this.uuid = uuid;
+        this.email = email;
+    }
 }
+exports.UserSayHello = UserSayHello;
 class User extends AggregateRoot_1.AggregateRoot {
     constructor() {
         super();
-        this._uuid = '11a38b9a-b3da-360f-9353-a5a725514269';
     }
     getAggregateRootId() {
         return this._uuid;
     }
-    create(email) {
-        super.raise(new UserWasCreated(email));
+    create(uuid, email) {
+        super.raise(new UserWasCreated(uuid, email));
         return this;
     }
     sayHello() {
-        super.raise(new UserSayHello());
+        super.raise(new UserSayHello(this._uuid, this._email));
         return 'Hello!';
     }
     applyUserWasCreated(event) {
-        this.email = event.email;
+        this._uuid = event.uuid;
+        this._email = event.email;
     }
 }
 exports.User = User;

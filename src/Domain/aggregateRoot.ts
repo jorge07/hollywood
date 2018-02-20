@@ -13,9 +13,7 @@ export abstract class AggregateRoot {
         return this._playhead
     }
 
-    raise(event: DomainEvent): void { 
-        this._playhead++;
-        event.playhead = this._playhead;
+    raise(event: DomainEvent): void {
         this.applyEvent(event);
         this._events.push(event)
     }
@@ -29,12 +27,14 @@ export abstract class AggregateRoot {
     }
 
     fromHistory(stream: DomainEventStream): any {
-        stream.events.forEach((message: DomainMessage) => this.raise(message.event));
-
+        stream.events.forEach((message: DomainMessage) => this.applyEvent(message.event));
         return this
     }
 
-    protected applyEvent(event: DomainEvent): void {            
+    protected applyEvent(event: DomainEvent): void {
+        this._playhead++;
+        event.playhead = this._playhead;
+
         const method: string = this.methodToApplyEvent(event);
 
         if (this[method]) {

@@ -7,26 +7,21 @@ export class HandlerResolver {
     private _handlers: CommandRegistry = {};
 
     async resolve(command: Request): Promise<any> {
+
         const handler = this.getHandlerForCommand(command);
 
-        return handler.handle(command)
+        return handler ? handler.handle(command) : null;
     }
 
-    addHandler(command: Request, handler: Handler): HandlerResolver {
-        const commandStringName = HandlerResolver.commandName(command);
-
-        this._handlers[commandStringName] = handler;
+    addHandler(command: any, handler: Handler): HandlerResolver {
+        this._handlers[(<any> command).name] = handler;
 
         return this
     }
 
     private getHandlerForCommand(command: Request): Handler | undefined {
-        let commandName = HandlerResolver.commandName(command);
+        let commandName = (<any> command).constructor.name;
 
         return this._handlers[commandName];
-    }
-
-    private static commandName(command: Request): string {
-        return (<any> command).constructor.name;
     }
 }

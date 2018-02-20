@@ -1,19 +1,19 @@
 {
   "name": "hollywood-js",
-  "version": "1.0.7",
+  "version": "1.0.10",
   "description": "Event Sourcing DDD CQRS tool kit",
   "author": "jorge.arcoma@gmail.com",
   "url": "https://github.com/jorge07/hollywood",
   "license": "MIT",
   "main": "out/index.js",
   "dependencies": {
-    "@types/node": "^9.4.6",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
-    "@types/jest": "^22.1.2",
+    "@types/jest": "^22.1.3",
+    "@types/node": "^9.4.6",
     "ts-jest": "^22.0.4",
-    "typescript": "^2.7.1"
+    "typescript": "^2.7.2"
   },
   "jest": {
     "transform": {
@@ -32,6 +32,6 @@
   },
   "scripts": {
     "test": "jest",
-    "dev" : "tsc -p tsconfig.json -w"
+    "dev": "tsc -p tsconfig.json -w"
   }
 }

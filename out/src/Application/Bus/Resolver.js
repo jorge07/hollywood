@@ -15,20 +15,16 @@ class HandlerResolver {
     resolve(command) {
         return __awaiter(this, void 0, void 0, function* () {
             const handler = this.getHandlerForCommand(command);
-            return handler.handle(command);
+            return handler ? handler.handle(command) : null;
         });
     }
     addHandler(command, handler) {
-        const commandStringName = HandlerResolver.commandName(command);
-        this._handlers[commandStringName] = handler;
+        this._handlers[command.name] = handler;
         return this;
     }
     getHandlerForCommand(command) {
-        let commandName = HandlerResolver.commandName(command);
+        let commandName = command.constructor.name;
         return this._handlers[commandName];
-    }
-    static commandName(command) {
-        return command.constructor.name;
     }
 }
 exports.HandlerResolver = HandlerResolver;
