@@ -1,4 +1,4 @@
-import {EventStore} from "./EventBus/EventStore";
+import {EventStore} from "./EventStore";
 import {AggregateRootNotFoundException} from "./Exception/AggregateRootNotFoundException";
 import {InMemoryEventStore} from "./InMemoryEventStore";
 

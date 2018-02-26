@@ -1,7 +1,7 @@
 import * as Domain from "../../../"
-import {EvenStore, InMemoryEventStore} from "../../../src/EventStore"
+import {EventStore, InMemoryEventStore} from "../../../src/EventStore"
 import {Dog} from "../AggregateRoot.test";
-import {EventBus} from "../../../src/EventStore/EventBus";
+import {EventBus} from "../../../src/EventStore/EventBus/EventBus";
 
 export class DogRepository implements Domain.Repository {
 

@@ -1,4 +1,4 @@
-import { DomainEventStream } from '../../Domain/Event/DomainEventStream';
+import { DomainEventStream } from '../Domain/Event/DomainEventStream';
 
 export interface EventStore {
 

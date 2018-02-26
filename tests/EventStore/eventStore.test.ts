@@ -1,6 +1,6 @@
 import {Dog, SayWolf} from '../Domain/AggregateRoot.test';
 import {InMemoryEventStore} from "../../src/EventStore";
-import {EventBus} from "../../src/EventStore/EventBus";
+import {EventBus} from "../../src/EventStore/EventBus/EventBus";
 import {EventSubscriber} from "../../src/EventStore/EventBus/EventSubscriber";
 
 class OnWolfEventSubscriber extends EventSubscriber {

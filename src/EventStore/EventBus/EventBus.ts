@@ -1,6 +1,6 @@
-import {EventSubscriber} from "./EventBus/EventSubscriber";
-import {DomainEvent} from "../Domain/Event/DomainEvent";
-import {DomainMessage} from "../Domain/Event/DomainMessage";
+import {EventSubscriber} from "../EventBus/EventSubscriber";
+import {DomainEvent} from "../../Domain/Event/DomainEvent";
+import {DomainMessage} from "../../Domain/Event/DomainMessage";
 import {isArray} from "util";
 
 interface SubscriberRegistry {
@@ -16,13 +16,9 @@ export class EventBus {
     }
     
     attach(event: any, subscriber: EventSubscriber) {
-        let eventName = (<any> event).name;
-        let collection = this._subscribers[eventName];
-
-        if (! isArray(collection)) {
-            collection = []
-        }
-
+        const eventName = (<any> event).name;
+        const collection = this._subscribers[eventName] || [];
+        
         collection.push(subscriber);
 
         this._subscribers[eventName] = collection;

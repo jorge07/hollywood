@@ -96,6 +96,7 @@ eventBus.attach(UserSayHello, onSayHello);
 const userRepository = new UserRepository(new InMemoryEventStore(eventBus));
 
 // Provision Bus
+
 let resolver = new HandlerResolver();
 resolver.addHandler(CreateUser, new UserCreateHandler(userRepository));
 resolver.addHandler(SayHello, new SayHelloHandler(userRepository));
