@@ -1,9 +1,13 @@
-import {EventStore} from "./EventStore";
-import {AggregateRootNotFoundException} from "./Exception/AggregateRootNotFoundException";
-import {InMemoryEventStore} from "./InMemoryEventStore";
+import { EventBus } from "./EventBus/EventBus";
+import { EventSubscriber } from "./EventBus/EventSubscriber";
+import { IEventStore } from "./EventStore";
+import { AggregateRootNotFoundException } from "./Exception/AggregateRootNotFoundException";
+import { InMemoryEventStore } from "./InMemoryEventStore";
 
 export {
-    EventStore,
+    EventBus,
+    EventSubscriber,
+    IEventStore,
     AggregateRootNotFoundException,
-    InMemoryEventStore
-}
+    InMemoryEventStore,
+};

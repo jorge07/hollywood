@@ -1,27 +1,27 @@
-import {Handler} from "./Handler";
-import {Request} from "./Request";
-import {CommandRegistry} from "./CommandRegistry";
+import { ICommandRegistry } from "./CommandRegistry";
+import { IHandler } from "./Handler";
+import { IRequest } from "./Request";
 
 export class HandlerResolver {
 
-    private _handlers: CommandRegistry = {};
+    private handlers: ICommandRegistry = {};
 
-    async resolve(command: Request): Promise<any> {
+    public async resolve(command: IRequest): Promise<any> {
 
         const handler = this.getHandlerForCommand(command);
 
         return handler ? handler.handle(command) : null;
     }
 
-    addHandler(command: any, handler: Handler): HandlerResolver {
-        this._handlers[(<any> command).name] = handler;
+    public addHandler(command: any, handler: IHandler): HandlerResolver {
+        this.handlers[(command as any).name] = handler;
 
-        return this
+        return this;
     }
 
-    private getHandlerForCommand(command: Request): Handler | undefined {
-        let commandName = (<any> command).constructor.name;
+    private getHandlerForCommand(command: IRequest): IHandler | undefined {
+        const commandName = (command as any).constructor.name;
 
-        return this._handlers[commandName];
+        return this.handlers[commandName];
     }
 }

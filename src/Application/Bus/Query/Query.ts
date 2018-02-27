@@ -1,3 +1,2 @@
-export interface Query {
-
+export interface IQuery {
 }

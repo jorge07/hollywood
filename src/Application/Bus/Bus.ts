@@ -1,11 +1,11 @@
-import {HandlerResolver} from "./Resolver";
 import {Request} from "./Request";
+import {HandlerResolver} from "./Resolver";
 
 export class Bus {
 
-    constructor(private _handlerResolver: HandlerResolver) {}
+    constructor(private handlerResolver: HandlerResolver) {}
 
-    handle(command: Request): any {
-        return this._handlerResolver.resolve(command)
+    public handle(command: Request): any {
+        return this.handlerResolver.resolve(command);
     }
 }

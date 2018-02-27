@@ -1,7 +1,7 @@
-import { AggregateRoot } from '../AggregateRoot';
+import { AggregateRoot } from "../AggregateRoot";
 
-export interface Repository {
-    save(aggregateRoot: AggregateRoot): void
+export interface IRepository {
+    save(aggregateRoot: AggregateRoot): void;
 
-    load(aggregateRootId: string): AggregateRoot
+    load(aggregateRootId: string): AggregateRoot;
 }

@@ -1,27 +1,23 @@
-import {CommandHandler} from "../../../src/Application/Bus/Command/CommandHandler";
-import {Command} from "../../../src/Application/Bus/Command/Command";
-import {Query} from "../../../src/Application/Bus/Query/Query";
-import {QueryHandler} from "../../../src/Application/Bus/Query/QueryHandler";
+import {ICommand, ICommandHandler, IQuery, IQueryHandler} from "../../../src/Application/";
 
-export class DemoCommand implements Command {
-
+export class DemoCommand implements ICommand {
 }
 
-export class DemoHandler implements CommandHandler {
+export class DemoHandler implements ICommandHandler {
 
     public received: boolean = false;
 
-    handle(demo: DemoCommand): void {
-        this.received = true
+    public handle(demo: DemoCommand): void {
+        this.received = true;
     }
 }
 
-export class DemoQuery implements Query {
+export class DemoQuery implements IQuery {
 
 }
 
-export class DemoQueryHandler implements QueryHandler {
-    handle(query: DemoQuery): string {
-        return 'Hello!'
+export class DemoQueryHandler implements IQueryHandler {
+    public handle(query: DemoQuery): Promise<string> {
+        return new Promise(() => ("Hello!"));
     }
 }

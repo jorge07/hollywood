@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const DomainEventStream_1 = require("./Event/DomainEventStream");
-const DomainMessage_1 = require("./Event/DomainMessage");
+const _1 = require(".");
 class AggregateRoot {
     constructor() {
         this._playhead = -1;
@@ -17,9 +16,9 @@ class AggregateRoot {
     }
     getUncommitedEvents() {
         const id = this.getAggregateRootId();
-        const events = this._events.map((event) => (DomainMessage_1.DomainMessage.create(id, event)));
+        const events = this._events.map((event) => (_1.DomainMessage.create(id, event)));
         this._events = [];
-        return new DomainEventStream_1.DomainEventStream(events);
+        return new _1.DomainEventStream(events);
     }
     fromHistory(stream) {
         stream.events.forEach((message) => this.applyEvent(message.event));

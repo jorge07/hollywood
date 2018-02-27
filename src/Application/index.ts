@@ -1,15 +1,17 @@
-import {Command} from "./Bus/Command/Command";
-import {CommandHandler} from "./Bus/Command/CommandHandler";
-import {Query} from "./Bus/Query/Query";
-import {QueryHandler} from "./Bus/Query/QueryHandler";
-import {Bus} from "./Bus/Bus";
-import {HandlerResolver} from "./Bus/Resolver";
+import { Bus } from "./Bus/Bus";
+import { ICommand } from "./Bus/Command/Command";
+import { ICommandHandler } from "./Bus/Command/CommandHandler";
+import { IQuery } from "./Bus/Query/Query";
+import { IQueryHandler } from "./Bus/Query/QueryHandler";
+import { IRequest } from "./Bus/Request";
+import { HandlerResolver } from "./Bus/Resolver";
 
 export {
     Bus,
     HandlerResolver,
-    Command,
-    CommandHandler,
-    Query,
-    QueryHandler
-}
+    ICommand,
+    ICommandHandler,
+    IQuery,
+    IQueryHandler,
+    IRequest,
+};

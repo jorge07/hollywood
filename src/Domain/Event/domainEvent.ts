@@ -3,7 +3,7 @@ export abstract class DomainEvent {
     public playhead: number;
     public aggregateRootId: number;
 
-    constructor(){
-        this.ocurrendOn = new Date()
+    constructor() {
+        this.ocurrendOn = new Date();
     }
 }

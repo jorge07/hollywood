@@ -1,27 +1,27 @@
-import {AggregateRoot, DomainEvent, DomainMessage, DomainEventStream} from "../../src/Domain";
+import {AggregateRoot, DomainEvent, DomainEventStream, DomainMessage} from "../../src/Domain";
 
 export class Dog extends AggregateRoot {
-  private _id: string;
-  wolfCount: number = 0;
+  public wolfCount: number = 0;
+  private id: string;
 
   constructor(aggregateRootId: string) {
     super();
-    this._id = aggregateRootId
+    this.id = aggregateRootId;
   }
 
-  getAggregateRootId(): string {
+  public getAggregateRootId(): string {
 
-    return this._id
+    return this.id;
   }
 
-  sayWolf(): string {
+  public sayWolf(): string {
     super.raise(new SayWolf());
 
-    return 'Wolf!'
+    return "Wolf!";
   }
 
-  applySayWolf(event: SayWolf) {
-    this.wolfCount++
+  public applySayWolf(event: SayWolf) {
+    this.wolfCount++;
   }
 }
 
@@ -29,44 +29,44 @@ export class SayWolf extends DomainEvent {
 
 }
 
-describe('AggregateRoot', () => {
+describe("AggregateRoot", () => {
 
-  it('Aggregate Roots have an aggregate id', () => {
+  it("Aggregate Roots have an aggregate id", () => {
     const dog = new Dog(Math.random().toString());
     let stream = dog.getUncommitedEvents();
 
     expect(stream.events.length).toBe(0);
     expect(dog.wolfCount).toBe(0);
 
-    expect(dog.sayWolf()).toBe('Wolf!');
+    expect(dog.sayWolf()).toBe("Wolf!");
     expect(dog.wolfCount).toBe(1);
 
     stream = dog.getUncommitedEvents();
-    expect(stream.events.length).toBe(1)
+    expect(stream.events.length).toBe(1);
   });
 
-  it('Aggregate Roots must store events and call apply<DomainEventName> method if exist', () => {
+  it("Aggregate Roots must store events and call apply<DomainEventName> method if exist", () => {
     const dog = new Dog(Math.random().toString());
     let stream = dog.getUncommitedEvents();
 
     expect(stream.events.length).toBe(0);
     expect(dog.wolfCount).toBe(0);
 
-    expect(dog.sayWolf()).toBe('Wolf!');
+    expect(dog.sayWolf()).toBe("Wolf!");
     expect(dog.wolfCount).toBe(1);
 
     stream = dog.getUncommitedEvents();
-    expect(stream.events.length).toBe(1)
+    expect(stream.events.length).toBe(1);
   });
 
-  it('Aggregate Roots must be able to reconstruct from events history', () => {
+  it("Aggregate Roots must be able to reconstruct from events history", () => {
     const dog = new Dog(Math.random().toString());
-    const stream = new DomainEventStream([DomainMessage.create(dog.getAggregateRootId(), new SayWolf)]);
+    const stream = new DomainEventStream([DomainMessage.create(dog.getAggregateRootId(), new SayWolf())]);
 
-    const pluto = <Dog> dog.fromHistory(stream);
+    const pluto = dog.fromHistory(stream) as Dog;
 
     expect(pluto.getUncommitedEvents().events.length).toBe(0);
 
-    expect(pluto.wolfCount).toBe(1)
-  })
+    expect(pluto.wolfCount).toBe(1);
+  });
 });

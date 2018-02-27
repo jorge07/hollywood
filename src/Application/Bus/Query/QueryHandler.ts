@@ -1,6 +1,6 @@
-import {Query} from "./Query";
-import {Handler} from "../Handler";
+import { IHandler } from "../Handler";
+import { IQuery } from "./Query";
 
-export interface QueryHandler extends Handler{
-    handle(query: Query): Promise<any>
+export interface IQueryHandler extends IHandler {
+    handle(query: IQuery): Promise<any>;
 }

@@ -1,5 +1,4 @@
-import {DomainEvent} from "../src/Domain/Event/DomainEvent";
-import {AggregateRoot} from "../src/Domain/AggregateRoot";
+import { DomainEvent, AggregateRoot } from "../src/Domain";
 
 export class UserWasCreated extends DomainEvent {
 
@@ -15,16 +14,16 @@ export class UserSayHello extends DomainEvent {
 }
 
 export class User extends AggregateRoot {
-    _uuid: string;
+    uuid: string;
 
-    _email: string;
+    email: string;
 
     constructor() {
         super()
     }
 
     getAggregateRootId(): string {
-        return this._uuid
+        return this.uuid
     }
 
     create(uuid: string, email: string) {
@@ -34,13 +33,13 @@ export class User extends AggregateRoot {
     }
 
     sayHello(): string {
-        super.raise(new UserSayHello(this._uuid, this._email));
+        super.raise(new UserSayHello(this.uuid, this.email));
         
         return 'Hello!'
     }
 
     applyUserWasCreated(event: UserWasCreated): void {
-        this._uuid = event.uuid;
-        this._email = event.email;
+        this.uuid = event.uuid;
+        this.email = event.email;
     }
 }

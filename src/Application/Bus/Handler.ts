@@ -1,6 +1,6 @@
-import {Request} from "./Request";
+import { IRequest } from "./Request";
 
-export interface Handler {
+export interface IHandler {
 
-    handle(any: Request): void | any
+    handle(request: IRequest): void | any;
 }

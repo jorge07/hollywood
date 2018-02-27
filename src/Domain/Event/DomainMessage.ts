@@ -1,23 +1,23 @@
-import { DomainEvent } from './DomainEvent';
+import { DomainEvent } from "./DomainEvent";
 
-/** 
+/**
  * @internal class
  */
 export class DomainMessage {
+    public static create(uuid: string, event: DomainEvent): DomainMessage {
+        const instance = new DomainMessage();
 
-    private playhead: number
-    private ocurredOn: Date
+        instance.uuid = uuid
+        instance.event = event;
+        instance.playhead = event.playhead;
+        instance.ocurredOn = event.ocurrendOn;
 
-    constructor(
-        public uuid: string,
-        public event: DomainEvent,
-        public metadata: Array<any> = []
-    ) {
-        this.playhead = event.playhead
-        this.ocurredOn = event.ocurrendOn
+        return instance;
     }
 
-    static create(uuid: string, event: DomainEvent): DomainMessage {
-        return new DomainMessage(uuid, event)
-    }
+    public uuid: string;
+    public event: DomainEvent;
+    public metadata: any[] = [];
+    public playhead: number;
+    public ocurredOn: Date;
 }

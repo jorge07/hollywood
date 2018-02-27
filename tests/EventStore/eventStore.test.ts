@@ -1,19 +1,18 @@
-import {Dog, SayWolf} from '../Domain/AggregateRoot.test';
-import {InMemoryEventStore} from "../../src/EventStore";
-import {EventBus} from "../../src/EventStore/EventBus/EventBus";
-import {EventSubscriber} from "../../src/EventStore/EventBus/EventSubscriber";
+import { EventBus, EventSubscriber, InMemoryEventStore } from "../../src/EventStore";
+
+import { Dog, SayWolf } from "../Domain/AggregateRoot.test";
 
 class OnWolfEventSubscriber extends EventSubscriber {
-    wolf: any;
+    public wolf: any;
 
     private onSayWolf(event: SayWolf): void {
-        this.wolf = event
+        this.wolf = event;
     }
 }
 
-describe('EventStore', () => {
-    it('EventStore should store, publish and retrieve events', () => {
-        const onWolfEventSubscriber = new OnWolfEventSubscriber;
+describe("EventStore", () => {
+    it("EventStore should store, publish and retrieve events", () => {
+        const onWolfEventSubscriber = new OnWolfEventSubscriber();
 
         const eventBus = new EventBus();
         eventBus.attach(SayWolf, onWolfEventSubscriber);
@@ -24,16 +23,16 @@ describe('EventStore', () => {
         pluto.sayWolf();
 
         store.append(
-            pluto.getAggregateRootId(), 
-            pluto.getUncommitedEvents()
+            pluto.getAggregateRootId(),
+            pluto.getUncommitedEvents(),
         );
 
         const events = store.load(pluto.getAggregateRootId());
         const fromHistory = (new Dog(pluto.getAggregateRootId())).fromHistory(events);
 
         expect(fromHistory.wolfCount).toBe(1);
-        expect(fromHistory.playhead()).toBe(0);
+        expect(fromHistory.playhead).toBe(0);
 
-        expect(onWolfEventSubscriber.wolf).toBeInstanceOf(SayWolf)
-    })
+        expect(onWolfEventSubscriber.wolf).toBeInstanceOf(SayWolf);
+    });
 });

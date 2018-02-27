@@ -2,10 +2,9 @@ import {DomainEvent} from "../../Domain/Event/DomainEvent";
 
 export class EventSubscriber {
 
-    on(event: DomainEvent): void
-    {
-        if (this['on' + (<any> event).constructor.name]) {
-            this['on' + (<any> event).constructor.name](event)
+    public on(event: DomainEvent): void {
+        if (this["on" + (event as any).constructor.name]) {
+            this["on" + (event as any).constructor.name](event);
         }
     }
 }

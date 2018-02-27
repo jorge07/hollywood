@@ -1,15 +1,7 @@
-import {User, UserSayHello, UserWasCreated} from "./user";
-import {CommandHandler} from "../src/Application/Bus/Command/CommandHandler";
-import {QueryHandler} from "../src/Application/Bus/Query/QueryHandler";
-import {Query} from "../src/Application/Bus/Query/Query";
-import {HandlerResolver} from "../src/Application/Bus/Resolver";
-import {Bus} from "../src/Application/Bus/Bus";
-import {Repository} from "../src/Domain/Repository/Repository";
-import {EventStore} from "../src/EventStore/EventBus/EventStore";
-import {EventSubscriber} from "../src/EventStore/EventBus/EventSubscriber";
-import {InMemoryEventStore} from "../src/EventStore/InMemoryEventStore";
-import {EventBus} from "../src/EventStore/EventBus";
-import {Command} from "../src/Application/Bus/Command/Command";
+import { User, UserSayHello, UserWasCreated } from "./User";
+import { CommandHandler, Command, QueryHandler, Query, HandlerResolver, Bus } from "../src/Application";
+import { EventStore, EventSubscriber, InMemoryEventStore, EventBus } from "../src/EventStore";
+import { Repository } from "../src/Domain/";
 
 class UserRepository implements Repository {
 

@@ -1,32 +1,32 @@
-import {EventSubscriber} from "../EventBus/EventSubscriber";
+import {isArray} from "util";
 import {DomainEvent} from "../../Domain/Event/DomainEvent";
 import {DomainMessage} from "../../Domain/Event/DomainMessage";
-import {isArray} from "util";
+import {EventSubscriber} from "../EventBus/EventSubscriber";
 
-interface SubscriberRegistry {
-    [key: string]: Array<EventSubscriber>
+interface ISubscriberRegistry {
+    [key: string]: EventSubscriber[];
 }
 
 export class EventBus {
 
-    private _subscribers: SubscriberRegistry = {};
+    private subscribersRegistry: ISubscriberRegistry = {};
 
-    publish(message: DomainMessage) {
-        this.subscribers(message.event).forEach((subscriber) => subscriber.on(message.event))
+    public publish(message: DomainMessage) {
+        this.subscribersFor(message.event).forEach((subscriber) => subscriber.on(message.event));
     }
-    
-    attach(event: any, subscriber: EventSubscriber) {
-        const eventName = (<any> event).name;
-        const collection = this._subscribers[eventName] || [];
-        
+
+    public attach(event: any, subscriber: EventSubscriber) {
+        const eventName = (event as any).name;
+        const collection = this.subscribersRegistry[eventName] || [];
+
         collection.push(subscriber);
 
-        this._subscribers[eventName] = collection;
+        this.subscribersRegistry[eventName] = collection;
 
-        return this
+        return this;
     }
 
-    private subscribers(event: DomainEvent): Array<EventSubscriber> {
-        return this._subscribers[(<any> event).constructor.name] || [];
+    private subscribersFor(event: DomainEvent): EventSubscriber[] {
+        return this.subscribersRegistry[(event as any).constructor.name] || [];
     }
 }

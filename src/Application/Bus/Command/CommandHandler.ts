@@ -1,7 +1,7 @@
-import {Command} from "./Command";
-import {Handler} from "../Handler";
+import { IHandler } from "../Handler";
+import { ICommand } from "./Command";
 
-export interface CommandHandler extends Handler{
+export interface ICommandHandler extends IHandler {
 
-    handle(command: Command): void
+    handle(command: ICommand): void;
 }

@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const DomainEventStream_1 = require("../Domain/Event/DomainEventStream");
-const AggregateRootNotFoundException_1 = require("./Exception/AggregateRootNotFoundException");
-const DomainMessage_1 = require("../Domain/Event/DomainMessage");
+const _1 = require(".");
+const Domain_1 = require("../Domain");
 class InMemoryEventStore {
     constructor(eventBus) {
         this._events = [];
@@ -10,12 +9,12 @@ class InMemoryEventStore {
     }
     load(aggregateId) {
         if (this._events[aggregateId]) {
-            const stream = new DomainEventStream_1.DomainEventStream();
+            const stream = new Domain_1.DomainEventStream();
             let events = this._events[aggregateId];
-            events.forEach((event) => stream.events.push(DomainMessage_1.DomainMessage.create(aggregateId, event)));
+            events.forEach((event) => stream.events.push(Domain_1.DomainMessage.create(aggregateId, event)));
             return stream;
         }
-        throw new AggregateRootNotFoundException_1.AggregateRootNotFoundException();
+        throw new _1.AggregateRootNotFoundException();
     }
     append(aggregateId, stream) {
         if (!this._events[aggregateId]) {

@@ -1,55 +1,50 @@
-import { DomainEvent } from './Event/DomainEvent';
-import { DomainEventStream } from './Event/DomainEventStream';
-import { DomainMessage } from './Event/DomainMessage';
+import { DomainEvent, DomainEventStream, DomainMessage } from ".";
 
 export abstract class AggregateRoot {
-    private _playhead: number = -1;
-    private _events: Array<DomainEvent> =[];
-    protected _methodPrefix: string = 'apply';
-    
-    abstract getAggregateRootId() : string
+    protected methodPrefix: string = "apply";
+    private playhead: number = -1;
+    private events: DomainEvent[] = [];
 
-    playhead(): number {
-        return this._playhead
-    }
+    public abstract getAggregateRootId(): string;
 
-    raise(event: DomainEvent): void {
+    public raise(event: DomainEvent): void {
         this.applyEvent(event);
-        this._events.push(event)
+        this.events.push(event);
     }
-    
-    getUncommitedEvents(): DomainEventStream {
+
+    public getUncommitedEvents(): DomainEventStream {
         const id = this.getAggregateRootId();
-        const events = this._events.map((event: DomainEvent) => (DomainMessage.create(id, event)));
-        this._events = [];
+        const events = this.events.map((event: DomainEvent) => (DomainMessage.create(id, event)));
+        this.events = [];
 
-        return new DomainEventStream(events)
+        return new DomainEventStream(events);
     }
 
-    fromHistory(stream: DomainEventStream): any {
+    public fromHistory(stream: DomainEventStream): any {
         stream.events.forEach((message: DomainMessage) => this.applyEvent(message.event));
-        return this
+
+        return this;
     }
 
     protected applyEvent(event: DomainEvent): void {
-        this._playhead++;
-        event.playhead = this._playhead;
+        this.playhead++;
+        event.playhead = this.playhead;
 
         const method: string = this.methodToApplyEvent(event);
 
         if (this[method]) {
-            this[method](event)
+            this[method](event);
         }
     }
 
     protected methodToApplyEvent(event: DomainEvent): string | null {
+        const name: string = this.eventName(event);
 
-        const name: string = AggregateRoot.eventName(event);
-
-        return this._methodPrefix + name
+        return this.methodPrefix + name;
     }
 
-    private static eventName(event: DomainEvent): string {
-        return  (<any> event).constructor.name;
+    private eventName(event: DomainEvent): string {
+        return  (event as any).constructor.name;
     }
+
 }
