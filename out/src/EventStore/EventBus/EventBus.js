@@ -2,20 +2,20 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class EventBus {
     constructor() {
-        this._subscribers = {};
+        this.subscribersRegistry = {};
     }
     publish(message) {
-        this.subscribers(message.event).forEach((subscriber) => subscriber.on(message.event));
+        this.subscribersFor(message.event).forEach((subscriber) => subscriber.on(message.event));
     }
     attach(event, subscriber) {
         const eventName = event.name;
-        const collection = this._subscribers[eventName] || [];
+        const collection = this.subscribersRegistry[eventName] || [];
         collection.push(subscriber);
-        this._subscribers[eventName] = collection;
+        this.subscribersRegistry[eventName] = collection;
         return this;
     }
-    subscribers(event) {
-        return this._subscribers[event.constructor.name] || [];
+    subscribersFor(event) {
+        return this.subscribersRegistry[event.constructor.name] || [];
     }
 }
 exports.EventBus = EventBus;

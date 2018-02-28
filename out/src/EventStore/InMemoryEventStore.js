@@ -4,25 +4,25 @@ const _1 = require(".");
 const Domain_1 = require("../Domain");
 class InMemoryEventStore {
     constructor(eventBus) {
-        this._events = [];
-        this._eventBus = eventBus;
+        this.events = [];
+        this.eventBus = eventBus;
     }
     load(aggregateId) {
-        if (this._events[aggregateId]) {
+        if (this.events[aggregateId]) {
             const stream = new Domain_1.DomainEventStream();
-            let events = this._events[aggregateId];
+            const events = this.events[aggregateId];
             events.forEach((event) => stream.events.push(Domain_1.DomainMessage.create(aggregateId, event)));
             return stream;
         }
         throw new _1.AggregateRootNotFoundException();
     }
     append(aggregateId, stream) {
-        if (!this._events[aggregateId]) {
-            this._events[aggregateId] = [];
+        if (!this.events[aggregateId]) {
+            this.events[aggregateId] = [];
         }
         stream.events.forEach((message) => {
-            this._events[aggregateId].push(message.event);
-            this._eventBus.publish(message);
+            this.events[aggregateId].push(message.event);
+            this.eventBus.publish(message);
         });
     }
 }

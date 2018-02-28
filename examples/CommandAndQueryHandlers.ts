@@ -1,11 +1,11 @@
 import { User, UserSayHello, UserWasCreated } from "./User";
-import { CommandHandler, Command, QueryHandler, Query, HandlerResolver, Bus } from "../src/Application";
-import { EventStore, EventSubscriber, InMemoryEventStore, EventBus } from "../src/EventStore";
-import { Repository } from "../src/Domain/";
+import { ICommandHandler, ICommand, IQueryHandler, IQuery, HandlerResolver, Bus } from "../src/Application";
+import { IEventStore, EventSubscriber, InMemoryEventStore, EventBus } from "../src/EventStore";
+import { IRepository } from "../src/Domain/";
 
-class UserRepository implements Repository {
+class UserRepository implements IRepository {
 
-    constructor(private eventStore: EventStore){}
+    constructor(private eventStore: IEventStore){}
 
     save(aggregateRoot: User): void {
         this.eventStore.append(aggregateRoot.getAggregateRootId(), aggregateRoot.getUncommitedEvents());
@@ -28,11 +28,11 @@ class OnSayHello extends EventSubscriber {
     }
 }
 
-class CreateUser implements Command {
+class CreateUser implements ICommand {
     constructor(public uuid: string, public email: string) {}
 }
 
-class UserCreateHandler implements CommandHandler {
+class UserCreateHandler implements ICommandHandler {
 
     constructor(private userRepository: UserRepository) {}
 
@@ -43,11 +43,11 @@ class UserCreateHandler implements CommandHandler {
     }
 }
 
-class SayHello implements Command {
+class SayHello implements ICommand {
     constructor(public uuid: string) {}
 }
 
-class SayHelloHandler implements CommandHandler {
+class SayHelloHandler implements ICommandHandler {
 
     constructor(
         private userRepository: UserRepository
@@ -63,9 +63,9 @@ class SayHelloHandler implements CommandHandler {
     }
 }
 
-class QueryDemo implements Query {}
+class QueryDemo implements IQuery {}
 
-class DemoQueryHandler implements QueryHandler {
+class DemoQueryHandler implements IQueryHandler {
 
     async handle(query: QueryDemo): Promise<any> {
         return new Promise((resolve) => {

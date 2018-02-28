@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Bus {
-    constructor(_handlerResolver) {
-        this._handlerResolver = _handlerResolver;
+    constructor(handlerResolver) {
+        this.handlerResolver = handlerResolver;
     }
     handle(command) {
-        return this._handlerResolver.resolve(command);
+        return this.handlerResolver.resolve(command);
     }
 }
 exports.Bus = Bus;

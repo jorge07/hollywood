@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class DomainEventStream {
-    constructor(events = [], name = 'master') {
+    constructor(events = [], name = "master") {
         this.events = events;
         this.name = name;
     }

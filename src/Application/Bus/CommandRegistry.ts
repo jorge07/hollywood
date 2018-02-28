@@ -1,5 +1,5 @@
 import { IHandler } from "./Handler";
 
-export interface ICommandRegistry {
+export type CommandRegistry = {
     [key: string]: IHandler;
 }

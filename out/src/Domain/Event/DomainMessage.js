@@ -4,15 +4,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @internal class
  */
 class DomainMessage {
-    constructor(uuid, event, metadata = []) {
-        this.uuid = uuid;
-        this.event = event;
-        this.metadata = metadata;
-        this.playhead = event.playhead;
-        this.ocurredOn = event.ocurrendOn;
+    constructor() {
+        this.metadata = [];
     }
     static create(uuid, event) {
-        return new DomainMessage(uuid, event);
+        const instance = new DomainMessage();
+        instance.uuid = uuid;
+        instance.event = event;
+        instance.playhead = event.playhead;
+        instance.ocurredOn = event.ocurrendOn;
+        return instance;
     }
 }
 exports.DomainMessage = DomainMessage;

@@ -1,10 +1,10 @@
-import { ICommandRegistry } from "./CommandRegistry";
+import { CommandRegistry } from "./CommandRegistry";
 import { IHandler } from "./Handler";
 import { IRequest } from "./Request";
 
 export class HandlerResolver {
 
-    private handlers: ICommandRegistry = {};
+    private handlers: CommandRegistry = <CommandRegistry>{};
 
     public async resolve(command: IRequest): Promise<any> {
 

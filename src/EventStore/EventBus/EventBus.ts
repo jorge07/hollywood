@@ -3,13 +3,13 @@ import {DomainEvent} from "../../Domain/Event/DomainEvent";
 import {DomainMessage} from "../../Domain/Event/DomainMessage";
 import {EventSubscriber} from "../EventBus/EventSubscriber";
 
-interface ISubscriberRegistry {
+type SubscriberRegistry = {
     [key: string]: EventSubscriber[];
 }
 
 export class EventBus {
 
-    private subscribersRegistry: ISubscriberRegistry = {};
+    private subscribersRegistry: SubscriberRegistry = <SubscriberRegistry>{};
 
     public publish(message: DomainMessage) {
         this.subscribersFor(message.event).forEach((subscriber) => subscriber.on(message.event));

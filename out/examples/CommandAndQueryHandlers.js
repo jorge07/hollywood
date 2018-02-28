@@ -8,12 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const user_1 = require("./user");
-const Resolver_1 = require("../src/Application/Bus/Resolver");
-const Bus_1 = require("../src/Application/Bus/Bus");
-const EventSubscriber_1 = require("../src/EventStore/EventBus/EventSubscriber");
-const InMemoryEventStore_1 = require("../src/EventStore/InMemoryEventStore");
-const EventBus_1 = require("../src/EventStore/EventBus");
+const User_1 = require("./User");
+const Application_1 = require("../src/Application");
+const EventStore_1 = require("../src/EventStore");
 class UserRepository {
     constructor(eventStore) {
         this.eventStore = eventStore;
@@ -22,15 +19,15 @@ class UserRepository {
         this.eventStore.append(aggregateRoot.getAggregateRootId(), aggregateRoot.getUncommitedEvents());
     }
     load(aggregateRootId) {
-        return (new user_1.User).fromHistory(this.eventStore.load(aggregateRootId));
+        return (new User_1.User).fromHistory(this.eventStore.load(aggregateRootId));
     }
 }
-class OnUserWasCreated extends EventSubscriber_1.EventSubscriber {
+class OnUserWasCreated extends EventStore_1.EventSubscriber {
     onUserWasCreated(event) {
         console.log(`User ${event.email} was created on ${event.ocurrendOn}`);
     }
 }
-class OnSayHello extends EventSubscriber_1.EventSubscriber {
+class OnSayHello extends EventStore_1.EventSubscriber {
     onUserSayHello(event) {
         console.log(`User ${event.email} said: "Hello" at ${event.ocurrendOn}`);
     }
@@ -46,7 +43,7 @@ class UserCreateHandler {
         this.userRepository = userRepository;
     }
     handle(c) {
-        const user = (new user_1.User).create(c.uuid, c.email);
+        const user = (new User_1.User).create(c.uuid, c.email);
         this.userRepository.save(user);
     }
 }
@@ -79,18 +76,18 @@ class DemoQueryHandler {
     }
 }
 // Provision User Store
-let eventBus = new EventBus_1.EventBus();
+let eventBus = new EventStore_1.EventBus();
 let onUserWasCreated = new OnUserWasCreated();
 let onSayHello = new OnSayHello();
-eventBus.attach(user_1.UserWasCreated, onUserWasCreated);
-eventBus.attach(user_1.UserSayHello, onSayHello);
-const userRepository = new UserRepository(new InMemoryEventStore_1.InMemoryEventStore(eventBus));
+eventBus.attach(User_1.UserWasCreated, onUserWasCreated);
+eventBus.attach(User_1.UserSayHello, onSayHello);
+const userRepository = new UserRepository(new EventStore_1.InMemoryEventStore(eventBus));
 // Provision Bus
-let resolver = new Resolver_1.HandlerResolver();
+let resolver = new Application_1.HandlerResolver();
 resolver.addHandler(CreateUser, new UserCreateHandler(userRepository));
 resolver.addHandler(SayHello, new SayHelloHandler(userRepository));
 resolver.addHandler(QueryDemo, new DemoQueryHandler());
-let bus = new Bus_1.Bus(resolver);
+let bus = new Application_1.Bus(resolver);
 let userUuid = '11a38b9a-b3da-360f-9353-a5a725514269';
 bus.handle(new CreateUser(userUuid, 'lol@lol.com'));
 bus.handle(new SayHello(userUuid));

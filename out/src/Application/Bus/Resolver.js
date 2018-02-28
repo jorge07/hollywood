@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 class HandlerResolver {
     constructor() {
-        this._handlers = {};
+        this.handlers = {};
     }
     resolve(command) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -19,12 +19,12 @@ class HandlerResolver {
         });
     }
     addHandler(command, handler) {
-        this._handlers[command.name] = handler;
+        this.handlers[command.name] = handler;
         return this;
     }
     getHandlerForCommand(command) {
-        let commandName = command.constructor.name;
-        return this._handlers[commandName];
+        const commandName = command.constructor.name;
+        return this.handlers[commandName];
     }
 }
 exports.HandlerResolver = HandlerResolver;

@@ -3,21 +3,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const _1 = require(".");
 class AggregateRoot {
     constructor() {
-        this._playhead = -1;
-        this._events = [];
-        this._methodPrefix = 'apply';
-    }
-    playhead() {
-        return this._playhead;
+        this.methodPrefix = "apply";
+        this.playhead = -1;
+        this.events = [];
     }
     raise(event) {
         this.applyEvent(event);
-        this._events.push(event);
+        this.events.push(event);
     }
     getUncommitedEvents() {
         const id = this.getAggregateRootId();
-        const events = this._events.map((event) => (_1.DomainMessage.create(id, event)));
-        this._events = [];
+        const events = this.events.map((event) => (_1.DomainMessage.create(id, event)));
+        this.events = [];
         return new _1.DomainEventStream(events);
     }
     fromHistory(stream) {
@@ -25,18 +22,18 @@ class AggregateRoot {
         return this;
     }
     applyEvent(event) {
-        this._playhead++;
-        event.playhead = this._playhead;
+        this.playhead++;
+        event.playhead = this.playhead;
         const method = this.methodToApplyEvent(event);
         if (this[method]) {
             this[method](event);
         }
     }
     methodToApplyEvent(event) {
-        const name = AggregateRoot.eventName(event);
-        return this._methodPrefix + name;
+        const name = this.eventName(event);
+        return this.methodPrefix + name;
     }
-    static eventName(event) {
+    eventName(event) {
         return event.constructor.name;
     }
 }
