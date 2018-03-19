@@ -1,19 +1,19 @@
-import { DomainEvent, AggregateRoot } from "../src/Domain";
+import * as Domain from "../src/Domain";
 
-export class UserWasCreated extends DomainEvent {
+export class UserWasCreated extends Domain.DomainEvent {
 
     constructor(public uuid: string, public email: string){
         super()
     }
 }
 
-export class UserSayHello extends DomainEvent {
+export class UserSayHello extends Domain.DomainEvent {
     constructor(public uuid: string, public email: string) {
         super()
     }
 }
 
-export class User extends AggregateRoot {
+export class User extends Domain.EventSourced {
     uuid: string;
 
     email: string;

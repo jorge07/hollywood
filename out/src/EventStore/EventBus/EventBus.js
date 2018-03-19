@@ -18,5 +18,5 @@ class EventBus {
         return this.subscribersRegistry[event.constructor.name] || [];
     }
 }
-exports.EventBus = EventBus;
+exports.default = EventBus;
 //# sourceMappingURL=EventBus.js.map

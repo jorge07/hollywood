@@ -1,6 +1,6 @@
-import { DomainEventStream } from "../Domain/Event/DomainEventStream";
+import DomainEventStream from "../Domain/Event/DomainEventStream";
 
-export interface IEventStore {
+export default interface IEventStore {
 
     load(aggregateId: string): DomainEventStream;
 

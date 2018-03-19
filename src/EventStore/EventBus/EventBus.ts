@@ -1,15 +1,15 @@
 import {isArray} from "util";
-import {DomainEvent} from "../../Domain/Event/DomainEvent";
-import {DomainMessage} from "../../Domain/Event/DomainMessage";
-import {EventSubscriber} from "../EventBus/EventSubscriber";
+import DomainEvent from "Domain/Event/DomainEvent";
+import DomainMessage from "Domain/Event/DomainMessage";
+import EventSubscriber from "EventStore/EventBus/EventSubscriber";
 
 type SubscriberRegistry = {
     [key: string]: EventSubscriber[];
 }
 
-export class EventBus {
+export default class EventBus {
 
-    private subscribersRegistry: SubscriberRegistry = <SubscriberRegistry>{};
+    private readonly subscribersRegistry: SubscriberRegistry = <SubscriberRegistry>{};
 
     public publish(message: DomainMessage) {
         this.subscribersFor(message.event).forEach((subscriber) => subscriber.on(message.event));

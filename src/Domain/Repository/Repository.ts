@@ -1,7 +1,8 @@
 import { AggregateRoot } from "../AggregateRoot";
+import EventSourced from '../AggregateRoot';
 
-export interface IRepository {
-    save(aggregateRoot: AggregateRoot): void;
+export default interface IRepository {
+    save(aggregateRoot: EventSourced): void;
 
-    load(aggregateRootId: string): AggregateRoot;
+    load(aggregateRootId: string): EventSourced;
 }

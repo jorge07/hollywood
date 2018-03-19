@@ -2,5 +2,5 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class AggregateRootNotFoundException extends Error {
 }
-exports.AggregateRootNotFoundException = AggregateRootNotFoundException;
+exports.default = AggregateRootNotFoundException;
 //# sourceMappingURL=AggregateRootNotFoundException.js.map

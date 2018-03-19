@@ -4,9 +4,9 @@ class Bus {
     constructor(handlerResolver) {
         this.handlerResolver = handlerResolver;
     }
-    handle(command) {
-        return this.handlerResolver.resolve(command);
+    handle(command, callback) {
+        this.handlerResolver.resolve(command, callback);
     }
 }
-exports.Bus = Bus;
+exports.default = Bus;
 //# sourceMappingURL=Bus.js.map

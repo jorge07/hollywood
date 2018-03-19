@@ -1,18 +1,18 @@
-import {Repository} from "../../../src/Domain";
-import {EventStore, InMemoryEventStore} from "../../../src/EventStore";
+import { IRepository } from "../../../src/Domain";
+import { IEventStore, InMemoryEventStore } from "../../../src/EventStore";
 import {EventBus} from "../../../src/EventStore";
 import {Dog} from "../AggregateRoot.test";
 
-export class DogRepository implements Repository {
+export class DogRepository implements IRepository {
 
-    constructor(private eventStore: EventStore) {}
+    constructor(private eventStore: IEventStore) {}
 
-    public save(aggregateRoot: Dog): void {
+    public save(eventSourced: Dog): void {
         this
             .eventStore
             .append(
-                aggregateRoot.getAggregateRootId(),
-                aggregateRoot.getUncommitedEvents(),
+                eventSourced.getAggregateRootId(),
+                eventSourced.getUncommitedEvents(),
             );
     }
 

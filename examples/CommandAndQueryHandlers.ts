@@ -1,14 +1,23 @@
-import { User, UserSayHello, UserWasCreated } from "./User";
-import { ICommandHandler, ICommand, IQueryHandler, IQuery, HandlerResolver, Bus } from "../src/Application";
-import { IEventStore, EventSubscriber, InMemoryEventStore, EventBus } from "../src/EventStore";
-import { IRepository } from "../src/Domain/";
+import { User, UserSayHello, UserWasCreated } from './User';
+import { Application, EventStore, Domain } from "../";
+import { AppResponse } from '../src/Application/Bus/Query/CallbackArg';
 
-class UserRepository implements IRepository {
+class UserRepository implements Domain.IRepository {
 
-    constructor(private eventStore: IEventStore){}
+    constructor(private readonly eventStore: EventStore.IEventStore){}
 
-    save(aggregateRoot: User): void {
-        this.eventStore.append(aggregateRoot.getAggregateRootId(), aggregateRoot.getUncommitedEvents());
+    latency() {
+        return new Promise(resolve => setTimeout(resolve, 150));
+    }
+
+    async save(aggregateRoot: User): Promise<any> {
+        
+        return await this.latency().then(() => {
+            this.eventStore.append(
+                aggregateRoot.getAggregateRootId(), 
+                aggregateRoot.getUncommitedEvents()
+            );
+        })
     }
 
     load(aggregateRootId: string): User {
@@ -16,94 +25,93 @@ class UserRepository implements IRepository {
     }
 }
 
-class OnUserWasCreated extends EventSubscriber {
+class OnUserWasCreated extends EventStore.EventSubscriber {
     private onUserWasCreated(event: UserWasCreated): void {
-        console.log(`User ${event.email} was created on ${event.ocurrendOn}`);
+        console.log(`EVENT: OnUserWasCreated: User ${event.email} was created on ${event.ocurrendOn}`);
     }
 }
 
-class OnSayHello extends EventSubscriber {
+class OnSayHello extends EventStore.EventSubscriber {
     private onUserSayHello(event: UserSayHello): void {
         console.log(`User ${event.email} said: "Hello" at ${event.ocurrendOn}`);
     }
 }
 
-class CreateUser implements ICommand {
+class CreateUser implements Application.ICommand {
     constructor(public uuid: string, public email: string) {}
 }
 
-class UserCreateHandler implements ICommandHandler {
+class UserCreateHandler implements Application.ICommandHandler {
 
     constructor(private userRepository: UserRepository) {}
 
-    handle(c: CreateUser): void {
+    handle(c: CreateUser, callback: Function): void {
         const user = (new User).create(c.uuid, c.email);
 
-        this.userRepository.save(user)
+        this.userRepository.save(user).then(() => {
+            callback && callback(<AppResponse>{data: 'User Created ACK'});
+        })
     }
 }
 
-class SayHello implements ICommand {
+class SayHello implements Application.ICommand {
     constructor(public uuid: string) {}
 }
 
-class SayHelloHandler implements ICommandHandler {
+class SayHelloHandler implements Application.ICommandHandler {
 
     constructor(
         private userRepository: UserRepository
     ) {}
 
-    handle(c: SayHello): void {
+    handle(c: SayHello, callback: Function): void {
 
         const user = this.userRepository.load(c.uuid);
 
         console.log(user.sayHello());
 
         this.userRepository.save(user)
+
+        callback(<AppResponse>{data: 'User say Hello ACK'});
     }
 }
 
-class QueryDemo implements IQuery {}
+class QueryDemo implements Application.IQuery {}
 
-class DemoQueryHandler implements IQueryHandler {
+class DemoQueryHandler implements Application.IQueryHandler {
 
-    async handle(query: QueryDemo): Promise<any> {
-        return new Promise((resolve) => {
-            setTimeout(()=> {
-                resolve('This is a async return query')
-            }, 500)
-        })
+    handle(query: QueryDemo, callback: Function): void {
+        
+        setTimeout(()=> {
+            callback('This is a async return query')
+        }, 500)
     }
 }
 
 // Provision User Store
 
-let eventBus = new EventBus();
-let onUserWasCreated = new OnUserWasCreated();
-let onSayHello = new OnSayHello();
+const eventBus = new EventStore.EventBus();
+const onUserWasCreated = new OnUserWasCreated();
+const onSayHello = new OnSayHello();
 
 eventBus.attach(UserWasCreated, onUserWasCreated);
 eventBus.attach(UserSayHello, onSayHello);
 
-const userRepository = new UserRepository(new InMemoryEventStore(eventBus));
+const userRepository = new UserRepository(new EventStore.InMemoryEventStore(eventBus));
 
 // Provision Bus
 
-let resolver = new HandlerResolver();
+let resolver = new Application.HandlerResolver();
 resolver.addHandler(CreateUser, new UserCreateHandler(userRepository));
 resolver.addHandler(SayHello, new SayHelloHandler(userRepository));
 resolver.addHandler(QueryDemo, new DemoQueryHandler());
 
-let bus = new Bus(resolver);
+const bus = new Application.Bus(resolver);
 
-let userUuid = '11a38b9a-b3da-360f-9353-a5a725514269';
-bus.handle(new CreateUser(userUuid, 'lol@lol.com'));
-bus.handle(new SayHello(userUuid));
+export default bus;
 
-bus.handle(new QueryDemo())
-    .then((res) => console.log(res))
-    .catch(err => (console.log(err)))
-;
-
-setTimeout(() => console.log('DONE'), 1000);
-
+export {
+     CreateUser,
+     UserSayHello,
+     QueryDemo
+}; 

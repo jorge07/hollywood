@@ -1,10 +1,10 @@
 import { AggregateRootNotFoundException, EventBus, IEventStore } from ".";
 import { DomainEvent, DomainEventStream, DomainMessage } from "../Domain";
 
-export class InMemoryEventStore implements IEventStore {
+export default class InMemoryEventStore implements IEventStore {
 
-    private events: any[] = [];
-    private eventBus: EventBus;
+    private readonly events: any[] = [];
+    private readonly eventBus: EventBus;
 
     constructor(eventBus: EventBus) {
         this.eventBus = eventBus;

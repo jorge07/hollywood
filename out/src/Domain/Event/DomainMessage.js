@@ -1,20 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * @internal class
+ * @internal
  */
 class DomainMessage {
-    constructor() {
-        this.metadata = [];
+    constructor(uuid, event, playhead, ocurredOn, metadata = []) {
+        this.uuid = uuid;
+        this.event = event;
+        this.playhead = playhead;
+        this.ocurredOn = ocurredOn;
+        this.metadata = metadata;
     }
     static create(uuid, event) {
-        const instance = new DomainMessage();
-        instance.uuid = uuid;
-        instance.event = event;
-        instance.playhead = event.playhead;
-        instance.ocurredOn = event.ocurrendOn;
-        return instance;
+        return new DomainMessage(uuid, event, event.playhead, event.ocurrendOn);
     }
 }
-exports.DomainMessage = DomainMessage;
+exports.default = DomainMessage;
 //# sourceMappingURL=DomainMessage.js.map

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Domain_1 = require("../src/Domain");
-class UserWasCreated extends Domain_1.DomainEvent {
+const Domain = require("../src/Domain");
+class UserWasCreated extends Domain.DomainEvent {
     constructor(uuid, email) {
         super();
         this.uuid = uuid;
@@ -9,7 +9,7 @@ class UserWasCreated extends Domain_1.DomainEvent {
     }
 }
 exports.UserWasCreated = UserWasCreated;
-class UserSayHello extends Domain_1.DomainEvent {
+class UserSayHello extends Domain.DomainEvent {
     constructor(uuid, email) {
         super();
         this.uuid = uuid;
@@ -17,7 +17,7 @@ class UserSayHello extends Domain_1.DomainEvent {
     }
 }
 exports.UserSayHello = UserSayHello;
-class User extends Domain_1.AggregateRoot {
+class User extends Domain.EventSourced {
     constructor() {
         super();
     }

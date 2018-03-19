@@ -9,25 +9,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const User_1 = require("./User");
-const Application_1 = require("../src/Application");
-const EventStore_1 = require("../src/EventStore");
+exports.UserSayHello = User_1.UserSayHello;
+const _1 = require("../");
 class UserRepository {
     constructor(eventStore) {
         this.eventStore = eventStore;
     }
+    latency() {
+        return new Promise(resolve => setTimeout(resolve, 150));
+    }
     save(aggregateRoot) {
-        this.eventStore.append(aggregateRoot.getAggregateRootId(), aggregateRoot.getUncommitedEvents());
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.latency().then(() => {
+                this.eventStore.append(aggregateRoot.getAggregateRootId(), aggregateRoot.getUncommitedEvents());
+            });
+        });
     }
     load(aggregateRootId) {
         return (new User_1.User).fromHistory(this.eventStore.load(aggregateRootId));
     }
 }
-class OnUserWasCreated extends EventStore_1.EventSubscriber {
+class OnUserWasCreated extends _1.EventStore.EventSubscriber {
     onUserWasCreated(event) {
-        console.log(`User ${event.email} was created on ${event.ocurrendOn}`);
+        console.log(`EVENT: OnUserWasCreated: User ${event.email} was created on ${event.ocurrendOn}`);
     }
 }
-class OnSayHello extends EventStore_1.EventSubscriber {
+class OnSayHello extends _1.EventStore.EventSubscriber {
     onUserSayHello(event) {
         console.log(`User ${event.email} said: "Hello" at ${event.ocurrendOn}`);
     }
@@ -38,13 +45,16 @@ class CreateUser {
         this.email = email;
     }
 }
+exports.CreateUser = CreateUser;
 class UserCreateHandler {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
-    handle(c) {
+    handle(c, callback) {
         const user = (new User_1.User).create(c.uuid, c.email);
-        this.userRepository.save(user);
+        this.userRepository.save(user).then(() => {
+            callback && callback({ data: 'User Created ACK' });
+        });
     }
 }
 class SayHello {
@@ -56,43 +66,35 @@ class SayHelloHandler {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
-    handle(c) {
+    handle(c, callback) {
         const user = this.userRepository.load(c.uuid);
         console.log(user.sayHello());
         this.userRepository.save(user);
+        callback({ data: 'User say Hello ACK' });
     }
 }
 class QueryDemo {
 }
+exports.QueryDemo = QueryDemo;
 class DemoQueryHandler {
-    handle(query) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve('This is a async return query');
-                }, 500);
-            });
-        });
+    handle(query, callback) {
+        setTimeout(() => {
+            callback('This is a async return query');
+        }, 500);
     }
 }
 // Provision User Store
-let eventBus = new EventStore_1.EventBus();
-let onUserWasCreated = new OnUserWasCreated();
-let onSayHello = new OnSayHello();
+const eventBus = new _1.EventStore.EventBus();
+const onUserWasCreated = new OnUserWasCreated();
+const onSayHello = new OnSayHello();
 eventBus.attach(User_1.UserWasCreated, onUserWasCreated);
 eventBus.attach(User_1.UserSayHello, onSayHello);
-const userRepository = new UserRepository(new EventStore_1.InMemoryEventStore(eventBus));
+const userRepository = new UserRepository(new _1.EventStore.InMemoryEventStore(eventBus));
 // Provision Bus
-let resolver = new Application_1.HandlerResolver();
+let resolver = new _1.Application.HandlerResolver();
 resolver.addHandler(CreateUser, new UserCreateHandler(userRepository));
 resolver.addHandler(SayHello, new SayHelloHandler(userRepository));
 resolver.addHandler(QueryDemo, new DemoQueryHandler());
-let bus = new Application_1.Bus(resolver);
-let userUuid = '11a38b9a-b3da-360f-9353-a5a725514269';
-bus.handle(new CreateUser(userUuid, 'lol@lol.com'));
-bus.handle(new SayHello(userUuid));
-bus.handle(new QueryDemo())
-    .then((res) => console.log(res))
-    .catch(err => (console.log(err)));
-setTimeout(() => console.log('DONE'), 1000);
+const bus = new _1.Application.Bus(resolver);
+exports.default = bus;
 //# sourceMappingURL=CommandAndQueryHandlers.js.map

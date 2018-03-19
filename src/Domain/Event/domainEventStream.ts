@@ -1,9 +1,10 @@
 import { AggregateRoot } from "../AggregateRoot";
-import { DomainMessage } from "./DomainMessage";
+import DomainMessage from "./DomainMessage";
 
-export class DomainEventStream {
+export default class DomainEventStream {
     constructor(
-        public events: DomainMessage[] = [],
-        public name: string = "master",
-    ) {}
+        public readonly events: DomainMessage[] = [],
+        public readonly name: string = "master",
+    ) {
+    }
 }

@@ -1,6 +1,6 @@
-import {AggregateRoot, DomainEvent, DomainEventStream, DomainMessage} from "../../src/Domain";
+import { EventSourced, DomainEvent, DomainEventStream, DomainMessage } from "../../src/Domain";
 
-export class Dog extends AggregateRoot {
+export class Dog extends EventSourced {
   public wolfCount: number = 0;
   private id: string;
 

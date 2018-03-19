@@ -2,7 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const _1 = require(".");
 class AggregateRoot {
+}
+exports.AggregateRoot = AggregateRoot;
+class EventSourced extends AggregateRoot {
     constructor() {
+        super(...arguments);
         this.methodPrefix = "apply";
         this.playhead = -1;
         this.events = [];
@@ -37,5 +41,5 @@ class AggregateRoot {
         return event.constructor.name;
     }
 }
-exports.AggregateRoot = AggregateRoot;
+exports.default = EventSourced;
 //# sourceMappingURL=AggregateRoot.js.map

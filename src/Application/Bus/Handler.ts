@@ -1,6 +1,7 @@
-import { IRequest } from "./Request";
+import IRequest from "./Request";
+import { AppResponse, AppError } from './Query/CallbackArg';
 
-export interface IHandler {
+export default interface IHandler {
 
-    handle(request: IRequest): void | any;
+    handle(request: IRequest, callback?: (error: AppResponse|AppError)=>void): void;
 }

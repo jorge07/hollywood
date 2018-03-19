@@ -1,5 +1,7 @@
-import {HandlerResolver, Request} from "../../../src/Application/";
+import { callbackify } from 'util';
+import {HandlerResolver, IRequest} from "../../../src/Application/";
 import {DemoCommand, DemoHandler, DemoQuery, DemoQueryHandler} from "./DemoHandlers";
+import { AppResponse, AppError } from '../../../src/Application/Bus/Query/CallbackArg';
 
 describe("HandlerResolver test suite", () => {
     it("It should routing to correct handler", () => {
@@ -11,14 +13,13 @@ describe("HandlerResolver test suite", () => {
             .addHandler(DemoCommand, demoHandler)
             .addHandler(DemoQuery, new DemoQueryHandler());
 
-        const caller = async (command: Request) => {
-            return await resolver.resolve(command);
+        const caller = (command: IRequest, callback: (response: AppResponse|AppError) => void): void => {
+            resolver.resolve(command, callback);
         };
 
-        caller(new DemoQuery())
-            .then((result) => expect(result).toBe("Hello!"));
+        caller(new DemoQuery(), (result) => expect(result).toBe("Hello!"));
 
-        caller(new DemoCommand());
+        caller(new DemoCommand(), (res: AppResponse) => (expect(res.data).toBe('ack')));
 
         expect(demoHandler.received).toBeTruthy();
     });

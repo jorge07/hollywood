@@ -1,3 +1,3 @@
-export class AggregateRootNotFoundException extends Error {
+export default class AggregateRootNotFoundException extends Error {
 
 }

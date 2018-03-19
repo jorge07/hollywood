@@ -12,10 +12,12 @@ class HandlerResolver {
     constructor() {
         this.handlers = {};
     }
-    resolve(command) {
+    resolve(command, callback) {
         return __awaiter(this, void 0, void 0, function* () {
             const handler = this.getHandlerForCommand(command);
-            return handler ? handler.handle(command) : null;
+            if (handler) {
+                handler.handle(command, callback);
+            }
         });
     }
     addHandler(command, handler) {
@@ -27,5 +29,5 @@ class HandlerResolver {
         return this.handlers[commandName];
     }
 }
-exports.HandlerResolver = HandlerResolver;
+exports.default = HandlerResolver;
 //# sourceMappingURL=Resolver.js.map

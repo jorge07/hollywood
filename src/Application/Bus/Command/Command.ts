@@ -1,4 +1,4 @@
-import { IRequest } from "../Request";
+import IRequest from "../Request";
 
-export interface ICommand extends IRequest {
+export default interface ICommand extends IRequest {
 }

@@ -1,6 +1,8 @@
-import { IHandler } from "../Handler";
-import { IQuery } from "./Query";
+import IHandler from "../Handler";
+import IQuery from './Query';
+import { AppResponse, AppError } from './CallbackArg';
 
-export interface IQueryHandler extends IHandler {
-    handle(query: IQuery): Promise<any>;
+export default interface IQueryHandler extends IHandler {
+
+    handle(request: IQuery, callback?: (error: AppResponse|AppError)=>void): void;
 }

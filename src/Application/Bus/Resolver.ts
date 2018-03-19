@@ -1,16 +1,17 @@
 import { CommandRegistry } from "./CommandRegistry";
-import { IHandler } from "./Handler";
-import { IRequest } from "./Request";
+import IHandler from "./Handler";
+import IRequest from "./Request";
+import { AppResponse, AppError } from './Query/CallbackArg';
 
-export class HandlerResolver {
+export default class HandlerResolver {
 
-    private handlers: CommandRegistry = <CommandRegistry>{};
+    private readonly handlers: CommandRegistry = <CommandRegistry>{};
 
-    public async resolve(command: IRequest): Promise<any> {
-
+    public async resolve(command: IRequest, callback?: (error: AppResponse|AppError)=>void): Promise<any> {
         const handler = this.getHandlerForCommand(command);
-
-        return handler ? handler.handle(command) : null;
+        if (handler) {
+            handler.handle(command, callback)
+        }
     }
 
     public addHandler(command: any, handler: IHandler): HandlerResolver {

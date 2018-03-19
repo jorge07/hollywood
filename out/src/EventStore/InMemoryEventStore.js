@@ -26,5 +26,5 @@ class InMemoryEventStore {
         });
     }
 }
-exports.InMemoryEventStore = InMemoryEventStore;
+exports.default = InMemoryEventStore;
 //# sourceMappingURL=InMemoryEventStore.js.map

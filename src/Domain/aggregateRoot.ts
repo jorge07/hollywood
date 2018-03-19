@@ -1,11 +1,15 @@
 import { DomainEvent, DomainEventStream, DomainMessage } from ".";
 
 export abstract class AggregateRoot {
-    protected methodPrefix: string = "apply";
-    private playhead: number = -1;
-    private events: DomainEvent[] = [];
 
     public abstract getAggregateRootId(): string;
+}
+
+export default abstract class EventSourced extends AggregateRoot {
+    
+    protected readonly methodPrefix: string = "apply";
+    private playhead: number = -1;
+    private events: DomainEvent[] = [];
 
     public raise(event: DomainEvent): void {
         this.applyEvent(event);
@@ -46,5 +50,5 @@ export abstract class AggregateRoot {
     private eventName(event: DomainEvent): string {
         return  (event as any).constructor.name;
     }
-
 }
+

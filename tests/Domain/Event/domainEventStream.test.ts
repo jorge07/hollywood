@@ -1,6 +1,4 @@
-import { DomainEvent } from "../../../src/Domain/Event/DomainEvent";
-import { DomainEventStream } from "../../../src/Domain/Event/DomainEventStream";
-import { DomainMessage } from "../../../src/Domain/Event/DomainMessage";
+import { DomainEvent, DomainEventStream, DomainMessage } from "../../../src/Domain";
 
 class DemoEvent extends DomainEvent {
 }

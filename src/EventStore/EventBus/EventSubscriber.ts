@@ -1,6 +1,6 @@
-import {DomainEvent} from "../../Domain/Event/DomainEvent";
+import DomainEvent from "../../Domain/Event/DomainEvent";
 
-export class EventSubscriber {
+export default class EventSubscriber {
 
     public on(event: DomainEvent): void {
         if (this["on" + (event as any).constructor.name]) {

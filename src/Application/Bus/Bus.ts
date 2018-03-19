@@ -1,11 +1,11 @@
-import { IRequest } from "./Request";
-import {HandlerResolver} from "./Resolver";
+import IRequest from "./Request";
+import HandlerResolver from "./Resolver";
+import { AppResponse, AppError } from './Query/CallbackArg';
 
-export class Bus {
+export default class Bus {
+    constructor(private readonly handlerResolver: HandlerResolver) {}
 
-    constructor(private handlerResolver: HandlerResolver) {}
-
-    public handle(command: IRequest): any {
-        return this.handlerResolver.resolve(command);
+    public handle(command: IRequest, callback?: (error: AppResponse|AppError)=>void): void {
+        this.handlerResolver.resolve(command, callback);
     }
 }

@@ -6,5 +6,5 @@ class DomainEventStream {
         this.name = name;
     }
 }
-exports.DomainEventStream = DomainEventStream;
+exports.default = DomainEventStream;
 //# sourceMappingURL=DomainEventStream.js.map

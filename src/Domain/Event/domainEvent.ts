@@ -1,5 +1,5 @@
-export abstract class DomainEvent {
-    public ocurrendOn: Date;
+export default abstract class DomainEvent {
+    public readonly ocurrendOn: Date;
     public playhead: number;
     public aggregateRootId: number;
 

@@ -5,5 +5,5 @@ class DomainEvent {
         this.ocurrendOn = new Date();
     }
 }
-exports.DomainEvent = DomainEvent;
+exports.default = DomainEvent;
 //# sourceMappingURL=DomainEvent.js.map

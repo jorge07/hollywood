@@ -7,5 +7,5 @@ class EventSubscriber {
         }
     }
 }
-exports.EventSubscriber = EventSubscriber;
+exports.default = EventSubscriber;
 //# sourceMappingURL=EventSubscriber.js.map
