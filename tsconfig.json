@@ -6,13 +6,7 @@
         "lib": [ "es2015" ],
         "sourceMap": true,
         "rootDir": ".",
-        "types": [ "node" ],
-        "baseUrl": "src",
-        "paths": {
-            "Application/*": [ "Application/*" ],
-            "Domain/*": [ "Domain/*" ],
-            "EventStore/*": [ "EventStore/*" ]
-        }
+        "types": [ "node" ]
     },
     "compileOnSave": true,
     "include": [

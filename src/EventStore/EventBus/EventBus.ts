@@ -1,7 +1,7 @@
 import {isArray} from "util";
-import DomainEvent from "Domain/Event/DomainEvent";
-import DomainMessage from "Domain/Event/DomainMessage";
-import EventSubscriber from "EventStore/EventBus/EventSubscriber";
+import DomainEvent from "../../Domain/Event/DomainEvent";
+import DomainMessage from "../../Domain/Event/DomainMessage";
+import EventSubscriber from "./EventSubscriber";
 
 type SubscriberRegistry = {
     [key: string]: EventSubscriber[];
