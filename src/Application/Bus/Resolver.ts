@@ -7,11 +7,10 @@ export default class HandlerResolver {
 
     private readonly handlers: CommandRegistry = <CommandRegistry>{};
 
-    public async resolve(command: IRequest, callback?: (error: AppResponse|AppError)=>void): Promise<any> {
+    public resolve(command: IRequest, callback?: (error: AppResponse|AppError)=>void): void {
         const handler = this.getHandlerForCommand(command);
-        if (handler) {
-            handler.handle(command, callback)
-        }
+
+        handler && handler.handle(command, callback)
     }
 
     public addHandler(command: any, handler: IHandler): HandlerResolver {
