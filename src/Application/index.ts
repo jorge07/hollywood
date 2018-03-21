@@ -5,6 +5,7 @@ import IQuery from "./Bus/Query/Query";
 import IQueryHandler from "./Bus/Query/QueryHandler";
 import IRequest from "./Bus/Request";
 import HandlerResolver from "./Bus/Resolver";
+import { AppError, AppResponse } from './Bus/Query/CallbackArg';
 
 export {
     Bus,
@@ -14,4 +15,6 @@ export {
     IQuery,
     IQueryHandler,
     IRequest,
+    AppError,
+    AppResponse
 };
