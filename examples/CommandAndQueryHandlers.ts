@@ -1,6 +1,6 @@
 import { User, UserSayHello, UserWasCreated } from './User';
 import { Application, EventStore, Domain } from "../";
-import { AppResponse } from '../src/Application/Bus/Query/CallbackArg';
+import { AppResponse, AppError } from '../src/Application/Bus/Query/CallbackArg';
 
 class UserRepository implements Domain.IRepository {
 
@@ -80,10 +80,10 @@ class QueryDemo implements Application.IQuery {}
 
 class DemoQueryHandler implements Application.IQueryHandler {
 
-    handle(query: QueryDemo, callback: Function): void {
+    handle(query: QueryDemo, success?: (response: AppResponse)=>void, error?: (error: AppError)=>void): void|Promise<any> {
         
         setTimeout(()=> {
-            callback('This is a async return query')
+            success(<AppResponse>{data:'This is a async return query'})
         }, 500)
     }
 }

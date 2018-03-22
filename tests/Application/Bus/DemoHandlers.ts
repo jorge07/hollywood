@@ -2,13 +2,19 @@ import {ICommand, ICommandHandler, IQuery, IQueryHandler} from "../../../src/App
 import { AppResponse, AppError } from '../../../src/Application/Bus/Query/CallbackArg';
 
 export class DemoCommand implements ICommand {
+    constructor(public readonly exception: boolean) {}
 }
 
 export class DemoHandler implements ICommandHandler {
     public received: boolean = false
 
-    handle(command: ICommand, success?: (response: AppResponse)=>void, error?: (error: AppError)=>void): void {
+    handle(command: DemoCommand, success?: (response: AppResponse)=>void, error?: (error: AppError)=>void): void {
         this.received = true;
+        if (command.exception) {
+            
+            return error(<AppError>{message: 'Fail'})
+        }
+        
         success(<AppResponse>{data: 'ack', meta: []})
     }
 }

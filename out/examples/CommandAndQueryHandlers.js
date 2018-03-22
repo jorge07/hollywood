@@ -77,9 +77,9 @@ class QueryDemo {
 }
 exports.QueryDemo = QueryDemo;
 class DemoQueryHandler {
-    handle(query, callback) {
+    handle(query, success, error) {
         setTimeout(() => {
-            callback('This is a async return query');
+            success({ data: 'This is a async return query' });
         }, 500);
     }
 }

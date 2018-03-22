@@ -4,8 +4,8 @@ class Bus {
     constructor(handlerResolver) {
         this.handlerResolver = handlerResolver;
     }
-    handle(command, callback) {
-        this.handlerResolver.resolve(command, callback);
+    handle(command, success, error) {
+        this.handlerResolver.resolve(command, success, error);
     }
 }
 exports.default = Bus;
