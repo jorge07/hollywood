@@ -3,5 +3,5 @@ import { AppResponse, AppError } from './Query/CallbackArg';
 
 export default interface IHandler {
 
-    handle(request: IRequest, callback?: (error: AppResponse|AppError)=>void): void;
+    handle(request: IRequest, success?: (response: AppResponse)=>void, error?: (error: AppError)=>void): void;
 }

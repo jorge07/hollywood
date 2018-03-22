@@ -5,21 +5,19 @@ export class DemoCommand implements ICommand {
 }
 
 export class DemoHandler implements ICommandHandler {
+    public received: boolean = false
 
-    public received: boolean = false;
-
-    public handle(demo: DemoCommand, callback?: (error: AppResponse|AppError)=>void): void {
+    handle(command: ICommand, success?: (response: AppResponse)=>void, error?: (error: AppError)=>void): void {
         this.received = true;
-        callback(<AppResponse>{data: 'ack', meta: []})
+        success(<AppResponse>{data: 'ack', meta: []})
     }
 }
 
 export class DemoQuery implements IQuery {
-
 }
 
 export class DemoQueryHandler implements IQueryHandler {
-    public handle(query: DemoQuery): Promise<string> {
+    handle(request: DemoQuery, success?: (response: AppResponse)=>void, error?: (error: AppError)=>void): Promise<any> {
         return new Promise(() => ("Hello!"));
     }
 }

@@ -4,5 +4,5 @@ import { AppResponse, AppError } from '../Query/CallbackArg';
 
 export default interface ICommandHandler extends IHandler {
 
-    handle(command: ICommand, callback?: (error: AppResponse|AppError)=>void): void;
+    handle(command: ICommand, success?: (response: AppResponse)=>void, error?: (error: AppError)=>void): void;
 }
