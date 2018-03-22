@@ -1,6 +1,6 @@
-import { EventBus, EventSubscriber, InMemoryEventStore } from "../../src/EventStore";
-
+import { EventBus, EventSubscriber, InMemoryEventStore, EventListener } from "../../src/EventStore";
 import { Dog, SayWolf } from "../Domain/AggregateRoot.test";
+import DomainEvent from '../../src/Domain/Event/DomainEvent';
 
 class OnWolfEventSubscriber extends EventSubscriber {
     public wolf: any;
@@ -10,15 +10,27 @@ class OnWolfEventSubscriber extends EventSubscriber {
     }
 }
 
+class GlobalListener extends EventListener {
+    public lastEvent: any;
+
+    on(event: DomainEvent): void {
+        this.lastEvent = event;
+    }
+}
+
 describe("EventStore", () => {
     it("EventStore should store, publish and retrieve events", () => {
         const onWolfEventSubscriber = new OnWolfEventSubscriber();
-
+        const globalListener = new GlobalListener();
         const eventBus = new EventBus();
-        eventBus.attach(SayWolf, onWolfEventSubscriber);
-
         const store = new InMemoryEventStore(eventBus);
         const pluto = new Dog(Math.random().toString());
+
+        eventBus
+            .attach(SayWolf, onWolfEventSubscriber)
+            .addListener(globalListener)
+        ;
+
 
         pluto.sayWolf();
 
@@ -34,5 +46,7 @@ describe("EventStore", () => {
         expect(fromHistory.playhead).toBe(0);
 
         expect(onWolfEventSubscriber.wolf).toBeInstanceOf(SayWolf);
+        expect(globalListener.lastEvent).toBeInstanceOf(SayWolf);
+
     });
 });

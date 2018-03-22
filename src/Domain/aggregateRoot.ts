@@ -41,7 +41,7 @@ export default abstract class EventSourced extends AggregateRoot {
         }
     }
 
-    protected methodToApplyEvent(event: DomainEvent): string | null {
+    protected methodToApplyEvent(event: DomainEvent): string {
         const name: string = this.eventName(event);
 
         return this.methodPrefix + name;
