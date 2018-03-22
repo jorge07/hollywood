@@ -8,7 +8,7 @@ import EventListener from './EventBus/EventListener';
 export {
     EventBus,
     EventSubscriber,
-    EventListener
+    EventListener,
     IEventStore,
     AggregateRootNotFoundException,
     InMemoryEventStore,

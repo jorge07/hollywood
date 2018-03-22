@@ -8,4 +8,6 @@ const AggregateRootNotFoundException_1 = require("./Exception/AggregateRootNotFo
 exports.AggregateRootNotFoundException = AggregateRootNotFoundException_1.default;
 const InMemoryEventStore_1 = require("./InMemoryEventStore");
 exports.InMemoryEventStore = InMemoryEventStore_1.default;
+const EventListener_1 = require("./EventBus/EventListener");
+exports.EventListener = EventListener_1.default;
 //# sourceMappingURL=index.js.map
