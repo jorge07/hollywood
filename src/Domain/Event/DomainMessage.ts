@@ -4,6 +4,7 @@ import DomainEvent from "./DomainEvent";
  * @internal
  */
 export default class DomainMessage {
+    public readonly eventType: string
 
     private constructor(
         public readonly uuid: string, 
@@ -12,6 +13,7 @@ export default class DomainMessage {
         public readonly ocurredOn: Date,
         public readonly metadata: any[] = []
     ) {
+        this.eventType = (event as any).name
     }
 
     public static create(uuid: string, event: DomainEvent): DomainMessage {
