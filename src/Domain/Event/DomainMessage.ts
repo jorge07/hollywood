@@ -13,7 +13,7 @@ export default class DomainMessage {
         public readonly ocurredOn: Date,
         public readonly metadata: any[] = []
     ) {
-        this.eventType = (event as any).name
+        this.eventType = (event as any).constructor.name
     }
 
     public static create(uuid: string, event: DomainEvent): DomainMessage {

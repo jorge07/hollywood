@@ -1,8 +1,7 @@
-import IHandler from "../Handler";
 import ICommand from "./Command";
-import { AppResponse, AppError } from '../Query/CallbackArg';
+import { AppResponse, AppError } from '../CallbackArg';
 
-export default interface ICommandHandler extends IHandler {
+export default interface ICommandHandler {
 
     handle(command: ICommand, success?: (response: AppResponse)=>void, error?: (error: AppError)=>void): void;
 }

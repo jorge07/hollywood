@@ -1,6 +1,6 @@
 import * as express from 'express'
-import Bus, { CreateUser, UserSayHello, QueryDemo } from "./CommandAndQueryHandlers"
-import { AppResponse } from '../src/Application/Bus/Query/CallbackArg';
+import Bus, { CreateUser, UserSayHello, QueryDemo, queryBus } from "./CommandAndQueryHandlers"
+import { AppResponse } from '../src/Application/Bus/CallbackArg';
 
 const app = express();
 
@@ -28,7 +28,7 @@ app.post('/user-sync', (req, res) => {
 });
 
 app.get('/hello', (req, res) => {
-    Bus.handle(new QueryDemo(), (response) => {
+    queryBus.handle(new QueryDemo()).then((response: AppResponse) => {
         res.json(response);
     });
 });

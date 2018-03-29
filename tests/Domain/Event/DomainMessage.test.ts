@@ -1,5 +1,4 @@
 import { DomainEvent } from "../../../src/Domain";
-import { EventPayload } from '../../../src/Domain/Event/DomainEvent';
 import DomainMessage from '../../../src/Domain/Event/DomainMessage';
 
 class DemoEvent extends DomainEvent {

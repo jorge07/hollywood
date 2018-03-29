@@ -1,6 +1,6 @@
 {
   "name": "hollywood-js",
-  "version": "1.1.11",
+  "version": "1.1.12",
   "description": "Event Sourcing DDD CQRS tool kit",
   "author": "jorge.arcoma@gmail.com",
   "url": "https://github.com/jorge07/hollywood",
@@ -35,6 +35,7 @@
   "scripts": {
     "test": "jest",
     "test:server": "node ./out/examples/Server.js",
-    "dev": "tsc -p tsconfig.json -w"
+    "dev": "tsc -p tsconfig.json -w",
+    "build": "tsc -p tsconfig.json"
   }
 }

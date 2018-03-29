@@ -21,7 +21,7 @@ app.post('/user-sync', (req, res) => {
     });
 });
 app.get('/hello', (req, res) => {
-    CommandAndQueryHandlers_1.default.handle(new CommandAndQueryHandlers_1.QueryDemo(), (response) => {
+    CommandAndQueryHandlers_1.queryBus.handle(new CommandAndQueryHandlers_1.QueryDemo()).then((response) => {
         res.json(response);
     });
 });

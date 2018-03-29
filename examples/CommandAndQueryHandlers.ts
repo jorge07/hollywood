@@ -1,6 +1,6 @@
 import { User, UserSayHello, UserWasCreated } from './User';
 import { Application, EventStore, Domain } from "../";
-import { AppResponse, AppError } from '../src/Application/Bus/Query/CallbackArg';
+import { AppResponse, AppError } from '../src/Application/Bus/CallbackArg';
 
 class UserRepository implements Domain.IRepository {
 
@@ -80,11 +80,13 @@ class QueryDemo implements Application.IQuery {}
 
 class DemoQueryHandler implements Application.IQueryHandler {
 
-    handle(query: QueryDemo, success?: (response: AppResponse)=>void, error?: (error: AppError)=>void): void|Promise<any> {
-        
-        setTimeout(()=> {
-            success(<AppResponse>{data:'This is a async return query'})
-        }, 500)
+    handle(query: QueryDemo): Promise<any> {
+        return new Promise((resolve, reject) => {
+            setTimeout(()=> {
+                resolve(<AppResponse>{data:'This is a async return query'})
+            }, 500)
+        })
+
     }
 }
 
@@ -101,17 +103,22 @@ const userRepository = new UserRepository(new EventStore.InMemoryEventStore(even
 
 // Provision Bus
 
-let resolver = new Application.HandlerResolver();
+const resolver = new Application.CommandHandlerResolver();
 resolver.addHandler(CreateUser, new UserCreateHandler(userRepository));
 resolver.addHandler(SayHello, new SayHelloHandler(userRepository));
-resolver.addHandler(QueryDemo, new DemoQueryHandler());
 
-const bus = new Application.Bus(resolver);
+const queryResolver =  new Application.QueryHandlerResolver()
+queryResolver.addHandler(QueryDemo, new DemoQueryHandler());
 
-export default bus;
+const commandBus = new Application.CommandBus(resolver);
+
+const queryBus = new Application.QueryBus(queryResolver);
+
+export default commandBus;
 
 export {
      CreateUser,
      UserSayHello,
-     QueryDemo
+     QueryDemo,
+     queryBus
 }; 

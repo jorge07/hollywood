@@ -77,10 +77,12 @@ class QueryDemo {
 }
 exports.QueryDemo = QueryDemo;
 class DemoQueryHandler {
-    handle(query, success, error) {
-        setTimeout(() => {
-            success({ data: 'This is a async return query' });
-        }, 500);
+    handle(query) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve({ data: 'This is a async return query' });
+            }, 500);
+        });
     }
 }
 // Provision User Store
@@ -91,10 +93,13 @@ eventBus.attach(User_1.UserWasCreated, onUserWasCreated);
 eventBus.attach(User_1.UserSayHello, onSayHello);
 const userRepository = new UserRepository(new _1.EventStore.InMemoryEventStore(eventBus));
 // Provision Bus
-let resolver = new _1.Application.HandlerResolver();
+const resolver = new _1.Application.CommandHandlerResolver();
 resolver.addHandler(CreateUser, new UserCreateHandler(userRepository));
 resolver.addHandler(SayHello, new SayHelloHandler(userRepository));
-resolver.addHandler(QueryDemo, new DemoQueryHandler());
-const bus = new _1.Application.Bus(resolver);
-exports.default = bus;
+const queryResolver = new _1.Application.QueryHandlerResolver();
+queryResolver.addHandler(QueryDemo, new DemoQueryHandler());
+const commandBus = new _1.Application.CommandBus(resolver);
+const queryBus = new _1.Application.QueryBus(queryResolver);
+exports.queryBus = queryBus;
+exports.default = commandBus;
 //# sourceMappingURL=CommandAndQueryHandlers.js.map
