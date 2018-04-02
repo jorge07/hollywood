@@ -12,6 +12,7 @@ class EventSourced extends AggregateRoot {
         this.events = [];
     }
     raise(event) {
+        this.playhead++;
         this.applyEvent(event);
         this.events.push(event);
     }
@@ -22,23 +23,24 @@ class EventSourced extends AggregateRoot {
         return new _1.DomainEventStream(events);
     }
     fromHistory(stream) {
-        stream.events.forEach((message) => this.applyEvent(message.event));
+        stream.events.forEach((message) => {
+            this.playhead++;
+            this.applyDomainMessage(message);
+        });
         return this;
     }
     applyEvent(event) {
-        this.playhead++;
         event.playhead = this.playhead;
-        const method = this.methodToApplyEvent(event);
+        this.applyDomainMessage(_1.DomainMessage.create(this.getAggregateRootId(), event));
+    }
+    applyDomainMessage(message) {
+        const method = this.methodToApplyEvent(message);
         if (this[method]) {
-            this[method](event);
+            this[method](message.event);
         }
     }
-    methodToApplyEvent(event) {
-        const name = this.eventName(event);
-        return this.methodPrefix + name;
-    }
-    eventName(event) {
-        return event.constructor.name;
+    methodToApplyEvent(message) {
+        return this.methodPrefix + message.eventType;
     }
 }
 exports.default = EventSourced;

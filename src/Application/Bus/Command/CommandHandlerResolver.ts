@@ -7,6 +7,8 @@ export default class CommandHandlerResolver {
 
     private readonly handlers: CommandRegistry = {};
 
+    constructor() {}
+    
     resolve(command: ICommand, success?: (response: AppResponse)=>void, error?: (error: AppError)=>void): void {
         const handler = this.getHandlerForCommand(command);
 

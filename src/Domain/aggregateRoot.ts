@@ -12,6 +12,7 @@ export default abstract class EventSourced extends AggregateRoot {
     private events: DomainEvent[] = [];
 
     public raise(event: DomainEvent): void {
+        this.playhead++;
         this.applyEvent(event);
         this.events.push(event);
     }
@@ -25,30 +26,32 @@ export default abstract class EventSourced extends AggregateRoot {
     }
 
     public fromHistory(stream: DomainEventStream): any {
-        stream.events.forEach((message: DomainMessage) => this.applyEvent(message.event));
+        stream.events.forEach(
+            (message: DomainMessage) => {
+                this.playhead++;
+                this.applyDomainMessage(message)
+            }
+        );
 
         return this;
     }
 
     protected applyEvent(event: DomainEvent): void {
-        this.playhead++;
         event.playhead = this.playhead;
+        this.applyDomainMessage(DomainMessage.create(this.getAggregateRootId(), event));
+    }
 
-        const method: string = this.methodToApplyEvent(event);
-
+    private applyDomainMessage(message: DomainMessage): void {
+        const method: string = this.methodToApplyEvent(message);
+                
         if (this[method]) {
-            this[method](event);
+            this[method](message.event);
         }
     }
 
-    protected methodToApplyEvent(event: DomainEvent): string {
-        const name: string = this.eventName(event);
+    private methodToApplyEvent(message: DomainMessage): string {
 
-        return this.methodPrefix + name;
-    }
-
-    private eventName(event: DomainEvent): string {
-        return  (event as any).constructor.name;
+        return this.methodPrefix + message.eventType;
     }
 }
 

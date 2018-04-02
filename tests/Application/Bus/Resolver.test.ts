@@ -5,8 +5,8 @@ describe("HandlerResolver test suite", () => {
     it("It should routing to correct handler", async () => {
         expect.assertions(4)
 
-        const resolver = new CommandHandlerResolver();
         const queryResolver = new QueryHandlerResolver();
+        const resolver = new CommandHandlerResolver();
         const demoHandler = new DemoHandler();
 
         resolver
