@@ -15,9 +15,6 @@ class UserRepository {
     constructor(eventStore) {
         this.eventStore = eventStore;
     }
-    latency() {
-        return new Promise(resolve => setTimeout(resolve, 150));
-    }
     save(aggregateRoot) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.latency().then(() => {
@@ -26,7 +23,12 @@ class UserRepository {
         });
     }
     load(aggregateRootId) {
-        return (new User_1.User).fromHistory(this.eventStore.load(aggregateRootId));
+        return __awaiter(this, void 0, void 0, function* () {
+            return (new User_1.User).fromHistory(yield this.eventStore.load(aggregateRootId));
+        });
+    }
+    latency() {
+        return new Promise(resolve => setTimeout(resolve, 150));
     }
 }
 class OnUserWasCreated extends _1.EventStore.EventSubscriber {
@@ -67,10 +69,11 @@ class SayHelloHandler {
         this.userRepository = userRepository;
     }
     handle(c, callback) {
-        const user = this.userRepository.load(c.uuid);
-        console.log(user.sayHello());
-        this.userRepository.save(user);
-        callback({ data: 'User say Hello ACK' });
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.userRepository.load(c.uuid);
+            this.userRepository.save(user);
+            callback({ data: 'User say Hello ACK' });
+        });
     }
 }
 class QueryDemo {
@@ -78,10 +81,12 @@ class QueryDemo {
 exports.QueryDemo = QueryDemo;
 class DemoQueryHandler {
     handle(query) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve({ data: 'This is a async return query' });
-            }, 500);
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve({ data: 'This is a async return query' });
+                }, 500);
+            });
         });
     }
 }

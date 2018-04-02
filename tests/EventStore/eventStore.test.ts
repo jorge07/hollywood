@@ -19,7 +19,7 @@ class GlobalListener extends EventListener {
 }
 
 describe("EventStore", () => {
-    it("EventStore should store, publish and retrieve events", () => {
+    it("EventStore should store, publish and retrieve events", async () => {
         const onWolfEventSubscriber = new OnWolfEventSubscriber();
         const globalListener = new GlobalListener();
         const eventBus = new EventBus();
@@ -39,7 +39,7 @@ describe("EventStore", () => {
             pluto.getUncommitedEvents(),
         );
 
-        const events = store.load(pluto.getAggregateRootId());
+        const events = await store.load(pluto.getAggregateRootId());
         const fromHistory = (new Dog(pluto.getAggregateRootId())).fromHistory(events);
 
         expect(fromHistory.wolfCount).toBe(1);

@@ -1,14 +1,9 @@
 import { User, UserSayHello, UserWasCreated } from './User';
 import { Application, EventStore, Domain } from "../";
-import { AppResponse, AppError } from '../src/Application/Bus/CallbackArg';
 
 class UserRepository implements Domain.IRepository {
 
     constructor(private readonly eventStore: EventStore.IEventStore){}
-
-    latency() {
-        return new Promise(resolve => setTimeout(resolve, 150));
-    }
 
     async save(aggregateRoot: User): Promise<any> {
         
@@ -20,8 +15,12 @@ class UserRepository implements Domain.IRepository {
         })
     }
 
-    load(aggregateRootId: string): User {
-        return (new User).fromHistory(this.eventStore.load(aggregateRootId));
+    async load(aggregateRootId: string): Promise<User> {
+        return (new User).fromHistory(await this.eventStore.load(aggregateRootId));
+    }
+
+    private latency(): Promise<any> {
+        return new Promise(resolve => setTimeout(resolve, 150));
     }
 }
 
@@ -49,7 +48,7 @@ class UserCreateHandler implements Application.ICommandHandler {
         const user = (new User).create(c.uuid, c.email);
 
         this.userRepository.save(user).then(() => {
-            callback && callback(<AppResponse>{data: 'User Created ACK'});
+            callback && callback(<Application.AppResponse>{data: 'User Created ACK'});
         })
     }
 }
@@ -64,15 +63,13 @@ class SayHelloHandler implements Application.ICommandHandler {
         private userRepository: UserRepository
     ) {}
 
-    handle(c: SayHello, callback: Function): void {
+    async handle(c: SayHello, callback: Function): Promise<void> {
 
-        const user = this.userRepository.load(c.uuid);
-
-        console.log(user.sayHello());
+        const user = await this.userRepository.load(c.uuid);
 
         this.userRepository.save(user)
 
-        callback(<AppResponse>{data: 'User say Hello ACK'});
+        callback(<Application.AppResponse>{data: 'User say Hello ACK'});
     }
 }
 
@@ -80,10 +77,10 @@ class QueryDemo implements Application.IQuery {}
 
 class DemoQueryHandler implements Application.IQueryHandler {
 
-    handle(query: QueryDemo): Promise<any> {
+    async handle(query: QueryDemo): Promise<any> {
         return new Promise((resolve, reject) => {
             setTimeout(()=> {
-                resolve(<AppResponse>{data:'This is a async return query'})
+                resolve(<Application.AppResponse>{data:'This is a async return query'})
             }, 500)
         })
 

@@ -12,7 +12,7 @@ class InMemoryEventStore {
             const stream = new Domain_1.DomainEventStream();
             const events = this.events[aggregateId];
             events.forEach((event) => stream.events.push(Domain_1.DomainMessage.create(aggregateId, event)));
-            return stream;
+            return new Promise((resolve, rejesct) => resolve(stream));
         }
         throw new _1.AggregateRootNotFoundException();
     }

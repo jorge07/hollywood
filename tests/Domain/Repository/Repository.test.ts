@@ -7,7 +7,7 @@ export class DogRepository implements IRepository {
 
     constructor(private eventStore: IEventStore) {}
 
-    public save(eventSourced: Dog): void {
+    save(eventSourced: Dog): void {
         this
             .eventStore
             .append(
@@ -16,15 +16,15 @@ export class DogRepository implements IRepository {
             );
     }
 
-    public load(aggregateRootId: string): Dog {
+    async load(aggregateRootId: string): Promise<Dog> {
         return (new Dog(aggregateRootId)).fromHistory(
-            this.eventStore.load(aggregateRootId),
+            await this.eventStore.load(aggregateRootId),
         );
     }
 }
 
 describe("Repository", () => {
-    it("Repository should store and retieve AggregateRoots", () => {
+    it("Repository should store and retieve AggregateRoots", async () => {
         const repo = new DogRepository(new InMemoryEventStore(new EventBus()));
         const pluto = new Dog(Math.random().toString());
 
@@ -32,7 +32,7 @@ describe("Repository", () => {
 
         repo.save(pluto);
 
-        const another = repo.load(pluto.getAggregateRootId());
+        const another = await repo.load(pluto.getAggregateRootId());
 
         expect(another.getAggregateRootId()).toBe(pluto.getAggregateRootId());
         expect(another.wolfCount).toBe(pluto.wolfCount);

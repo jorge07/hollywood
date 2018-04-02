@@ -10,7 +10,7 @@ export default class InMemoryEventStore implements IEventStore {
         this.eventBus = eventBus;
     }
 
-    public load(aggregateId: string): DomainEventStream {
+    public load(aggregateId: string): Promise<DomainEventStream> {
 
         if (this.events[aggregateId]) {
             const stream = new DomainEventStream();
@@ -18,7 +18,7 @@ export default class InMemoryEventStore implements IEventStore {
 
             events.forEach((event: DomainEvent) => stream.events.push(DomainMessage.create(aggregateId, event)));
 
-            return stream;
+            return new Promise((resolve, rejesct) => resolve(stream));
         }
 
         throw new AggregateRootNotFoundException();

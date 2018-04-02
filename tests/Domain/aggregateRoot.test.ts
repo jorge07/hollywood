@@ -1,5 +1,4 @@
 import { EventSourced, DomainEvent, DomainEventStream, DomainMessage } from "../../src/Domain";
-import { DomainMessage } from '.';
 
 export class Dog extends EventSourced {
   public wolfCount: number = 0;
