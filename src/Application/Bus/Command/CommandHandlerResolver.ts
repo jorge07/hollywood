@@ -6,13 +6,11 @@ import ICommand from './Command';
 export default class CommandHandlerResolver {
 
     private readonly handlers: CommandRegistry = {};
-
-    constructor() {}
     
-    resolve(command: ICommand, success?: (response: AppResponse)=>void, error?: (error: AppError)=>void): void {
+    async resolve(command: ICommand): Promise<void|AppError> {
         const handler = this.getHandlerForCommand(command);
 
-        handler && handler.handle(command, success, error)
+        return await handler && handler.handle(command)
     }
 
     addHandler(command: any, handler: ICommandHandler): CommandHandlerResolver {

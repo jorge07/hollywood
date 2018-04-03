@@ -8,22 +8,35 @@ export class DemoCommand implements ICommand {
 export class DemoHandler implements ICommandHandler {
     public received: boolean = false
 
-    handle(command: DemoCommand, success?: (response: AppResponse)=>void, error?: (error: AppError)=>void): void {
+    async handle(command: DemoCommand): Promise<void|AppError> {
         this.received = true;
         if (command.exception) {
-            
-            return error(<AppError>{message: 'Fail'})
-        }
-        
-        success(<AppResponse>{data: 'ack', meta: []})
+
+            throw <AppError>{
+                message: 'Fail',
+                code: 1
+            }
+        }        
     }
 }
 
 export class DemoQuery implements IQuery {
+    constructor(public readonly exception: boolean = false) {
+    }
 }
 
 export class DemoQueryHandler implements IQueryHandler {
-    async handle(request: DemoQuery): Promise<any> {
-        return new Promise((resolve, reject) => (resolve("Hello!")));
+    async handle(request: DemoQuery): Promise<AppResponse|AppError> {
+        if (request.exception) {
+
+            throw <AppError>{
+                message: 'Fail', 
+                code: 0
+            }
+        }
+
+        return <AppResponse>{
+            data: 'Hello!'
+        };
     }
 }

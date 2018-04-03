@@ -3,5 +3,5 @@ import IQuery from './Query';
 
 export default interface IQueryHandler {
 
-    handle(request: IQuery): Promise<any>;
+    handle(request: IQuery): Promise<AppResponse|AppError>;
 }

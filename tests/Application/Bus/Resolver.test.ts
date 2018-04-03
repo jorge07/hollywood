@@ -3,7 +3,7 @@ import { DemoCommand, DemoHandler, DemoQuery, DemoQueryHandler } from "./DemoHan
 
 describe("HandlerResolver test suite", () => {
     it("It should routing to correct handler", async () => {
-        expect.assertions(4)
+        expect.assertions(5)
 
         const queryResolver = new QueryHandlerResolver();
         const resolver = new CommandHandlerResolver();
@@ -14,18 +14,38 @@ describe("HandlerResolver test suite", () => {
         queryResolver
             .addHandler(DemoQuery, new DemoQueryHandler());
 
-        const commandCaller = (command: ICommand, callback: (response: AppResponse) => void, error?: (response: AppError) => void): void => {
-            resolver.resolve(command, callback, error);
+        const commandCaller = async (command: ICommand): Promise<any> => {
+            return await resolver.resolve(command);
         };
         const queryCaller = async (command: IQuery): Promise<any> => {
             return queryResolver.resolve(command);
         };
 
         const response = await queryCaller(new DemoQuery());
-        expect(response).toBe('Hello!');
+        expect(response.data).toBe('Hello!');
 
-        commandCaller(new DemoCommand(false), (res: AppResponse) => (expect(res.data).toBe('ack')));
-        commandCaller(new DemoCommand(true), (res: AppResponse) => {}, (result) => expect(result.message).toBe("Fail"));
+        try {
+            await queryCaller(new DemoQuery(true));
+            expect('Exception').toBe('Not throwed');           
+        } catch (err) {
+            expect(err.code).toBe(0);
+        }
+
+        const res: AppResponse = await commandCaller(new DemoCommand(false));
         expect(demoHandler.received).toBeTruthy();
+
+        try {
+            await queryCaller(new DemoQuery(true));
+            expect('Exception').toBe('Not throwed');           
+        } catch (err) {
+            expect(err.code).toBe(0);
+        }
+
+        try {
+            const resp = await commandCaller(new DemoCommand(true));
+            expect('Exception 2').toBe('Not throwed');           
+        } catch(err) {
+            expect(err.message).toBe("Fail")
+        }
     });
 });
