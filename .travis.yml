@@ -8,7 +8,7 @@ node_js:
   - "9.10.0"
 
 before_install:
-  - docker build -t test test/Dockerfile .
+  - docker build -t test -f tests/Dockerfile .
 
 script:
-  - docker run test sh -lc 'yarn test'
+  - docker run --rm -v $PWD/src:/app/src -v $PWD/tests:/app/tests test sh -lc 'yarn test'
