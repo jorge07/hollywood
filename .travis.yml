@@ -1,13 +1,14 @@
+sudo: required
+
+services:
+  - docker
+
 language: node_js
 node_js:
   - "9.10.0"
 
 before_install:
-  - curl -o- -L https://yarnpkg.com/install.sh | bash
-  - export PATH="$HOME/.yarn/bin:$PATH"
-
-install:
-  - yarn install
+  - docker build -t test test/Dockerfile .
 
 script:
-  - yarn test
+  - docker run test sh -lc 'yarn test'
