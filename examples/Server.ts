@@ -1,6 +1,6 @@
 import * as express from 'express'
 import Bus, { CreateUser, UserSayHello, QueryDemo, queryBus } from "./CommandAndQueryHandlers"
-import { AppResponse } from '../src/Application/Bus/CallbackArg';
+import { AppResponse, AppError } from '../src/Application/Bus/CallbackArg';
 
 const app = express();
 
@@ -17,20 +17,19 @@ app.post('/user', (req, res) => {
     console.log('CLIENT LIBERATED');
 });
 
-app.post('/user-sync', (req, res) => {
+app.post('/user-sync', async (req, res) => {
     const email = 'lol@lol.com'
     const userUuid = '11a38b9a-b3da-360f-9353-a5a725514269';
     
-    Bus.handle(new CreateUser(userUuid, email), (appResponse: AppResponse) => {
-        res.json({uuid: userUuid, email, appResponse});
-        console.log('CLIENT LIBERATED');
-    });
+    await Bus.handle(new CreateUser(userUuid, email))
+    
+    res.json({uuid: userUuid, email});
+    console.log('CLIENT LIBERATED');
 });
 
-app.get('/hello', (req, res) => {
-    queryBus.handle(new QueryDemo()).then((response: AppResponse) => {
-        res.json(response);
-    });
+app.get('/hello', async (req, res) => {
+    const response: AppResponse|AppError = await queryBus.handle(new QueryDemo()); 
+    res.json(response);
 });
 
 app.listen(app.get('port'), () => {

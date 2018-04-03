@@ -18,7 +18,7 @@ describe("HandlerResolver test suite", () => {
             return await resolver.resolve(command);
         };
         const queryCaller = async (command: IQuery): Promise<any> => {
-            return queryResolver.resolve(command);
+            return await queryResolver.resolve(command);
         };
 
         const response = await queryCaller(new DemoQuery());
@@ -36,14 +36,14 @@ describe("HandlerResolver test suite", () => {
 
         try {
             await queryCaller(new DemoQuery(true));
-            expect('Exception').toBe('Not throwed');           
+            expect('Exception Query').toBe('Not throwed');           
         } catch (err) {
             expect(err.code).toBe(0);
         }
 
         try {
             const resp = await commandCaller(new DemoCommand(true));
-            expect('Exception 2').toBe('Not throwed');           
+            expect('Exception Command').toBe('Not throwed');           
         } catch(err) {
             expect(err.message).toBe("Fail")
         }

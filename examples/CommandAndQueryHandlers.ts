@@ -1,5 +1,6 @@
 import { User, UserSayHello, UserWasCreated } from './User';
 import { Application, EventStore, Domain } from "../";
+import { AppError } from '../src/Application/Bus/CallbackArg';
 
 class UserRepository implements Domain.IRepository {
 
@@ -44,12 +45,10 @@ class UserCreateHandler implements Application.ICommandHandler {
 
     constructor(private userRepository: UserRepository) {}
 
-    handle(c: CreateUser, callback: Function): void {
+    async handle(c: CreateUser): Promise<void|AppError> {
         const user = (new User).create(c.uuid, c.email);
 
-        this.userRepository.save(user).then(() => {
-            callback && callback(<Application.AppResponse>{data: 'User Created ACK'});
-        })
+        await this.userRepository.save(user)
     }
 }
 
@@ -63,13 +62,10 @@ class SayHelloHandler implements Application.ICommandHandler {
         private userRepository: UserRepository
     ) {}
 
-    async handle(c: SayHello, callback: Function): Promise<void> {
-
+    async handle(c: SayHello): Promise<void|AppError> {
         const user = await this.userRepository.load(c.uuid);
 
-        this.userRepository.save(user)
-
-        callback(<Application.AppResponse>{data: 'User say Hello ACK'});
+        await this.userRepository.save(user)
     }
 }
 

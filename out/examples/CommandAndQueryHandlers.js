@@ -52,10 +52,10 @@ class UserCreateHandler {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
-    handle(c, callback) {
-        const user = (new User_1.User).create(c.uuid, c.email);
-        this.userRepository.save(user).then(() => {
-            callback && callback({ data: 'User Created ACK' });
+    handle(c) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = (new User_1.User).create(c.uuid, c.email);
+            yield this.userRepository.save(user);
         });
     }
 }
@@ -68,11 +68,10 @@ class SayHelloHandler {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
-    handle(c, callback) {
+    handle(c) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.userRepository.load(c.uuid);
-            this.userRepository.save(user);
-            callback({ data: 'User say Hello ACK' });
+            yield this.userRepository.save(user);
         });
     }
 }

@@ -18,7 +18,7 @@ class QueryHandlerResolver {
             if (!handler) {
                 return null;
             }
-            return handler.handle(command);
+            return yield handler.handle(command);
         });
     }
     addHandler(command, handler) {
