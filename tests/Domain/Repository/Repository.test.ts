@@ -1,38 +1,34 @@
 import { IRepository } from "../../../src/Domain";
-import { IEventStore, InMemoryEventStore } from "../../../src/EventStore";
+import { EventStore, InMemoryEventStore } from "../../../src/EventStore";
 import {EventBus} from "../../../src/EventStore";
-import {Dog} from "../AggregateRoot.test";
+import { Dog } from '../AggregateRoot.test';
 
 export class DogRepository implements IRepository {
 
-    constructor(private eventStore: IEventStore) {}
+    constructor(private eventStore: EventStore<Dog>) {}
 
     save(eventSourced: Dog): void {
         this
             .eventStore
-            .append(
-                eventSourced.getAggregateRootId(),
-                eventSourced.getUncommitedEvents(),
-            );
+            .save(eventSourced);
     }
 
     async load(aggregateRootId: string): Promise<Dog> {
-        return (new Dog(aggregateRootId)).fromHistory(
-            await this.eventStore.load(aggregateRootId),
-        );
+        return await this.eventStore.load(aggregateRootId);
     }
 }
 
 describe("Repository", () => {
     it("Repository should store and retieve AggregateRoots", async () => {
-        const repo = new DogRepository(new InMemoryEventStore(new EventBus()));
-        const pluto = new Dog(Math.random().toString());
+        const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), new EventBus());
+        const repo = new DogRepository(store);
+        const pluto = new Dog();
 
         pluto.sayWolf();
 
         repo.save(pluto);
 
-        const another = await repo.load(pluto.getAggregateRootId());
+        const another: Dog = await repo.load(pluto.getAggregateRootId());
 
         expect(another.getAggregateRootId()).toBe(pluto.getAggregateRootId());
         expect(another.wolfCount).toBe(pluto.wolfCount);

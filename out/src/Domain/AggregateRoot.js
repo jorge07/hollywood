@@ -11,11 +11,6 @@ class EventSourced extends AggregateRoot {
         this.playhead = -1;
         this.events = [];
     }
-    raise(event) {
-        this.playhead++;
-        this.applyEvent(event);
-        this.events.push(event);
-    }
     getUncommitedEvents() {
         const id = this.getAggregateRootId();
         const events = this.events.map((event) => (_1.DomainMessage.create(id, event)));
@@ -28,6 +23,14 @@ class EventSourced extends AggregateRoot {
             this.applyDomainMessage(message);
         });
         return this;
+    }
+    version() {
+        return this.playhead;
+    }
+    raise(event) {
+        this.playhead++;
+        this.applyEvent(event);
+        this.events.push(event);
     }
     applyEvent(event) {
         event.playhead = this.playhead;

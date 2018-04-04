@@ -3,15 +3,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const _1 = require(".");
 const Domain_1 = require("../Domain");
 class InMemoryEventStore {
-    constructor(eventBus) {
+    constructor() {
         this.events = [];
-        this.eventBus = eventBus;
     }
-    load(aggregateId) {
+    load(aggregateId, from = 0) {
         if (this.events[aggregateId]) {
             const stream = new Domain_1.DomainEventStream();
             const events = this.events[aggregateId];
-            events.forEach((event) => stream.events.push(Domain_1.DomainMessage.create(aggregateId, event)));
+            events
+                .slice(from)
+                .forEach((event) => stream.events.push(Domain_1.DomainMessage.create(aggregateId, event)));
             return new Promise((resolve, rejesct) => resolve(stream));
         }
         throw new _1.AggregateRootNotFoundException();
@@ -22,7 +23,6 @@ class InMemoryEventStore {
         }
         stream.events.forEach((message) => {
             this.events[aggregateId].push(message.event);
-            this.eventBus.publish(message);
         });
     }
 }

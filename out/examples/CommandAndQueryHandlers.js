@@ -18,13 +18,13 @@ class UserRepository {
     save(aggregateRoot) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.latency().then(() => {
-                this.eventStore.append(aggregateRoot.getAggregateRootId(), aggregateRoot.getUncommitedEvents());
+                this.eventStore.save(aggregateRoot);
             });
         });
     }
     load(aggregateRootId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (new User_1.User).fromHistory(yield this.eventStore.load(aggregateRootId));
+            return yield this.eventStore.load(aggregateRootId);
         });
     }
     latency() {
@@ -95,7 +95,7 @@ const onUserWasCreated = new OnUserWasCreated();
 const onSayHello = new OnSayHello();
 eventBus.attach(User_1.UserWasCreated, onUserWasCreated);
 eventBus.attach(User_1.UserSayHello, onSayHello);
-const userRepository = new UserRepository(new _1.EventStore.InMemoryEventStore(eventBus));
+const userRepository = new UserRepository(new _1.EventStore.EventStore(User_1.User, new _1.EventStore.InMemoryEventStore(), eventBus));
 // Provision Bus
 const resolver = new _1.Application.CommandHandlerResolver();
 resolver.addHandler(CreateUser, new UserCreateHandler(userRepository));

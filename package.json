@@ -28,7 +28,7 @@
       "js"
     ],
     "collectCoverageFrom": [
-      "**/*.{ts}",
+      "src/**/*.{ts}",
       "!**/node_modules/**"
     ],
     "coverageDirectory": "./coverage/",
