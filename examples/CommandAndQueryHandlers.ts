@@ -1,4 +1,4 @@
-import { User, UserSayHello, UserWasCreated } from './User';
+import { User, UserSayHello, UserWasCreated } from "./User";
 import { Application, EventStore, Domain } from "../";
 
 class UserRepository implements Domain.IRepository<User> {

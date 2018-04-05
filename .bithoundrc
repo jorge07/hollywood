@@ -5,5 +5,8 @@
   ],
   "test": [
     "test/**"
-  ]
+  ],
+  "critics": {
+    "lint": {"engine": "none"} 
+  }
 }
