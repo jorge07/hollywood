@@ -7,7 +7,6 @@
   "license": "MIT",
   "main": "out/index.js",
   "dependencies": {
-    "uuid": "^3.2.1"
   },
   "devDependencies": {
     "@types/jest": "^22.1.3",
