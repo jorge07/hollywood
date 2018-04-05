@@ -1,11 +1,6 @@
-import { EventBus, EventSubscriber, InMemoryEventStore, EventListener } from "../../../src/EventStore";
+import { EventBus, EventSubscriber, InMemoryEventStore, EventListener, EventStore, ISnapshotStoreDBAL } from "../../../src/EventStore";
+import { AggregateRootId, EventSourced, DomainEvent } from '../../../src/Domain';
 import { Dog, SayWolf } from "../../Domain/AggregateRoot.test";
-import DomainEvent from '../../../src/Domain/Event/DomainEvent';
-import EventStore from '../../../src/EventStore/EventStore';
-import ISnapshotStoreDBAL from '../../../src/EventStore/Snapshot/SnapshotStoreDBAL';
-import { AggregateRootId } from '../../../src/Domain/AggregateRoot';
-import EventSourced from '../../../src/Domain/AggregateRoot';
-import SnapshotStore from '../../../src/EventStore/Snapshot/SnapshotStore';
 
 type SnapshotDictionary = {
     [x: string]: any

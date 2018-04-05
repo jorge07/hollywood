@@ -1,7 +1,6 @@
-import { EventBus, EventSubscriber, InMemoryEventStore, EventListener } from "../../src/EventStore";
+import { EventBus, EventSubscriber, InMemoryEventStore, EventListener, EventStore } from "../../src/EventStore";
 import { Dog, SayWolf } from "../Domain/AggregateRoot.test";
 import DomainEvent from '../../src/Domain/Event/DomainEvent';
-import EventStore from '../../src/EventStore/EventStore';
 
 class OnWolfEventSubscriber extends EventSubscriber {
     public wolf: any;
