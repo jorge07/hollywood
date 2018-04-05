@@ -1,7 +1,7 @@
 import { User, UserSayHello, UserWasCreated } from './User';
 import { Application, EventStore, Domain } from "../";
 
-class UserRepository implements Domain.IRepository {
+class UserRepository implements Domain.IRepository<User> {
 
     constructor(private readonly eventStore: EventStore.EventStore<User>){}
 
