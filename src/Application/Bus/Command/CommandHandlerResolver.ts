@@ -1,19 +1,19 @@
-import { CommandRegistry } from '../CommandRegistry';
-import { AppResponse, AppError } from '../CallbackArg';
-import ICommandHandler from './CommandHandler';
-import ICommand from './Command';
+import { IAppError } from "../CallbackArg";
+import { ICommandRegistry } from "../CommandRegistry";
+import ICommand from "./Command";
+import ICommandHandler from "./CommandHandler";
 
 export default class CommandHandlerResolver {
 
-    private readonly handlers: CommandRegistry = {};
-    
-    async resolve(command: ICommand): Promise<void|AppError> {
+    private readonly handlers: ICommandRegistry = {};
+
+    public async resolve(command: ICommand): Promise<void|IAppError> {
         const handler = this.getHandlerForCommand(command);
 
-        return await handler && handler.handle(command)
+        return await handler && handler.handle(command);
     }
 
-    addHandler(command: any, handler: ICommandHandler): CommandHandlerResolver {
+    public addHandler(command: any, handler: ICommandHandler): CommandHandlerResolver {
         this.handlers[(command as any).name] = handler;
 
         return this;

@@ -1,6 +1,6 @@
-import { EventBus, EventSubscriber, InMemoryEventStore, EventListener, EventStore } from "../../src/EventStore";
+import DomainEvent from "../../src/Domain/Event/DomainEvent";
+import { EventBus, EventListener, EventStore, EventSubscriber, InMemoryEventStore } from "../../src/EventStore";
 import { Dog, SayWolf } from "../Domain/AggregateRoot.test";
-import DomainEvent from '../../src/Domain/Event/DomainEvent';
 
 class OnWolfEventSubscriber extends EventSubscriber {
     public wolf: any;
@@ -13,7 +13,7 @@ class OnWolfEventSubscriber extends EventSubscriber {
 class GlobalListener extends EventListener {
     public lastEvent: any;
 
-    on(event: DomainEvent): void {
+    public on(event: DomainEvent): void {
         this.lastEvent = event;
     }
 }
@@ -53,6 +53,6 @@ describe("EventStore", () => {
 
             console.log(x);
         };
-        expect(toTest()).rejects.toMatchObject(new Error('Not found'));
+        expect(toTest()).rejects.toMatchObject(new Error("Not found"));
     });
 });

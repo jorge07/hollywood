@@ -4,7 +4,7 @@ import { DomainEvent, DomainEventStream, DomainMessage } from "../Domain";
 export default class InMemoryEventStore implements IEventStoreDBAL {
     private readonly events: any[] = [];
 
-    load(aggregateId: string, from: number = 0): Promise<DomainEventStream> {
+    public load(aggregateId: string, from: number = 0): Promise<DomainEventStream> {
         if (this.events[aggregateId]) {
             const stream = new DomainEventStream();
             const events = this.events[aggregateId];
@@ -19,7 +19,7 @@ export default class InMemoryEventStore implements IEventStoreDBAL {
         throw new AggregateRootNotFoundException();
     }
 
-    append(aggregateId: string, stream: DomainEventStream): void {
+    public append(aggregateId: string, stream: DomainEventStream): void {
         if (! this.events[aggregateId]) {
             this.events[aggregateId] = [];
         }

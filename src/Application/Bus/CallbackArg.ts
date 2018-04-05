@@ -1,9 +1,10 @@
-export type AppResponse = {
-    data: any,
-    meta: Array<any>
+export interface IAppResponse {
+    data: any;
+    meta: any[];
 }
 
-export type AppError = {
-    message: string,
-    code: number
+export interface IAppError {
+    message: string;
+    code: number;
+    meta: any[];
 }

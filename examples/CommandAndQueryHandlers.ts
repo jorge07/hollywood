@@ -41,7 +41,7 @@ class UserCreateHandler implements Application.ICommandHandler {
 
     constructor(private userRepository: UserRepository) {}
 
-    async handle(c: CreateUser): Promise<void|Application.AppError> {
+    async handle(c: CreateUser): Promise<void|Application.IAppError> {
         const user = (new User).create(c.uuid, c.email);
 
         await this.userRepository.save(user)
@@ -58,7 +58,7 @@ class SayHelloHandler implements Application.ICommandHandler {
         private userRepository: UserRepository
     ) {}
 
-    async handle(c: SayHello): Promise<void|Application.AppError> {
+    async handle(c: SayHello): Promise<void|Application.IAppError> {
         const user = await this.userRepository.load(c.uuid);
 
         await this.userRepository.save(user)
@@ -72,7 +72,7 @@ class DemoQueryHandler implements Application.IQueryHandler {
     async handle(query: QueryDemo): Promise<any> {
         return new Promise((resolve, reject) => {
             setTimeout(()=> {
-                resolve(<Application.AppResponse>{data:'This is a async return query'})
+                resolve(<Application.IAppResponse>{data:'This is a async return query'})
             }, 500)
         })
 

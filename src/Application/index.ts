@@ -1,12 +1,12 @@
+import { IAppError, IAppResponse } from "./Bus/CallbackArg";
 import ICommand from "./Bus/Command/Command";
+import CommandBus from "./Bus/Command/CommandBus";
 import ICommandHandler from "./Bus/Command/CommandHandler";
+import CommandHandlerResolver from "./Bus/Command/CommandHandlerResolver";
 import IQuery from "./Bus/Query/Query";
+import QueryBus from "./Bus/Query/QueryBus";
 import IQueryHandler from "./Bus/Query/QueryHandler";
 import QueryHandlerResolver from "./Bus/Query/QueryResolver";
-import CommandHandlerResolver from './Bus/Command/CommandHandlerResolver'
-import { AppError, AppResponse } from './Bus/CallbackArg';
-import CommandBus from './Bus/Command/CommandBus'
-import QueryBus from './Bus/Query/QueryBus';
 
 export {
     CommandBus,
@@ -17,6 +17,6 @@ export {
     ICommandHandler,
     IQuery,
     IQueryHandler,
-    AppError,
-    AppResponse
+    IAppError,
+    IAppResponse,
 };

@@ -1,14 +1,14 @@
-import ISnapshotStoreDBAL from "./SnapshotStoreDBAL"
-import EventSourced, { AggregateRootId } from '../../Domain/AggregateRoot';
+import EventSourced, { AggregateRootId } from "../../Domain/AggregateRoot";
+import ISnapshotStoreDBAL from "./SnapshotStoreDBAL";
 
 export default class SnapshotStore<T extends EventSourced> {
     constructor(private readonly store: ISnapshotStoreDBAL<T>) {}
 
-    async retrieve(aggregateRootId: AggregateRootId): Promise<T> {
-        return <T> await this.store.get(aggregateRootId)
+    public async retrieve(aggregateRootId: AggregateRootId): Promise<T> {
+        return await this.store.get(aggregateRootId) as T;
     }
 
-    async snapshot(entity: T): Promise<void> {
+    public async snapshot(entity: T): Promise<void> {
         await this.store.store(entity);
     }
 }

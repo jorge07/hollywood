@@ -1,18 +1,18 @@
 import { IRepository } from "../../../src/Domain";
-import { EventStore, InMemoryEventStore, EventBus } from "../../../src/EventStore";
-import { Dog } from '../AggregateRoot.test';
+import { EventBus, EventStore, InMemoryEventStore } from "../../../src/EventStore";
+import { Dog } from "../AggregateRoot.test";
 
 export class DogRepository implements IRepository<Dog> {
 
     constructor(private eventStore: EventStore<Dog>) {}
 
-    save(eventSourced: Dog): void {
+    public save(eventSourced: Dog): void {
         this
             .eventStore
             .save(eventSourced);
     }
 
-    async load(aggregateRootId: string): Promise<Dog> {
+    public async load(aggregateRootId: string): Promise<Dog> {
         return await this.eventStore.load(aggregateRootId);
     }
 }

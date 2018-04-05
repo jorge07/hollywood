@@ -1,23 +1,23 @@
-import IQueryHandler from './QueryHandler';
-import { QueryRegistry } from '../CommandRegistry';
-import IQuery from './Query';
-import { AppResponse, AppError } from '../CallbackArg';
+import { IAppError, IAppResponse } from "../CallbackArg";
+import { IQueryRegistry } from "../CommandRegistry";
+import IQuery from "./Query";
+import IQueryHandler from "./QueryHandler";
 
 export default class QueryHandlerResolver {
 
-    private readonly handlers: QueryRegistry = {};
+    private readonly handlers: IQueryRegistry = {};
 
-    async resolve(command: IQuery): Promise<AppResponse|AppError|null> {
+    public async resolve(command: IQuery): Promise<IAppResponse|IAppError|null> {
         const handler = this.getHandlerForCommand(command);
 
         if (! handler) {
             return null;
         }
 
-        return await handler.handle(command)
+        return await handler.handle(command);
     }
 
-    addHandler(command: any, handler: IQueryHandler): QueryHandlerResolver {
+    public addHandler(command: any, handler: IQueryHandler): QueryHandlerResolver {
         this.handlers[(command as any).name] = handler;
 
         return this;

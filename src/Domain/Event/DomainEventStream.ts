@@ -1,6 +1,6 @@
-import { AggregateRoot } from "../AggregateRoot";
+import AggregateRoot from "../AggregateRoot";
 import DomainMessage from "./DomainMessage";
-import { StreamName } from './StreamName';
+import { StreamName } from "./StreamName";
 
 export default class DomainEventStream {
     constructor(
@@ -9,7 +9,7 @@ export default class DomainEventStream {
     ) {
     }
 
-    isEmpty(): boolean {
+    public isEmpty(): boolean {
         return 0 === this.events.length;
     }
 }

@@ -1,21 +1,28 @@
-import { EventBus, EventSubscriber, InMemoryEventStore, EventListener, EventStore, ISnapshotStoreDBAL } from "../../../src/EventStore";
-import { AggregateRootId, EventSourced, DomainEvent } from '../../../src/Domain';
+import { AggregateRootId, DomainEvent, EventSourced } from "../../../src/Domain";
+import {
+    EventBus,
+    EventListener,
+    EventStore,
+    EventSubscriber,
+    InMemoryEventStore,
+    ISnapshotStoreDBAL,
+} from "../../../src/EventStore";
 import { Dog, SayWolf } from "../../Domain/AggregateRoot.test";
 
-type SnapshotDictionary = {
-    [x: string]: any
+interface ISnapshotDictionary {
+    [x: string]: any;
 }
 
-class InMemorySnapshotStore<T extends EventSourced> implements ISnapshotStoreDBAL<T> {
+class InMemorySnapshotStore implements ISnapshotStoreDBAL<Dog> {
 
-    public snapshots: SnapshotDictionary = {}
+    public snapshots: ISnapshotDictionary = {};
 
-    async get(uuid: AggregateRootId): Promise<T|null>{
+    public async get(uuid: AggregateRootId): Promise<Dog|null> {
         return this.snapshots[uuid] || null;
-        
+
     }
 
-    async store(entity: T): Promise<void> {
+    public async store(entity: Dog): Promise<void> {
         this.snapshots[entity.getAggregateRootId()] = entity;
     }
 }
@@ -23,7 +30,7 @@ class InMemorySnapshotStore<T extends EventSourced> implements ISnapshotStoreDBA
 describe("SnapshotStore", () => {
     it("EventStore should store, publish and retrieve events", async () => {
         const eventBus = new EventBus();
-        const snapshotDBAL = new InMemorySnapshotStore<Dog>();
+        const snapshotDBAL = new InMemorySnapshotStore();
 
         const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus, snapshotDBAL);
         const pluto = new Dog();
@@ -40,7 +47,7 @@ describe("SnapshotStore", () => {
         pluto.sayWolf();
         pluto.sayWolf();
 
-        expect(pluto.version()).toBe(10)
+        expect(pluto.version()).toBe(10);
 
         store.save(pluto);
 

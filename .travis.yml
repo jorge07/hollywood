@@ -12,5 +12,6 @@ before_install:
 
 script:
   - docker run --rm -v $PWD/src:/app/src -v $PWD/tests:/app/tests test sh -lc 'yarn test'
+  - docker run --rm -v $PWD/src:/app/src -v $PWD/tests:/app/tests test sh -lc 'yarn lint'
 
 after_script: "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"

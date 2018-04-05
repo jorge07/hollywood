@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class AggregateRootNotFoundException extends Error {
     constructor() {
-        super('Not found');
+        super("Not found");
     }
 }
 exports.default = AggregateRootNotFoundException;

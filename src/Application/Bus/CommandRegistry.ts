@@ -1,10 +1,10 @@
-import ICommandHandler from './Command/CommandHandler';
-import IQueryHandler from './Query/QueryHandler';
+import ICommandHandler from "./Command/CommandHandler";
+import IQueryHandler from "./Query/QueryHandler";
 
-export type CommandRegistry = {
+export interface ICommandRegistry {
     [key: string]: ICommandHandler;
 }
 
-export type QueryRegistry = {
+export interface IQueryRegistry {
     [key: string]: IQueryHandler;
 }

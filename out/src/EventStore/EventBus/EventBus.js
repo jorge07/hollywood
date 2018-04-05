@@ -7,7 +7,7 @@ class EventBus {
     }
     publish(message) {
         this.subscribersFor(message.event).forEach((subscriber) => subscriber.on(message.event));
-        Object.keys(this.listenersRegistry).forEach(key => {
+        Object.keys(this.listenersRegistry).forEach((key) => {
             this.listenersRegistry[key].on(message.event);
         });
     }

@@ -1,4 +1,4 @@
-import { AggregateRootId, DomainEventStream } from '../Domain';
+import { AggregateRootId, DomainEventStream } from "../Domain";
 
 export default interface IEventStoreDBAL {
 

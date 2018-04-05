@@ -1,21 +1,21 @@
-import { ICommand, ICommandHandler, IQuery, IQueryHandler, AppResponse, AppError} from "../../../src/Application/";
+import { IAppError, IAppResponse, ICommand, ICommandHandler, IQuery, IQueryHandler} from "../../../src/Application/";
 
 export class DemoCommand implements ICommand {
     constructor(public readonly exception: boolean) {}
 }
 
 export class DemoHandler implements ICommandHandler {
-    public received: boolean = false
+    public received: boolean = false;
 
-    async handle(command: DemoCommand): Promise<void|AppError> {
+    public async handle(command: DemoCommand): Promise<void|IAppError> {
         this.received = true;
         if (command.exception) {
 
-            throw <AppError>{
-                message: 'Fail',
-                code: 1
-            }
-        }        
+            throw {
+                code: 1,
+                message: "Fail",
+            } as IAppError;
+        }
     }
 }
 
@@ -25,17 +25,17 @@ export class DemoQuery implements IQuery {
 }
 
 export class DemoQueryHandler implements IQueryHandler {
-    async handle(request: DemoQuery): Promise<AppResponse|AppError> {
+    public async handle(request: DemoQuery): Promise<IAppResponse|IAppError> {
         if (request.exception) {
 
-            throw <AppError>{
-                message: 'Fail', 
-                code: 0
-            }
+            throw {
+                code: 0,
+                message: "Fail",
+            } as IAppError;
         }
 
-        return <AppResponse>{
-            data: 'Hello!'
-        };
+        return {
+            data: "Hello!",
+        } as IAppResponse;
     }
 }

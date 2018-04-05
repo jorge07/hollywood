@@ -1,4 +1,4 @@
-import { EventSourced, DomainEvent, DomainEventStream, DomainMessage } from "../../src/Domain";
+import { DomainEvent, DomainEventStream, DomainMessage, EventSourced } from "../../src/Domain";
 
 export class Dog extends EventSourced {
   public wolfCount: number = 0;
@@ -27,7 +27,7 @@ export class Dog extends EventSourced {
 
 export class SayWolf extends DomainEvent {
   constructor(public readonly uuid: string) {
-    super()
+    super();
   }
 }
 
@@ -61,11 +61,11 @@ describe("AggregateRoot", () => {
     expect(stream.events.length).toBe(1);
   });
 
-    it("Aggregate Roots must be able to reconstruct from stringified events", () => {
+  it("Aggregate Roots must be able to reconstruct from stringified events", () => {
 
     const dog = new Dog();
     const domainMessage: string = JSON.stringify(DomainMessage.create(dog.getAggregateRootId(), new SayWolf()));
-    const stream = new DomainEventStream([<DomainMessage>JSON.parse(domainMessage)]);
+    const stream = new DomainEventStream([JSON.parse(domainMessage) as DomainMessage]);
     const pluto = dog.fromHistory(stream) as Dog;
 
     expect(pluto.getUncommitedEvents().events.length).toBe(0);
