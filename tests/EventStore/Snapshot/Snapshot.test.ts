@@ -13,16 +13,16 @@ interface ISnapshotDictionary {
     [x: string]: any;
 }
 
-class InMemorySnapshotStore implements ISnapshotStoreDBAL<Dog> {
+class InMemorySnapshotStore implements ISnapshotStoreDBAL {
 
     public snapshots: ISnapshotDictionary = {};
 
-    public async get(uuid: AggregateRootId): Promise<Dog|null> {
+    public async get(uuid: AggregateRootId): Promise<any|null> {
         return this.snapshots[uuid] || null;
 
     }
 
-    public async store(entity: Dog): Promise<void> {
+    public async store(entity: EventSourced): Promise<void> {
         this.snapshots[entity.getAggregateRootId()] = entity;
     }
 }

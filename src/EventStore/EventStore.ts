@@ -10,7 +10,7 @@ const MIN_SNAPSHOT_MARGIN: number = 10;
 export default class EventStore<T extends EventSourced> {
     private readonly dbal: IEventStoreDBAL;
     private readonly eventBus: EventBus;
-    private readonly snapshotStore?: SnapshotStore<T>;
+    private readonly snapshotStore?: SnapshotStore;
     private readonly modelConstructor;
     private readonly snapshotMargin: number;
 
@@ -18,7 +18,7 @@ export default class EventStore<T extends EventSourced> {
         modelConstructor: new () => T,
         dbal: IEventStoreDBAL,
         eventBus: EventBus,
-        snapshotStoreDbal?: ISnapshotStoreDBAL<T>,
+        snapshotStoreDbal?: ISnapshotStoreDBAL,
         snapshotMargin?: number,
     ) {
         this.modelConstructor = modelConstructor;
@@ -27,7 +27,7 @@ export default class EventStore<T extends EventSourced> {
         this.snapshotMargin = snapshotMargin || MIN_SNAPSHOT_MARGIN;
 
         if (snapshotStoreDbal) {
-            this.snapshotStore = new SnapshotStore<T>(snapshotStoreDbal);
+            this.snapshotStore = new SnapshotStore(snapshotStoreDbal);
         }
     }
 
@@ -39,6 +39,7 @@ export default class EventStore<T extends EventSourced> {
             eventSourced = await this.snapshotStore.retrieve(aggregateId);
 
             if (eventSourced) {
+                eventSourced = Object.assign(eventSourced, this.factory());
                 from = eventSourced.version();
             }
         }

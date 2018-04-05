@@ -28,6 +28,7 @@ class EventStore {
             if (this.snapshotStore) {
                 eventSourced = yield this.snapshotStore.retrieve(aggregateId);
                 if (eventSourced) {
+                    eventSourced = Object.assign(eventSourced, this.factory());
                     from = eventSourced.version();
                 }
             }
