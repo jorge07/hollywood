@@ -1,10 +1,9 @@
 {
   "ignore": [
-      "out/**",
-      "examples/**",
-      "examples/*.ts",
+    "out/**",
+    "examples/**"
   ],
   "test": [
-      "tests/**"
+    "test/**"
   ]
 }
