@@ -5,7 +5,7 @@ import { AppResponse, AppError } from '../CallbackArg';
 export default class QueryBus {
     constructor(private readonly handlerResolver: QueryHandlerResolver) {}
 
-    public async handle(command: IQuery): Promise<AppResponse|AppError> {
+    public async ask(command: IQuery): Promise<AppResponse|AppError> {
         return await this.handlerResolver.resolve(command);
     }
 }

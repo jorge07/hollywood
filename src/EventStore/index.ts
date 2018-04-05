@@ -1,15 +1,19 @@
 import EventBus from "./EventBus/EventBus";
 import EventSubscriber from "./EventBus/EventSubscriber";
-import IEventStore from "./EventStore";
+import EventStore from "./EventStore";
 import AggregateRootNotFoundException from "./Exception/AggregateRootNotFoundException";
 import InMemoryEventStore from "./InMemoryEventStore";
 import EventListener from './EventBus/EventListener';
+import IEventStoreDBAL from './IEventStoreDBAL';
+import ISnapshotStoreDBAL from './Snapshot/SnapshotStoreDBAL';
 
 export {
     EventBus,
     EventSubscriber,
     EventListener,
-    IEventStore,
+    EventStore,
+    IEventStoreDBAL,
     AggregateRootNotFoundException,
     InMemoryEventStore,
+    ISnapshotStoreDBAL
 };

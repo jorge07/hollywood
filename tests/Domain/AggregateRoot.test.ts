@@ -4,9 +4,8 @@ export class Dog extends EventSourced {
   public wolfCount: number = 0;
   private id: string;
 
-  constructor(aggregateRootId: string) {
+  constructor() {
     super();
-    this.id = aggregateRootId;
   }
 
   public getAggregateRootId(): string {
@@ -15,24 +14,27 @@ export class Dog extends EventSourced {
   }
 
   public sayWolf(): string {
-    super.raise(new SayWolf());
+    super.raise(new SayWolf(Math.random().toString()));
 
     return "Wolf!";
   }
 
   public applySayWolf(event: SayWolf) {
+    this.id = event.uuid;
     this.wolfCount++;
   }
 }
 
 export class SayWolf extends DomainEvent {
-
+  constructor(public readonly uuid: string) {
+    super()
+  }
 }
 
 describe("AggregateRoot", () => {
 
   it("Aggregate Roots have an aggregate id", () => {
-    const dog = new Dog(Math.random().toString());
+    const dog = new Dog();
     let stream = dog.getUncommitedEvents();
 
     expect(stream.events.length).toBe(0);
@@ -46,7 +48,7 @@ describe("AggregateRoot", () => {
   });
 
   it("Aggregate Roots must store events and call apply<DomainEventName> method if exist", () => {
-    const dog = new Dog(Math.random().toString());
+    const dog = new Dog();
     let stream = dog.getUncommitedEvents();
 
     expect(stream.events.length).toBe(0);
@@ -61,7 +63,7 @@ describe("AggregateRoot", () => {
 
     it("Aggregate Roots must be able to reconstruct from stringified events", () => {
 
-    const dog = new Dog(Math.random().toString());
+    const dog = new Dog();
     const domainMessage: string = JSON.stringify(DomainMessage.create(dog.getAggregateRootId(), new SayWolf()));
     const stream = new DomainEventStream([<DomainMessage>JSON.parse(domainMessage)]);
     const pluto = dog.fromHistory(stream) as Dog;
@@ -72,7 +74,7 @@ describe("AggregateRoot", () => {
   });
 
   it("Aggregate Roots must be able to reconstruct from events history", () => {
-    const dog = new Dog(Math.random().toString());
+    const dog = new Dog();
     const stream = new DomainEventStream([DomainMessage.create(dog.getAggregateRootId(), new SayWolf())]);
 
     const pluto = dog.fromHistory(stream) as Dog;

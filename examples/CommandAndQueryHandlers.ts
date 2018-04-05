@@ -1,23 +1,19 @@
 import { User, UserSayHello, UserWasCreated } from './User';
 import { Application, EventStore, Domain } from "../";
-import { AppError } from '../src/Application/Bus/CallbackArg';
 
-class UserRepository implements Domain.IRepository {
+class UserRepository implements Domain.IRepository<User> {
 
-    constructor(private readonly eventStore: EventStore.IEventStore){}
+    constructor(private readonly eventStore: EventStore.EventStore<User>){}
 
     async save(aggregateRoot: User): Promise<any> {
         
         return await this.latency().then(() => {
-            this.eventStore.append(
-                aggregateRoot.getAggregateRootId(), 
-                aggregateRoot.getUncommitedEvents()
-            );
+            this.eventStore.save(aggregateRoot);
         })
     }
 
     async load(aggregateRootId: string): Promise<User> {
-        return (new User).fromHistory(await this.eventStore.load(aggregateRootId));
+        return await this.eventStore.load(aggregateRootId);
     }
 
     private latency(): Promise<any> {
@@ -45,7 +41,7 @@ class UserCreateHandler implements Application.ICommandHandler {
 
     constructor(private userRepository: UserRepository) {}
 
-    async handle(c: CreateUser): Promise<void|AppError> {
+    async handle(c: CreateUser): Promise<void|Application.AppError> {
         const user = (new User).create(c.uuid, c.email);
 
         await this.userRepository.save(user)
@@ -62,7 +58,7 @@ class SayHelloHandler implements Application.ICommandHandler {
         private userRepository: UserRepository
     ) {}
 
-    async handle(c: SayHello): Promise<void|AppError> {
+    async handle(c: SayHello): Promise<void|Application.AppError> {
         const user = await this.userRepository.load(c.uuid);
 
         await this.userRepository.save(user)
@@ -92,7 +88,7 @@ const onSayHello = new OnSayHello();
 eventBus.attach(UserWasCreated, onUserWasCreated);
 eventBus.attach(UserSayHello, onSayHello);
 
-const userRepository = new UserRepository(new EventStore.InMemoryEventStore(eventBus));
+const userRepository = new UserRepository(new EventStore.EventStore<User>(User, new EventStore.InMemoryEventStore(), eventBus));
 
 // Provision Bus
 

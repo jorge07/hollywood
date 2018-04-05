@@ -8,15 +8,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-class QueryBus {
-    constructor(handlerResolver) {
-        this.handlerResolver = handlerResolver;
+class SnapshotStore {
+    constructor(store) {
+        this.store = store;
     }
-    ask(command) {
+    retrieve(aggregateRootId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.handlerResolver.resolve(command);
+            return yield this.store.get(aggregateRootId);
+        });
+    }
+    snapshot(entity) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.store.store(entity);
         });
     }
 }
-exports.default = QueryBus;
-//# sourceMappingURL=QueryBus.js.map
+exports.default = SnapshotStore;
+//# sourceMappingURL=SnapshotStore.js.map

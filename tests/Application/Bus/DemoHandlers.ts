@@ -1,5 +1,4 @@
-import { ICommand, ICommandHandler, IQuery, IQueryHandler} from "../../../src/Application/";
-import { AppResponse, AppError } from '../../../src/Application/Bus/CallbackArg';
+import { ICommand, ICommandHandler, IQuery, IQueryHandler, AppResponse, AppError} from "../../../src/Application/";
 
 export class DemoCommand implements ICommand {
     constructor(public readonly exception: boolean) {}
