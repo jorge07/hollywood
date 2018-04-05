@@ -12,7 +12,7 @@ class QueryBus {
     constructor(handlerResolver) {
         this.handlerResolver = handlerResolver;
     }
-    handle(command) {
+    ask(command) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.handlerResolver.resolve(command);
         });

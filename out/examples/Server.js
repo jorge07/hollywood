@@ -28,7 +28,7 @@ app.post('/user-sync', (req, res) => __awaiter(this, void 0, void 0, function* (
     console.log('CLIENT LIBERATED');
 }));
 app.get('/hello', (req, res) => __awaiter(this, void 0, void 0, function* () {
-    const response = yield CommandAndQueryHandlers_1.queryBus.handle(new CommandAndQueryHandlers_1.QueryDemo());
+    const response = yield CommandAndQueryHandlers_1.queryBus.ask(new CommandAndQueryHandlers_1.QueryDemo());
     res.json(response);
 }));
 app.listen(app.get('port'), () => {

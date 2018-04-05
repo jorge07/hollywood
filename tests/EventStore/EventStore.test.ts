@@ -43,4 +43,17 @@ describe("EventStore", () => {
         expect(onWolfEventSubscriber.wolf).toBeInstanceOf(SayWolf);
         expect(globalListener.lastEvent).toBeInstanceOf(SayWolf);
     });
+
+    it("EventStore should throw exception when not aggregate found", async () => {
+        const eventBus = new EventBus();
+        const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus);
+        const pluto = new Dog();
+
+        const toTest = async () => {
+            const x = await store.load(pluto.getAggregateRootId());
+
+            console.log(x);
+        };
+        expect(toTest()).rejects.toMatchObject(new Error('Not found'));
+    });
 });
