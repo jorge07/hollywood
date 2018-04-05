@@ -28,7 +28,7 @@ class InMemorySnapshotStore<T extends EventSourced> implements ISnapshotStoreDBA
 describe("SnapshotStore", () => {
     it("EventStore should store, publish and retrieve events", async () => {
         const eventBus = new EventBus();
-        const snapshotDBAL =new InMemorySnapshotStore<Dog>();
+        const snapshotDBAL = new InMemorySnapshotStore<Dog>();
 
         const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus, snapshotDBAL);
         const pluto = new Dog();
@@ -51,6 +51,5 @@ describe("SnapshotStore", () => {
 
         const dog: Dog = await store.load(pluto.getAggregateRootId());
         expect(snapshotDBAL.snapshots[pluto.getAggregateRootId()]).toBe(pluto);
-
     });
 });

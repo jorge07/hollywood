@@ -2,8 +2,9 @@ import { IRepository } from "../../../src/Domain";
 import { EventStore, InMemoryEventStore } from "../../../src/EventStore";
 import {EventBus} from "../../../src/EventStore";
 import { Dog } from '../AggregateRoot.test';
+import EventSourced from '../../../src/Domain/AggregateRoot';
 
-export class DogRepository implements IRepository {
+export class DogRepository implements IRepository<Dog> {
 
     constructor(private eventStore: EventStore<Dog>) {}
 
