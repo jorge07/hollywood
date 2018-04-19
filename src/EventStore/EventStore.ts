@@ -39,7 +39,7 @@ export default class EventStore<T extends EventSourced> {
             eventSourced = await this.snapshotStore.retrieve(aggregateId);
 
             if (eventSourced) {
-                eventSourced = Object.assign(eventSourced, this.factory());
+                eventSourced = Object.assign(new (this.modelConstructor)(), eventSourced);
                 from = eventSourced.version();
             }
         }
@@ -50,7 +50,7 @@ export default class EventStore<T extends EventSourced> {
             throw new AggregateRootNotFoundException();
         }
 
-        const entity = eventSourced || this.factory();
+        const entity = eventSourced || new (this.modelConstructor)();
 
         return entity.fromHistory(stream);
     }
@@ -70,9 +70,5 @@ export default class EventStore<T extends EventSourced> {
 
     private needSnapshot(version: number): boolean {
         return version !== 0 && version / this.snapshotMargin >= 1 && version % this.snapshotMargin === 0;
-    }
-
-    private factory(): T {
-        return new (this.modelConstructor)();
     }
 }

@@ -28,7 +28,7 @@ class EventStore {
             if (this.snapshotStore) {
                 eventSourced = yield this.snapshotStore.retrieve(aggregateId);
                 if (eventSourced) {
-                    eventSourced = Object.assign(eventSourced, this.factory());
+                    eventSourced = Object.assign(new (this.modelConstructor)(), eventSourced);
                     from = eventSourced.version();
                 }
             }
@@ -36,7 +36,7 @@ class EventStore {
             if (stream.isEmpty()) {
                 throw new AggregateRootNotFoundException_1.default();
             }
-            const entity = eventSourced || this.factory();
+            const entity = eventSourced || new (this.modelConstructor)();
             return entity.fromHistory(stream);
         });
     }
@@ -52,9 +52,6 @@ class EventStore {
     }
     needSnapshot(version) {
         return version !== 0 && version / this.snapshotMargin >= 1 && version % this.snapshotMargin === 0;
-    }
-    factory() {
-        return new (this.modelConstructor)();
     }
 }
 exports.default = EventStore;

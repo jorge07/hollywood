@@ -46,12 +46,14 @@ describe("SnapshotStore", () => {
         pluto.sayWolf();
         pluto.sayWolf();
         pluto.sayWolf();
+        pluto.sayWolf();
 
         expect(pluto.version()).toBe(10);
 
         store.save(pluto);
 
         const dog: Dog = await store.load(pluto.getAggregateRootId());
+        
         expect(snapshotDBAL.snapshots[pluto.getAggregateRootId()]).toBe(pluto);
     });
 });
