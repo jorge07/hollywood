@@ -1,12 +1,21 @@
 import DomainEvent from "../../src/Domain/Event/DomainEvent";
 import { EventBus, EventListener, EventStore, EventSubscriber, InMemoryEventStore } from "../../src/EventStore";
-import { Dog, SayWolf } from "../Domain/AggregateRoot.test";
+import { Dog, SayWolf, SayGrr } from '../Domain/AggregateRoot.test';
 
 class OnWolfEventSubscriber extends EventSubscriber {
     public wolf: any;
+    public grr: any;
+
+    constructor() {
+        super();
+    }
 
     private onSayWolf(event: SayWolf): void {
         this.wolf = event;
+    }
+
+    private onSayGrr(event: SayWolf): void {
+        this.grr = event;
     }
 }
 
@@ -28,19 +37,23 @@ describe("EventStore", () => {
 
         eventBus
             .attach(SayWolf, onWolfEventSubscriber)
+            .attach(SayGrr, onWolfEventSubscriber)
             .addListener(globalListener)
         ;
 
         pluto.sayWolf();
+        pluto.sayGrr();
 
+        expect(pluto.version()).toBe(1);
         store.save(pluto);
 
         const dog: Dog = await store.load(pluto.getAggregateRootId());
         expect(dog.wolfCount).toBe(1);
-        expect(dog.version()).toBe(0);
+        expect(dog.version()).toBe(1);
 
         expect(onWolfEventSubscriber.wolf).toBeInstanceOf(SayWolf);
-        expect(globalListener.lastEvent).toBeInstanceOf(SayWolf);
+        expect(onWolfEventSubscriber.grr).toBeInstanceOf(SayGrr);
+        expect(globalListener.lastEvent).toBeInstanceOf(SayGrr);
     });
 
     it("EventStore should throw exception when not aggregate found", async () => {

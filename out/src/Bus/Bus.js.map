@@ -1,1 +1,0 @@
-{"version":3,"file":"Bus.js","sourceRoot":"","sources":["../../../src/Bus/Bus.ts"],"names":[],"mappings":";;AAGA;IAEI,YAAoB,gBAAiC;QAAjC,qBAAgB,GAAhB,gBAAgB,CAAiB;IAAG,CAAC;IAEzD,MAAM,CAAC,OAAgB;QACnB,MAAM,CAAC,IAAI,CAAC,gBAAgB,CAAC,OAAO,CAAC,OAAO,CAAC,CAAA;IACjD,CAAC;CACJ;AAPD,kBAOC"}

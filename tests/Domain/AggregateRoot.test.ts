@@ -19,6 +19,12 @@ export class Dog extends EventSourced {
     return "Wolf!";
   }
 
+  public sayGrr(): string {
+    super.raise(new SayGrr(Math.random().toString()));
+
+    return "Grr!";
+  }
+
   public applySayWolf(event: SayWolf) {
     this.id = event.uuid;
     this.wolfCount++;
@@ -26,6 +32,12 @@ export class Dog extends EventSourced {
 }
 
 export class SayWolf extends DomainEvent {
+  constructor(public readonly uuid: string) {
+    super();
+  }
+}
+
+export class SayGrr extends DomainEvent {
   constructor(public readonly uuid: string) {
     super();
   }
@@ -64,7 +76,7 @@ describe("AggregateRoot", () => {
   it("Aggregate Roots must be able to reconstruct from stringified events", () => {
 
     const dog = new Dog();
-    const domainMessage: string = JSON.stringify(DomainMessage.create(dog.getAggregateRootId(), new SayWolf()));
+    const domainMessage: string = JSON.stringify(DomainMessage.create(dog.getAggregateRootId(), new SayWolf('asd')));
     const stream = new DomainEventStream([JSON.parse(domainMessage) as DomainMessage]);
     const pluto = dog.fromHistory(stream) as Dog;
 
@@ -75,7 +87,7 @@ describe("AggregateRoot", () => {
 
   it("Aggregate Roots must be able to reconstruct from events history", () => {
     const dog = new Dog();
-    const stream = new DomainEventStream([DomainMessage.create(dog.getAggregateRootId(), new SayWolf())]);
+    const stream = new DomainEventStream([DomainMessage.create(dog.getAggregateRootId(), new SayWolf('asd'))]);
 
     const pluto = dog.fromHistory(stream) as Dog;
 
