@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class EventSubscriber {
-    on(event) {
-        if (this["on" + event.constructor.name]) {
-            this["on" + event.constructor.name](event);
+    on(message) {
+        if (this["on" + message.eventType]) {
+            this["on" + message.eventType](message.event);
         }
     }
 }

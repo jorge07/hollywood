@@ -19,9 +19,9 @@ export default class EventBus {
     private readonly listenersRegistry: IListenersRegistry = {};
 
     public publish(message: DomainMessage): void {
-        this.subscribersFor(message.event).forEach((subscriber: EventSubscriber) => subscriber.on(message.event));
+        this.subscribersFor(message.event).forEach((subscriber: EventSubscriber) => subscriber.on(message));
         Object.keys(this.listenersRegistry).forEach( (key) => {
-           this.listenersRegistry[key].on(message.event);
+           this.listenersRegistry[key].on(message);
         });
     }
 

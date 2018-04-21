@@ -1,1 +1,1 @@
-{"version":3,"file":"DomainEvent.js","sourceRoot":"","sources":["../../../../src/Domain/Event/DomainEvent.ts"],"names":[],"mappings":";;AAAA;IAKI;QACI,IAAI,CAAC,UAAU,GAAG,IAAI,IAAI,EAAE,CAAC;IACjC,CAAC;CACJ;AARD,8BAQC"}
+{"version":3,"file":"DomainEvent.js","sourceRoot":"","sources":["../../../../src/Domain/Event/DomainEvent.ts"],"names":[],"mappings":";;AAAA;IAII;QACI,IAAI,CAAC,UAAU,GAAG,IAAI,IAAI,EAAE,CAAC;IACjC,CAAC;CACJ;AAPD,8BAOC"}

@@ -60,7 +60,7 @@ export default class EventStore<T extends EventSourced> {
 
         await this.dbal.append(entity.getAggregateRootId(), stream);
 
-        if (this.snapshotStore && this.needSnapshot(entity.version())) {
+        if (this.snapshotStore && this.isSnapshotNeeded(entity.version())) {
 
             await this.snapshotStore.snapshot(entity);
         }
@@ -68,7 +68,7 @@ export default class EventStore<T extends EventSourced> {
         stream.events.forEach((message: DomainMessage) => this.eventBus.publish(message));
     }
 
-    private needSnapshot(version: number): boolean {
+    private isSnapshotNeeded(version: number): boolean {
         return version !== 0 && version / this.snapshotMargin >= 1 && version % this.snapshotMargin === 0;
     }
 }

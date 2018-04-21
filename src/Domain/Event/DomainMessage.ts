@@ -5,25 +5,20 @@ import DomainEvent from "./DomainEvent";
  */
 export default class DomainMessage {
 
-    public static create(uuid: string, event: DomainEvent): DomainMessage {
+    public static create(uuid: string, event: DomainEvent, metadata: Array<any> = []): DomainMessage {
         return new DomainMessage(
             uuid,
             event,
-            event.playhead,
-            event.ocurrendOn,
+            metadata
         );
     }
 
-    public readonly eventType: string;
-
+    public readonly eventType: string;    
     private constructor(
         public readonly uuid: string,
         public readonly event: DomainEvent,
-        public readonly playhead: number,
-        public readonly ocurredOn: Date,
-        public readonly metadata: any[] = [],
+        public readonly metadata: Array<any>
     ) {
         this.eventType = (event as any).constructor.name;
     }
-
 }

@@ -46,7 +46,6 @@ describe("SnapshotStore", () => {
         pluto.sayWolf();
         pluto.sayWolf();
         pluto.sayWolf();
-        pluto.sayWolf();
 
         expect(pluto.version()).toBe(10);
 

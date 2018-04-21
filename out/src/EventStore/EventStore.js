@@ -44,13 +44,13 @@ class EventStore {
         return __awaiter(this, void 0, void 0, function* () {
             const stream = entity.getUncommitedEvents();
             yield this.dbal.append(entity.getAggregateRootId(), stream);
-            if (this.snapshotStore && this.needSnapshot(entity.version())) {
+            if (this.snapshotStore && this.isSnapshotNeeded(entity.version())) {
                 yield this.snapshotStore.snapshot(entity);
             }
             stream.events.forEach((message) => this.eventBus.publish(message));
         });
     }
-    needSnapshot(version) {
+    isSnapshotNeeded(version) {
         return version !== 0 && version / this.snapshotMargin >= 1 && version % this.snapshotMargin === 0;
     }
 }

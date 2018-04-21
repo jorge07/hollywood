@@ -1,10 +1,10 @@
-import DomainEvent from "../../Domain/Event/DomainEvent";
+import DomainMessage from '../../Domain/Event/DomainMessage';
 
 export default abstract class EventSubscriber {
 
-    public on(event: DomainEvent): void {
-        if (this["on" + (event as any).constructor.name]) {
-            this["on" + (event as any).constructor.name](event);
+    public on(message: DomainMessage): void {
+        if (this["on" + message.eventType]) {
+            this["on" + message.eventType](message.event);
         }
     }
 }

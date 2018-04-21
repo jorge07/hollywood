@@ -1,4 +1,4 @@
-import DomainEvent from "../../src/Domain/Event/DomainEvent";
+import { DomainEvent, DomainMessage } from "../../src/Domain";
 import { EventBus, EventListener, EventStore, EventSubscriber, InMemoryEventStore } from "../../src/EventStore";
 import { Dog, SayWolf, SayGrr } from '../Domain/AggregateRoot.test';
 
@@ -22,8 +22,8 @@ class OnWolfEventSubscriber extends EventSubscriber {
 class GlobalListener extends EventListener {
     public lastEvent: any;
 
-    public on(event: DomainEvent): void {
-        this.lastEvent = event;
+    public on(event: DomainMessage): void {
+        this.lastEvent = event.event;
     }
 }
 

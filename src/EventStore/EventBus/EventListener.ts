@@ -1,6 +1,6 @@
-import DomainEvent from "../../Domain/Event/DomainEvent";
+import { DomainMessage } from '../../Domain';
 
 export default abstract class EventListener {
 
-    public abstract on(event: DomainEvent): void;
+    public abstract on(event: DomainMessage): void;
 }
