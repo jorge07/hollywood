@@ -1,4 +1,4 @@
-import DomainMessage from '../../Domain/Event/DomainMessage';
+import DomainMessage from "../../Domain/Event/DomainMessage";
 
 export default abstract class EventSubscriber {
 

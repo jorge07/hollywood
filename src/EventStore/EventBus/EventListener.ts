@@ -1,4 +1,4 @@
-import { DomainMessage } from '../../Domain';
+import { DomainMessage } from "../../Domain";
 
 export default abstract class EventListener {
 
