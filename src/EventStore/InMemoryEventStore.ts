@@ -6,12 +6,12 @@ export default class InMemoryEventStore implements IEventStoreDBAL {
 
     public load(aggregateId: string, from: number = 0): Promise<DomainEventStream> {
         if (this.events[aggregateId]) {
-            const stream = new DomainEventStream();
             const events = this.events[aggregateId];
 
-            events
-                .slice(from)
-                .forEach((event: DomainEvent) => stream.events.push(DomainMessage.create(aggregateId, event)));
+            const stream = new DomainEventStream(
+                events
+                    .slice(from),
+            );
 
             return new Promise((resolve, rejesct) => resolve(stream));
         }
@@ -25,7 +25,7 @@ export default class InMemoryEventStore implements IEventStoreDBAL {
         }
 
         stream.events.forEach((message: DomainMessage) => {
-            this.events[aggregateId].push(message.event);
+            this.events[aggregateId].push(message);
         });
     }
 }

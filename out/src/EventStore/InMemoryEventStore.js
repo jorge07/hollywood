@@ -8,11 +8,9 @@ class InMemoryEventStore {
     }
     load(aggregateId, from = 0) {
         if (this.events[aggregateId]) {
-            const stream = new Domain_1.DomainEventStream();
             const events = this.events[aggregateId];
-            events
-                .slice(from)
-                .forEach((event) => stream.events.push(Domain_1.DomainMessage.create(aggregateId, event)));
+            const stream = new Domain_1.DomainEventStream(events
+                .slice(from));
             return new Promise((resolve, rejesct) => resolve(stream));
         }
         throw new _1.AggregateRootNotFoundException();
@@ -22,7 +20,7 @@ class InMemoryEventStore {
             this.events[aggregateId] = [];
         }
         stream.events.forEach((message) => {
-            this.events[aggregateId].push(message.event);
+            this.events[aggregateId].push(message);
         });
     }
 }

@@ -1,24 +1,26 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const _1 = require(".");
-const AggregateRoot_1 = require("./AggregateRoot");
-class EventSourced extends AggregateRoot_1.default {
+class EventSourced extends _1.AggregateRoot {
     constructor() {
         super(...arguments);
         this.methodPrefix = "apply";
+        this.aggregates = [];
         this.playhead = -1;
         this.events = [];
     }
+    registerChild(child) {
+        this.aggregates.push(child);
+    }
     getUncommitedEvents() {
-        const id = this.getAggregateRootId();
-        const events = this.events.map((event) => (_1.DomainMessage.create(id, event)));
+        const stream = new _1.DomainEventStream(this.events);
         this.events = [];
-        return new _1.DomainEventStream(events);
+        return stream;
     }
     fromHistory(stream) {
         stream.events.forEach((message) => {
             this.playhead++;
-            this.applyDomainMessage(message);
+            this.recursiveHandling(message.event, this.methodToApplyEvent(message.eventType));
         });
         return this;
     }
@@ -26,22 +28,24 @@ class EventSourced extends AggregateRoot_1.default {
         return this.playhead;
     }
     raise(event) {
+        this.recursiveHandling(event, this.methodToApplyEvent(event.name()));
         this.playhead++;
-        this.applyEvent(event);
-        this.events.push(event);
+        const domainMessage = _1.DomainMessage.create(this.getAggregateRootId(), this.playhead, event);
+        this.events.push(domainMessage);
     }
-    applyEvent(event) {
-        event.playhead = this.playhead;
-        this.applyDomainMessage(_1.DomainMessage.create(this.getAggregateRootId(), event));
+    recursiveHandling(event, method) {
+        this.handle(event, method);
+        this.aggregates.forEach((aggregate) => {
+            aggregate.recursiveHandling(event, method);
+        });
     }
-    applyDomainMessage(message) {
-        const method = this.methodToApplyEvent(message);
+    handle(event, method) {
         if (this[method]) {
-            this[method](message.event);
+            this[method](event);
         }
     }
-    methodToApplyEvent(message) {
-        return this.methodPrefix + message.eventType;
+    methodToApplyEvent(eventName) {
+        return this.methodPrefix + eventName;
     }
 }
 exports.default = EventSourced;

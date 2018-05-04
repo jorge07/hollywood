@@ -1,8 +1,6 @@
 export default abstract class DomainEvent {
-    public readonly ocurrendOn: Date;
-    public playhead: number;
+    public name(): string {
 
-    constructor() {
-        this.ocurrendOn = new Date();
+        return this.constructor.name;
     }
 }

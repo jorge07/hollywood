@@ -23,13 +23,13 @@ class UserRepository implements Domain.IRepository<User> {
 
 class OnUserWasCreated extends EventStore.EventSubscriber {
     private onUserWasCreated(event: UserWasCreated): void {
-        console.log(`EVENT: OnUserWasCreated: User ${event.email} was created on ${event.ocurrendOn}`);
+        console.log(`EVENT: OnUserWasCreated: User ${event.email} was created`);
     }
 }
 
 class OnSayHello extends EventStore.EventSubscriber {
     private onUserSayHello(event: UserSayHello): void {
-        console.log(`User ${event.email} said: "Hello" at ${event.ocurrendOn}`);
+        console.log(`User ${event.email} said: "Hello"`);
     }
 }
 

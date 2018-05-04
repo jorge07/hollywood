@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class DomainEvent {
-    constructor() {
-        this.ocurrendOn = new Date();
+    name() {
+        return this.constructor.name;
     }
 }
 exports.default = DomainEvent;

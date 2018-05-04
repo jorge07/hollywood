@@ -33,12 +33,12 @@ class UserRepository {
 }
 class OnUserWasCreated extends _1.EventStore.EventSubscriber {
     onUserWasCreated(event) {
-        console.log(`EVENT: OnUserWasCreated: User ${event.email} was created on ${event.ocurrendOn}`);
+        console.log(`EVENT: OnUserWasCreated: User ${event.email} was created`);
     }
 }
 class OnSayHello extends _1.EventStore.EventSubscriber {
     onUserSayHello(event) {
-        console.log(`User ${event.email} said: "Hello" at ${event.ocurrendOn}`);
+        console.log(`User ${event.email} said: "Hello"`);
     }
 }
 class CreateUser {

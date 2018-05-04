@@ -1,25 +1,31 @@
-import { DomainEvent, DomainEventStream, DomainMessage } from ".";
-import AggregateRoot from "./AggregateRoot";
+import { AggregateRoot, DomainEvent, DomainEventStream, DomainMessage } from ".";
 
 export default abstract class EventSourced extends AggregateRoot {
 
     protected readonly methodPrefix: string = "apply";
+    protected aggregates: EventSourced[] = [];
     private playhead: number = -1;
-    private events: DomainEvent[] = [];
+    private events: DomainMessage[] = [];
+
+    public registerChild(child: EventSourced) {
+        this.aggregates.push(child);
+    }
 
     public getUncommitedEvents(): DomainEventStream {
-        const id = this.getAggregateRootId();
-        const events = this.events.map((event: DomainEvent) => (DomainMessage.create(id, event)));
+        const stream = new DomainEventStream(this.events);
         this.events = [];
 
-        return new DomainEventStream(events);
+        return stream;
     }
 
     public fromHistory(stream: DomainEventStream): any {
         stream.events.forEach(
             (message: DomainMessage) => {
                 this.playhead++;
-                this.applyDomainMessage(message);
+                this.recursiveHandling(
+                    message.event,
+                    this.methodToApplyEvent(message.eventType),
+                );
             },
         );
 
@@ -27,31 +33,40 @@ export default abstract class EventSourced extends AggregateRoot {
     }
 
     public version(): number {
+
         return this.playhead;
     }
 
     protected raise(event: DomainEvent): void {
+
+        this.recursiveHandling(event, this.methodToApplyEvent(event.name()));
+
         this.playhead++;
-        this.applyEvent(event);
-        this.events.push(event);
+        const domainMessage: DomainMessage = DomainMessage.create(
+            this.getAggregateRootId(),
+            this.playhead,
+            event,
+        );
+
+        this.events.push(domainMessage);
     }
 
-    protected applyEvent(event: DomainEvent): void {
-        event.playhead = this.playhead;
-        this.applyDomainMessage(DomainMessage.create(this.getAggregateRootId(), event));
+    protected recursiveHandling(event: DomainEvent, method: string): void {
+        this.handle(event, method);
+
+        this.aggregates.forEach((aggregate: EventSourced) => {
+            aggregate.recursiveHandling(event, method);
+        });
     }
 
-    private applyDomainMessage(message: DomainMessage): void {
-        const method: string = this.methodToApplyEvent(message);
-
+    private handle(event: DomainEvent, method: string): void {
         if (this[method]) {
-            this[method](message.event);
+            this[method](event);
         }
     }
 
-    private methodToApplyEvent(message: DomainMessage): string {
+    private methodToApplyEvent(eventName: string): string {
 
-        return this.methodPrefix + message.eventType;
+        return this.methodPrefix + eventName;
     }
-
 }

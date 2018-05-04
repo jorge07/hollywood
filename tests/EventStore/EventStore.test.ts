@@ -45,6 +45,7 @@ describe("EventStore", () => {
         pluto.sayGrr();
 
         expect(pluto.version()).toBe(1);
+
         store.save(pluto);
 
         const dog: Dog = await store.load(pluto.getAggregateRootId());
