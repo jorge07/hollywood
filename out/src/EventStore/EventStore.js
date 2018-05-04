@@ -24,10 +24,10 @@ class EventStore {
     load(aggregateId) {
         return __awaiter(this, void 0, void 0, function* () {
             let from = 0;
-            let eventSourced;
+            let eventSourced = null;
             if (this.snapshotStore) {
                 eventSourced = yield this.snapshotStore.retrieve(aggregateId);
-                if (eventSourced) {
+                if (eventSourced !== null && eventSourced !== undefined) {
                     eventSourced = Object.assign(new (this.modelConstructor)(), eventSourced);
                     from = eventSourced.version();
                 }

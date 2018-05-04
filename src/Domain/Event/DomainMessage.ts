@@ -27,7 +27,7 @@ export default class DomainMessage {
         public readonly event: DomainEvent,
         public readonly metadata: any[],
     ) {
-        this.eventType = event.name();
+        this.eventType = event.domainEventName();
         this.ocurrendOn = new Date();
     }
 }

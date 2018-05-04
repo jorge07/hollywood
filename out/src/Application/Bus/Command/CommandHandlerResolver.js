@@ -15,7 +15,9 @@ class CommandHandlerResolver {
     resolve(command) {
         return __awaiter(this, void 0, void 0, function* () {
             const handler = this.getHandlerForCommand(command);
-            return (yield handler) && handler.handle(command);
+            if (handler !== undefined && handler !== null) {
+                return yield handler.handle(command);
+            }
         });
     }
     addHandler(command, handler) {

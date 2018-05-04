@@ -10,7 +10,10 @@ export default class CommandHandlerResolver {
     public async resolve(command: ICommand): Promise<void|IAppError> {
         const handler = this.getHandlerForCommand(command);
 
-        return await handler && handler.handle(command);
+        if (handler !== undefined && handler !== null) {
+
+            return await handler.handle(command);
+        }
     }
 
     public addHandler(command: any, handler: ICommandHandler): CommandHandlerResolver {

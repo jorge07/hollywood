@@ -28,7 +28,7 @@ class EventSourced extends _1.AggregateRoot {
         return this.playhead;
     }
     raise(event) {
-        this.recursiveHandling(event, this.methodToApplyEvent(event.name()));
+        this.recursiveHandling(event, this.methodToApplyEvent(event.domainEventName()));
         this.playhead++;
         const domainMessage = _1.DomainMessage.create(this.getAggregateRootId(), this.playhead, event);
         this.events.push(domainMessage);

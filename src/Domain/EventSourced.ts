@@ -39,7 +39,7 @@ export default abstract class EventSourced extends AggregateRoot {
 
     protected raise(event: DomainEvent): void {
 
-        this.recursiveHandling(event, this.methodToApplyEvent(event.name()));
+        this.recursiveHandling(event, this.methodToApplyEvent(event.domainEventName()));
 
         this.playhead++;
         const domainMessage: DomainMessage = DomainMessage.create(

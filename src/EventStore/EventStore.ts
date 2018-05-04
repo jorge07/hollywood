@@ -33,13 +33,14 @@ export default class EventStore<T extends EventSourced> {
 
     public async load(aggregateId: AggregateRootId): Promise<T> {
         let from: number = 0;
-        let eventSourced: T | null;
+        let eventSourced: T | null = null;
 
         if (this.snapshotStore) {
             eventSourced = await this.snapshotStore.retrieve(aggregateId);
 
-            if (eventSourced) {
-                eventSourced = Object.assign(new (this.modelConstructor)(), eventSourced);
+            if (eventSourced !== null && eventSourced !== undefined) {
+                eventSourced = Object.assign(new (this.modelConstructor)(), eventSourced) as T;
+
                 from = eventSourced.version();
             }
         }

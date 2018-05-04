@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class DomainEvent {
-    name() {
+    domainEventName() {
         return this.constructor.name;
     }
 }

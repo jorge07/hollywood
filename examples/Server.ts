@@ -28,7 +28,7 @@ app.post('/user-sync', async (req, res) => {
 });
 
 app.get('/hello', async (req, res) => {
-    const response: IAppResponse|IAppError = await queryBus.ask(new QueryDemo()); 
+    const response: IAppResponse|IAppError|null = await queryBus.ask(new QueryDemo()); 
     res.json(response);
 });
 

@@ -1,5 +1,5 @@
 export default abstract class DomainEvent {
-    public name(): string {
+    public domainEventName(): string {
 
         return this.constructor.name;
     }
