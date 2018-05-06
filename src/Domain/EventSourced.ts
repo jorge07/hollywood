@@ -51,7 +51,7 @@ export default abstract class EventSourced extends AggregateRoot {
         this.events.push(domainMessage);
     }
 
-    protected recursiveHandling(event: DomainEvent, method: string): void {
+    public recursiveHandling(event: DomainEvent, method: string): void {
         this.handle(event, method);
 
         this.aggregates.forEach((aggregate: EventSourced) => {
