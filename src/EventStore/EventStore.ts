@@ -36,10 +36,12 @@ export default class EventStore<T extends EventSourced> {
         let eventSourced: T | null = null;
 
         if (this.snapshotStore) {
-            eventSourced = await this.snapshotStore.retrieve(aggregateId);
+            const snapshot = await this.snapshotStore.retrieve(aggregateId);
 
-            if (eventSourced !== null && eventSourced !== undefined) {
-                eventSourced = Object.assign(new (this.modelConstructor)(), eventSourced) as T;
+            if (snapshot !== null && snapshot !== undefined) {
+                eventSourced = new (this.modelConstructor)() as T;
+
+                eventSourced.fromSnapshot(snapshot);
 
                 from = eventSourced.version();
             }

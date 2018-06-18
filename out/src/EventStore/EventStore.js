@@ -26,9 +26,10 @@ class EventStore {
             let from = 0;
             let eventSourced = null;
             if (this.snapshotStore) {
-                eventSourced = yield this.snapshotStore.retrieve(aggregateId);
-                if (eventSourced !== null && eventSourced !== undefined) {
-                    eventSourced = Object.assign(new (this.modelConstructor)(), eventSourced);
+                const snapshot = yield this.snapshotStore.retrieve(aggregateId);
+                if (snapshot !== null && snapshot !== undefined) {
+                    eventSourced = new (this.modelConstructor)();
+                    eventSourced.fromSnapshot(snapshot);
                     from = eventSourced.version();
                 }
             }

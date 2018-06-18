@@ -1,3 +1,4 @@
+import { callbackify } from 'util';
 import { AggregateRootId, DomainEvent, EventSourced } from "../../../src/Domain";
 import {
     EventBus,
@@ -18,12 +19,14 @@ class InMemorySnapshotStore implements ISnapshotStoreDBAL {
     public snapshots: ISnapshotDictionary = {};
 
     public async get(uuid: AggregateRootId): Promise<any|null> {
+
         return this.snapshots[uuid] || null;
 
     }
 
     public async store(entity: EventSourced): Promise<void> {
-        this.snapshots[entity.getAggregateRootId()] = entity;
+
+        this.snapshots[entity.getAggregateRootId()] = Object.assign({}, entity);
     }
 }
 
@@ -47,12 +50,14 @@ describe("SnapshotStore", () => {
         pluto.sayWolf();
         pluto.sayWolf();
 
+        expect(pluto.records().length).toBe(11);
+
         expect(pluto.version()).toBe(10);
 
-        store.save(pluto);
+        await store.save(pluto);
 
         const dog: Dog = await store.load(pluto.getAggregateRootId());
-        
-        expect(snapshotDBAL.snapshots[pluto.getAggregateRootId()]).toBe(pluto);
+
+        expect(dog.records().length).toBe(pluto.records().length);
     });
 });

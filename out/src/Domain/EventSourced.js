@@ -9,9 +9,6 @@ class EventSourced extends _1.AggregateRoot {
         this.playhead = -1;
         this.events = [];
     }
-    registerChild(child) {
-        this.aggregates.push(child);
-    }
     getUncommitedEvents() {
         const stream = new _1.DomainEventStream(this.events);
         this.events = [];
@@ -24,20 +21,32 @@ class EventSourced extends _1.AggregateRoot {
         });
         return this;
     }
-    version() {
-        return this.playhead;
-    }
-    raise(event) {
-        this.recursiveHandling(event, this.methodToApplyEvent(event.domainEventName()));
-        this.playhead++;
-        const domainMessage = _1.DomainMessage.create(this.getAggregateRootId(), this.playhead, event);
-        this.events.push(domainMessage);
+    fromSnapshot(snapshot) {
+        const aggregates = snapshot.aggregates;
+        delete snapshot.aggregates;
+        Object.assign(this, snapshot);
+        aggregates.forEach((element, index) => {
+            this.aggregates[index].fromSnapshot(element);
+        });
+        return this;
     }
     recursiveHandling(event, method) {
         this.handle(event, method);
         this.aggregates.forEach((aggregate) => {
             aggregate.recursiveHandling(event, method);
         });
+    }
+    version() {
+        return this.playhead;
+    }
+    registerChild(child) {
+        this.aggregates.push(child);
+    }
+    raise(event) {
+        this.recursiveHandling(event, this.methodToApplyEvent(event.domainEventName()));
+        this.playhead++;
+        const domainMessage = _1.DomainMessage.create(this.getAggregateRootId(), this.playhead, event);
+        this.events.push(domainMessage);
     }
     handle(event, method) {
         if (this[method]) {

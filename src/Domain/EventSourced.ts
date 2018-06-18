@@ -1,3 +1,4 @@
+import { forEachComment } from "tslint/lib";
 import { AggregateRoot, DomainEvent, DomainEventStream, DomainMessage } from ".";
 
 export default abstract class EventSourced extends AggregateRoot {
@@ -6,10 +7,6 @@ export default abstract class EventSourced extends AggregateRoot {
     protected aggregates: EventSourced[] = [];
     private playhead: number = -1;
     private events: DomainMessage[] = [];
-
-    public registerChild(child: EventSourced) {
-        this.aggregates.push(child);
-    }
 
     public getUncommitedEvents(): DomainEventStream {
         const stream = new DomainEventStream(this.events);
@@ -32,9 +29,36 @@ export default abstract class EventSourced extends AggregateRoot {
         return this;
     }
 
+    public fromSnapshot(snapshot: EventSourced|any): EventSourced {
+
+        const aggregates: EventSourced[] = snapshot.aggregates;
+        delete snapshot.aggregates;
+
+        Object.assign(this, snapshot);
+
+        aggregates.forEach((element, index: number) => {
+
+            this.aggregates[index].fromSnapshot(element);
+        });
+
+        return this;
+    }
+
+    public recursiveHandling(event: DomainEvent, method: string): void {
+        this.handle(event, method);
+
+        this.aggregates.forEach((aggregate: EventSourced) => {
+            aggregate.recursiveHandling(event, method);
+        });
+    }
+
     public version(): number {
 
         return this.playhead;
+    }
+
+    protected registerChild(child: EventSourced) {
+        this.aggregates.push(child);
     }
 
     protected raise(event: DomainEvent): void {
@@ -50,15 +74,6 @@ export default abstract class EventSourced extends AggregateRoot {
 
         this.events.push(domainMessage);
     }
-
-    public recursiveHandling(event: DomainEvent, method: string): void {
-        this.handle(event, method);
-
-        this.aggregates.forEach((aggregate: EventSourced) => {
-            aggregate.recursiveHandling(event, method);
-        });
-    }
-
     private handle(event: DomainEvent, method: string): void {
         if (this[method]) {
             this[method](event);
