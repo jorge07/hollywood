@@ -4,4 +4,14 @@
 
 A Typescript port of Broadway https://github.com/broadway/broadway
 
+### Installation
+
+NPM:
+
+`npm install hollywood-js`
+
+Yarn:
+
+`yarn add hollywood-js`
+
 Look at [examples](https://github.com/jorge07/hollywood/tree/master/examples) for a better understanding.
