@@ -1,4 +1,3 @@
-import { forEachComment } from "tslint/lib";
 import { AggregateRoot, DomainEvent, DomainEventStream, DomainMessage } from ".";
 
 export default abstract class EventSourced extends AggregateRoot {
