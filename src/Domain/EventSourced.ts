@@ -28,7 +28,7 @@ export default abstract class EventSourced extends AggregateRoot {
         return this;
     }
 
-    public fromSnapshot(snapshot: EventSourced|any): EventSourced {
+    public fromSnapshot(snapshot: EventSourced): EventSourced {
 
         const aggregates: EventSourced[] = snapshot.aggregates;
         delete snapshot.aggregates;

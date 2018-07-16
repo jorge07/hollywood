@@ -5,6 +5,7 @@ import EventStore from "./EventStore";
 import AggregateRootNotFoundException from "./Exception/AggregateRootNotFoundException";
 import IEventStoreDBAL from "./IEventStoreDBAL";
 import InMemoryEventStore from "./InMemoryEventStore";
+import InMemorySnapshotStoreDBAL from "./Snapshot/InMemorySnapshotStoreDBAL";
 import ISnapshotStoreDBAL from "./Snapshot/SnapshotStoreDBAL";
 
 export {
@@ -16,4 +17,5 @@ export {
     AggregateRootNotFoundException,
     InMemoryEventStore,
     ISnapshotStoreDBAL,
+    InMemorySnapshotStoreDBAL,
 };

@@ -12,4 +12,6 @@ const AggregateRootNotFoundException_1 = require("./Exception/AggregateRootNotFo
 exports.AggregateRootNotFoundException = AggregateRootNotFoundException_1.default;
 const InMemoryEventStore_1 = require("./InMemoryEventStore");
 exports.InMemoryEventStore = InMemoryEventStore_1.default;
+const InMemorySnapshotStoreDBAL_1 = require("./Snapshot/InMemorySnapshotStoreDBAL");
+exports.InMemorySnapshotStoreDBAL = InMemorySnapshotStoreDBAL_1.default;
 //# sourceMappingURL=index.js.map

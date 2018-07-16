@@ -1,4 +1,3 @@
-import { callbackify } from 'util';
 import { AggregateRootId, DomainEvent, EventSourced } from "../../../src/Domain";
 import {
     EventBus,
@@ -7,33 +6,15 @@ import {
     EventSubscriber,
     InMemoryEventStore,
     ISnapshotStoreDBAL,
+    InMemorySnapshotStoreDBAL,
 } from "../../../src/EventStore";
 import { Dog, SayWolf } from "../../Domain/AggregateRoot.test";
 
-interface ISnapshotDictionary {
-    [x: string]: any;
-}
-
-class InMemorySnapshotStore implements ISnapshotStoreDBAL {
-
-    public snapshots: ISnapshotDictionary = {};
-
-    public async get(uuid: AggregateRootId): Promise<any|null> {
-
-        return this.snapshots[uuid] || null;
-
-    }
-
-    public async store(entity: EventSourced): Promise<void> {
-
-        this.snapshots[entity.getAggregateRootId()] = Object.assign({}, entity);
-    }
-}
 
 describe("SnapshotStore", () => {
     it("EventStore should store, publish and retrieve events", async () => {
         const eventBus = new EventBus();
-        const snapshotDBAL = new InMemorySnapshotStore();
+        const snapshotDBAL = new InMemorySnapshotStoreDBAL();
 
         const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus, snapshotDBAL);
         const pluto = new Dog();
