@@ -44,11 +44,17 @@ class EventStore {
     save(entity) {
         return __awaiter(this, void 0, void 0, function* () {
             const stream = entity.getUncommitedEvents();
-            yield this.dbal.append(entity.getAggregateRootId(), stream);
+            yield this.append(entity.getAggregateRootId(), stream);
             if (this.snapshotStore && this.isSnapshotNeeded(entity.version())) {
                 yield this.snapshotStore.snapshot(entity);
             }
             stream.events.forEach((message) => this.eventBus.publish(message));
+        });
+    }
+    append(aggregateId, stream) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const lastEvent = stream.events[stream.events.length - 1];
+            yield this.dbal.append(aggregateId, stream);
         });
     }
     isSnapshotNeeded(version) {

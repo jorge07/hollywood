@@ -61,7 +61,7 @@ export default class EventStore<T extends EventSourced> {
     public async save(entity: T): Promise<void> {
         const stream: DomainEventStream = entity.getUncommitedEvents();
 
-        await this.dbal.append(entity.getAggregateRootId(), stream);
+        await this.append(entity.getAggregateRootId(), stream);
 
         if (this.snapshotStore && this.isSnapshotNeeded(entity.version())) {
 
@@ -69,6 +69,13 @@ export default class EventStore<T extends EventSourced> {
         }
 
         stream.events.forEach((message: DomainMessage) => this.eventBus.publish(message));
+    }
+
+    public async append(aggregateId: AggregateRootId, stream: DomainEventStream): Promise<void> {
+
+        const lastEvent = stream.events[stream.events.length -1];
+
+        await this.dbal.append(aggregateId, stream);
     }
 
     private isSnapshotNeeded(version: number): boolean {

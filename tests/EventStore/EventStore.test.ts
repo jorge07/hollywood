@@ -1,5 +1,5 @@
-import { DomainEvent, DomainMessage } from "../../src/Domain";
-import { EventBus, EventListener, EventStore, EventSubscriber, InMemoryEventStore } from "../../src/EventStore";
+import { DomainEvent, DomainMessage, DomainEventStream } from "../../src/Domain";
+import { EventBus, EventListener, EventStore, EventSubscriber, InMemoryEventStore, IEventStoreDBAL, AggregateRootNotFoundException } from "../../src/EventStore";
 import { Dog, SayWolf, SayGrr } from '../Domain/AggregateRoot.test';
 
 class OnWolfEventSubscriber extends EventSubscriber {
@@ -26,6 +26,19 @@ class GlobalListener extends EventListener {
         this.lastEvent = event.event;
     }
 }
+
+export default class InMemoryErrorEventStore implements IEventStoreDBAL {
+    private readonly events: any[] = [];
+
+    public async load(aggregateId: string, from: number = 0): Promise<DomainEventStream> {
+        throw new Error('Fail Read');
+    }
+
+    public async append(aggregateId: string, stream: DomainEventStream): Promise<void> {
+        throw new Error('Fail Write');
+    }
+}
+
 
 describe("EventStore", () => {
     it("EventStore should store, publish and retrieve events", async () => {
@@ -63,10 +76,21 @@ describe("EventStore", () => {
         const pluto = new Dog();
 
         const toTest = async () => {
-            const x = await store.load(pluto.getAggregateRootId());
-
-            console.log(x);
+            return await store.load(pluto.getAggregateRootId());
         };
+
         expect(toTest()).rejects.toMatchObject(new Error("Not found"));
+    });
+
+    it("EventStore should collect exceptions", async () => {
+        const eventBus = new EventBus();
+        const store = new EventStore<Dog>(Dog, new InMemoryErrorEventStore(), eventBus);
+        const pluto = new Dog();
+
+        pluto.sayGrr();
+
+        await expect(store.save(pluto)).rejects.toMatchObject(new Error("Fail Write"));
+
+        await expect(store.load(pluto.getAggregateRootId())).rejects.toMatchObject(new Error("Fail Read"));
     });
 });

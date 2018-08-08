@@ -10,7 +10,7 @@ class DomainMessage {
         this.event = event;
         this.metadata = metadata;
         this.eventType = event.domainEventName();
-        this.ocurrendOn = new Date();
+        this.ocurredOn = new Date();
     }
     static create(uuid, playhead, event, metadata = []) {
         return new DomainMessage(uuid, playhead, event, metadata);

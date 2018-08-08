@@ -4,9 +4,9 @@ export class Dog extends EventSourced {
   public wolfCount: number = 0;
   private id: string;
 
-  constructor() {
+  constructor(id?: string) {
     super();
-
+    this.id = id;
     this.registerChild(new VoiceRecorder())
   }
 
@@ -16,13 +16,13 @@ export class Dog extends EventSourced {
   }
 
   public sayWolf(): string {
-    super.raise(new SayWolf(Math.random().toString()));
+    super.raise(new SayWolf(this.id || Math.random().toString()));
 
     return "Wolf!";
   }
 
   public sayGrr(): string {
-    super.raise(new SayGrr(Math.random().toString()));
+    super.raise(new SayGrr(this.id || Math.random().toString()));
 
     return "Grr!";
   }
