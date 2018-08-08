@@ -73,7 +73,7 @@ export default class EventStore<T extends EventSourced> {
 
     public async append(aggregateId: AggregateRootId, stream: DomainEventStream): Promise<void> {
 
-        const lastEvent = stream.events[stream.events.length -1];
+        const lastEvent = stream.events[stream.events.length - 1];
 
         await this.dbal.append(aggregateId, stream);
     }
