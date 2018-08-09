@@ -19,6 +19,7 @@
     "typescript": "2.*"
   },
   "jest": {
+    "testEnvironment": "node",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
