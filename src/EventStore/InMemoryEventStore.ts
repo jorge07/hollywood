@@ -18,6 +18,20 @@ export default class InMemoryEventStore implements IEventStoreDBAL {
 
         throw new AggregateRootNotFoundException();
     }
+    public loadFromTo(aggregateId: string, from: number = 0, to?: number): Promise<DomainEventStream> {
+        if (this.events[aggregateId]) {
+            const events: Array<DomainMessage> = this.events[aggregateId];
+
+            const stream = new DomainEventStream(
+                events
+                    .slice(from, to),
+            );
+
+            return new Promise((resolve, rejesct) => resolve(stream));
+        }
+
+        throw new AggregateRootNotFoundException();
+    }
 
     public append(aggregateId: string, stream: DomainEventStream): void {
         if (! this.events[aggregateId]) {

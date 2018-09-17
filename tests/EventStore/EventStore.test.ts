@@ -21,9 +21,11 @@ class OnWolfEventSubscriber extends EventSubscriber {
 
 class GlobalListener extends EventListener {
     public lastEvent: any;
+    public events: DomainMessage[] = [];
 
     public on(event: DomainMessage): void {
         this.lastEvent = event.event;
+        this.events.push(event);
     }
 }
 
@@ -31,6 +33,10 @@ export default class InMemoryErrorEventStore implements IEventStoreDBAL {
     private readonly events: any[] = [];
 
     public async load(aggregateId: string, from: number = 0): Promise<DomainEventStream> {
+        throw new Error('Fail Read');
+    }
+
+    public async loadFromTo(aggregateId: string, from: number = 0): Promise<DomainEventStream> {
         throw new Error('Fail Read');
     }
 
@@ -68,6 +74,42 @@ describe("EventStore", () => {
         expect(onWolfEventSubscriber.wolf).toBeInstanceOf(SayWolf);
         expect(onWolfEventSubscriber.grr).toBeInstanceOf(SayGrr);
         expect(globalListener.lastEvent).toBeInstanceOf(SayGrr);
+    });
+
+    it("EventStore be able to replay events", async () => {
+        const onWolfEventSubscriber = new OnWolfEventSubscriber();
+        const globalListener = new GlobalListener();
+        const eventBus = new EventBus();
+        const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus);
+        const pluto = new Dog();
+
+        eventBus
+            .attach(SayWolf, onWolfEventSubscriber)
+            .attach(SayGrr, onWolfEventSubscriber)
+            .addListener(globalListener)
+        ;
+
+        pluto.sayWolf();
+        pluto.sayGrr();
+
+        expect(pluto.version()).toBe(1);
+
+        store.save(pluto);
+
+        const dog: Dog = await store.load(pluto.getAggregateRootId());
+        expect(dog.wolfCount).toBe(1);
+        expect(dog.version()).toBe(1);
+
+        expect(onWolfEventSubscriber.wolf).toBeInstanceOf(SayWolf);
+        expect(onWolfEventSubscriber.grr).toBeInstanceOf(SayGrr);
+        expect(globalListener.lastEvent).toBeInstanceOf(SayGrr);
+
+        expect(globalListener.events.length).toBe(2);
+
+        await store.replayFrom(pluto.getAggregateRootId(), 0);
+
+        expect(globalListener.events.length).toBe(4);
+
     });
 
     it("EventStore should throw exception when not aggregate found", async () => {
