@@ -20,7 +20,7 @@ export default class InMemoryEventStore implements IEventStoreDBAL {
     }
     public loadFromTo(aggregateId: string, from: number = 0, to?: number): Promise<DomainEventStream> {
         if (this.events[aggregateId]) {
-            const events: Array<DomainMessage> = this.events[aggregateId];
+            const events: DomainMessage[] = this.events[aggregateId];
 
             const stream = new DomainEventStream(
                 events

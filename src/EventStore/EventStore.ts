@@ -32,12 +32,15 @@ export default class EventStore<T extends EventSourced> {
     }
 
     public async load(aggregateId: AggregateRootId): Promise<T> {
-        
+
         let aggregateRoot: T | null = null;
 
-        aggregateRoot = await this.fromSnapshot(aggregateId)
+        aggregateRoot = await this.fromSnapshot(aggregateId);
 
-        const stream: DomainEventStream = await this.dbal.load(aggregateId, aggregateRoot ? aggregateRoot.version() : 0);
+        const stream: DomainEventStream = await this.dbal.load(
+            aggregateId,
+            aggregateRoot ? aggregateRoot.version() : 0,
+        );
 
         this.emptyStream(stream);
 
@@ -63,10 +66,10 @@ export default class EventStore<T extends EventSourced> {
     }
 
     public async replayFrom(uuid: AggregateRootId, from: number, to?: number): Promise<void> {
-        
+
         const replayStream: DomainEventStream = await this.dbal.loadFromTo(uuid, from, to);
 
-        replayStream.events.forEach((event: DomainMessage) => this.eventBus.publish(event));        
+        replayStream.events.forEach((event: DomainMessage) => this.eventBus.publish(event));
     }
 
     private async takeSnapshot(entity: T): Promise<void> {
@@ -95,7 +98,7 @@ export default class EventStore<T extends EventSourced> {
 
             return null;
         }
-        
+
         const aggregateRoot = this.aggregateFactory();
 
         aggregateRoot.fromSnapshot(snapshot);
