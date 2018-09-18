@@ -23,42 +23,64 @@ class EventStore {
     }
     load(aggregateId) {
         return __awaiter(this, void 0, void 0, function* () {
-            let from = 0;
-            let eventSourced = null;
-            if (this.snapshotStore) {
-                const snapshot = yield this.snapshotStore.retrieve(aggregateId);
-                if (snapshot !== null && snapshot !== undefined) {
-                    eventSourced = new (this.modelConstructor)();
-                    eventSourced.fromSnapshot(snapshot);
-                    from = eventSourced.version();
-                }
-            }
-            const stream = yield this.dbal.load(aggregateId, from);
-            if (stream.isEmpty()) {
-                throw new AggregateRootNotFoundException_1.default();
-            }
-            const entity = eventSourced || new (this.modelConstructor)();
-            return entity.fromHistory(stream);
+            let aggregateRoot = null;
+            aggregateRoot = yield this.fromSnapshot(aggregateId);
+            const stream = yield this.dbal.load(aggregateId, aggregateRoot ? aggregateRoot.version() : 0);
+            this.emptyStream(stream);
+            aggregateRoot = aggregateRoot || this.aggregateFactory();
+            return aggregateRoot.fromHistory(stream);
         });
     }
     save(entity) {
         return __awaiter(this, void 0, void 0, function* () {
             const stream = entity.getUncommitedEvents();
             yield this.append(entity.getAggregateRootId(), stream);
-            if (this.snapshotStore && this.isSnapshotNeeded(entity.version())) {
-                yield this.snapshotStore.snapshot(entity);
-            }
+            this.takeSnapshot(entity);
             stream.events.forEach((message) => this.eventBus.publish(message));
         });
     }
     append(aggregateId, stream) {
         return __awaiter(this, void 0, void 0, function* () {
-            const lastEvent = stream.events[stream.events.length - 1];
             yield this.dbal.append(aggregateId, stream);
+        });
+    }
+    replayFrom(uuid, from, to) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const replayStream = yield this.dbal.loadFromTo(uuid, from, to);
+            replayStream.events.forEach((event) => this.eventBus.publish(event));
+        });
+    }
+    takeSnapshot(entity) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.snapshotStore && this.isSnapshotNeeded(entity.version())) {
+                yield this.snapshotStore.snapshot(entity);
+            }
         });
     }
     isSnapshotNeeded(version) {
         return version !== 0 && version / this.snapshotMargin >= 1 && version % this.snapshotMargin === 0;
+    }
+    fromSnapshot(aggregateId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.snapshotStore) {
+                return null;
+            }
+            const snapshot = yield this.snapshotStore.retrieve(aggregateId);
+            if (!snapshot) {
+                return null;
+            }
+            const aggregateRoot = this.aggregateFactory();
+            aggregateRoot.fromSnapshot(snapshot);
+            return aggregateRoot;
+        });
+    }
+    aggregateFactory() {
+        return new (this.modelConstructor)();
+    }
+    emptyStream(stream) {
+        if (stream.isEmpty()) {
+            throw new AggregateRootNotFoundException_1.default();
+        }
     }
 }
 exports.default = EventStore;

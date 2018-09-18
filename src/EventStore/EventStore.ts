@@ -32,53 +32,90 @@ export default class EventStore<T extends EventSourced> {
     }
 
     public async load(aggregateId: AggregateRootId): Promise<T> {
-        let from: number = 0;
-        let eventSourced: T | null = null;
 
-        if (this.snapshotStore) {
-            const snapshot = await this.snapshotStore.retrieve(aggregateId);
+        let aggregateRoot: T | null = null;
 
-            if (snapshot !== null && snapshot !== undefined) {
-                eventSourced = new (this.modelConstructor)() as T;
+        aggregateRoot = await this.fromSnapshot(aggregateId);
 
-                eventSourced.fromSnapshot(snapshot);
+        const stream: DomainEventStream = await this.dbal.load(
+            aggregateId,
+            aggregateRoot ? aggregateRoot.version() : 0,
+        );
 
-                from = eventSourced.version();
-            }
-        }
+        this.emptyStream(stream);
 
-        const stream: DomainEventStream = await this.dbal.load(aggregateId, from);
+        aggregateRoot = aggregateRoot || this.aggregateFactory();
 
-        if (stream.isEmpty()) {
-            throw new AggregateRootNotFoundException();
-        }
-
-        const entity = eventSourced || new (this.modelConstructor)();
-
-        return entity.fromHistory(stream);
+        return aggregateRoot.fromHistory(stream);
     }
 
     public async save(entity: T): Promise<void> {
+
         const stream: DomainEventStream = entity.getUncommitedEvents();
 
         await this.append(entity.getAggregateRootId(), stream);
 
-        if (this.snapshotStore && this.isSnapshotNeeded(entity.version())) {
-
-            await this.snapshotStore.snapshot(entity);
-        }
+        this.takeSnapshot(entity);
 
         stream.events.forEach((message: DomainMessage) => this.eventBus.publish(message));
     }
 
     public async append(aggregateId: AggregateRootId, stream: DomainEventStream): Promise<void> {
 
-        const lastEvent = stream.events[stream.events.length - 1];
-
         await this.dbal.append(aggregateId, stream);
     }
 
+    public async replayFrom(uuid: AggregateRootId, from: number, to?: number): Promise<void> {
+
+        const replayStream: DomainEventStream = await this.dbal.loadFromTo(uuid, from, to);
+
+        replayStream.events.forEach((event: DomainMessage) => this.eventBus.publish(event));
+    }
+
+    private async takeSnapshot(entity: T): Promise<void> {
+
+        if (this.snapshotStore && this.isSnapshotNeeded(entity.version())) {
+
+            await this.snapshotStore.snapshot(entity);
+        }
+    }
+
     private isSnapshotNeeded(version: number): boolean {
+
         return version !== 0 && version / this.snapshotMargin >= 1 && version % this.snapshotMargin === 0;
+    }
+
+    private async fromSnapshot(aggregateId: AggregateRootId): Promise<T|null> {
+
+        if (!this.snapshotStore) {
+
+            return null;
+        }
+
+        const snapshot = await this.snapshotStore.retrieve(aggregateId);
+
+        if (!snapshot) {
+
+            return null;
+        }
+
+        const aggregateRoot = this.aggregateFactory();
+
+        aggregateRoot.fromSnapshot(snapshot);
+
+        return aggregateRoot;
+    }
+
+    private aggregateFactory(): T {
+
+        return new (this.modelConstructor)() as T;
+    }
+
+    private emptyStream(stream: DomainEventStream): void {
+
+        if (stream.isEmpty()) {
+
+            throw new AggregateRootNotFoundException();
+        }
     }
 }

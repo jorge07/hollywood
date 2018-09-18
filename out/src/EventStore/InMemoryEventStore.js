@@ -15,6 +15,15 @@ class InMemoryEventStore {
         }
         throw new _1.AggregateRootNotFoundException();
     }
+    loadFromTo(aggregateId, from = 0, to) {
+        if (this.events[aggregateId]) {
+            const events = this.events[aggregateId];
+            const stream = new Domain_1.DomainEventStream(events
+                .slice(from, to));
+            return new Promise((resolve, rejesct) => resolve(stream));
+        }
+        throw new _1.AggregateRootNotFoundException();
+    }
     append(aggregateId, stream) {
         if (!this.events[aggregateId]) {
             this.events[aggregateId] = [];
