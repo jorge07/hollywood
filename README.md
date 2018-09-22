@@ -27,32 +27,29 @@ export class UserWasCreated extends Domain.DomainEvent {
     }
 }
 
-export class UserSayHello extends Domain.DomainEvent {
-    constructor(public uuid: string, public email: string) {
-        super()
-    }
-}
 
 export class User extends Domain.EventSourced {
-    uuid: string;
 
-    email: string;
+    private uuid: string;
 
-    constructor() {
-        super()
+    private email: string;
+
+    public static create(uuid: string, email: string): User {
+
+        const instance = new User();
+
+        instance.raise(new UserWasCreated(uuid, email));
+
+        return instance;
     }
 
-    getAggregateRootId(): string {
-        return this.uuid
+    public getAggregateRootId(): string {
+
+        return this.uuid;
     }
 
-    create(uuid: string, email: string) {
-        super.raise(new UserWasCreated(uuid, email));
 
-        return this
-    }
-
-    applyUserWasCreated(event: UserWasCreated): void {
+    protected applyUserWasCreated(event: UserWasCreated): void {
         this.uuid = event.uuid;
         this.email = event.email;
     }
