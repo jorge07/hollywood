@@ -7,6 +7,7 @@ import IQuery from "./Bus/Query/Query";
 import QueryBus from "./Bus/Query/QueryBus";
 import IQueryHandler from "./Bus/Query/QueryHandler";
 import QueryHandlerResolver from "./Bus/Query/QueryResolver";
+import App from './App';
 
 export {
     CommandBus,
@@ -19,4 +20,5 @@ export {
     IQueryHandler,
     IAppError,
     IAppResponse,
+    App,
 };
