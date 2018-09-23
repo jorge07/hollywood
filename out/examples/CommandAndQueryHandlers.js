@@ -11,25 +11,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const User_1 = require("./User");
 exports.UserSayHello = User_1.UserSayHello;
 const _1 = require("../");
-class UserRepository {
-    constructor(eventStore) {
-        this.eventStore = eventStore;
-    }
-    save(aggregateRoot) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.latency().then(() => {
-                this.eventStore.save(aggregateRoot);
-            });
-        });
-    }
-    load(aggregateRootId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.eventStore.load(aggregateRootId);
-        });
-    }
-    latency() {
-        return new Promise(resolve => setTimeout(resolve, 150));
-    }
+const App_1 = require("../src/Application/App");
+const Repository_1 = require("../src/Domain/Repository/Repository");
+class UserRepository extends Repository_1.default {
 }
 class OnUserWasCreated extends _1.EventStore.EventSubscriber {
     onUserWasCreated(event) {
@@ -54,7 +38,7 @@ class UserCreateHandler {
     }
     handle(c) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = (new User_1.User).create(c.uuid, c.email);
+            const user = User_1.User.create(c.uuid, c.email);
             yield this.userRepository.save(user);
         });
     }
@@ -96,14 +80,11 @@ const onSayHello = new OnSayHello();
 eventBus.attach(User_1.UserWasCreated, onUserWasCreated);
 eventBus.attach(User_1.UserSayHello, onSayHello);
 const userRepository = new UserRepository(new _1.EventStore.EventStore(User_1.User, new _1.EventStore.InMemoryEventStore(), eventBus));
-// Provision Bus
-const resolver = new _1.Application.CommandHandlerResolver();
-resolver.addHandler(CreateUser, new UserCreateHandler(userRepository));
-resolver.addHandler(SayHello, new SayHelloHandler(userRepository));
-const queryResolver = new _1.Application.QueryHandlerResolver();
-queryResolver.addHandler(QueryDemo, new DemoQueryHandler());
-const commandBus = new _1.Application.CommandBus(resolver);
-const queryBus = new _1.Application.QueryBus(queryResolver);
-exports.queryBus = queryBus;
-exports.default = commandBus;
+const app = new App_1.default(new Map([
+    [CreateUser, new UserCreateHandler(userRepository)],
+    [SayHello, new SayHelloHandler(userRepository)],
+]), new Map([
+    [QueryDemo, new DemoQueryHandler()]
+]));
+exports.default = app;
 //# sourceMappingURL=CommandAndQueryHandlers.js.map

@@ -1,24 +1,12 @@
 import { User, UserSayHello, UserWasCreated } from "./User";
 import { Application, EventStore, Domain } from "../";
+import App from '../src/Application/App';
+import ICommandHandler from '../src/Application/Bus/Command/CommandHandler';
+import IQueryHandler from '../src/Application/Bus/Query/QueryHandler';
+import Repository from '../src/Domain/Repository/Repository';
 
-class UserRepository implements Domain.IRepository<User> {
+class UserRepository extends Repository<User> {
 
-    constructor(private readonly eventStore: EventStore.EventStore<User>){}
-
-    async save(aggregateRoot: User): Promise<any> {
-        
-        return await this.latency().then(() => {
-            this.eventStore.save(aggregateRoot);
-        })
-    }
-
-    async load(aggregateRootId: string): Promise<User> {
-        return await this.eventStore.load(aggregateRootId);
-    }
-
-    private latency(): Promise<any> {
-        return new Promise(resolve => setTimeout(resolve, 150));
-    }
 }
 
 class OnUserWasCreated extends EventStore.EventSubscriber {
@@ -42,7 +30,7 @@ class UserCreateHandler implements Application.ICommandHandler {
     constructor(private userRepository: UserRepository) {}
 
     async handle(c: CreateUser): Promise<void|Application.IAppError> {
-        const user = (new User).create(c.uuid, c.email);
+        const user = User.create(c.uuid, c.email);
 
         await this.userRepository.save(user)
     }
@@ -90,24 +78,24 @@ eventBus.attach(UserSayHello, onSayHello);
 
 const userRepository = new UserRepository(new EventStore.EventStore<User>(User, new EventStore.InMemoryEventStore(), eventBus));
 
-// Provision Bus
+const app: App = new App(
+    new Map<any, ICommandHandler>(
+        [
+            [CreateUser, new UserCreateHandler(userRepository)],
+            [SayHello, new SayHelloHandler(userRepository)],
+        ]
+    ), 
+    new Map<any, IQueryHandler>(
+        [
+            [QueryDemo, new DemoQueryHandler()]
+        ]
+    )
+);
 
-const resolver = new Application.CommandHandlerResolver();
-resolver.addHandler(CreateUser, new UserCreateHandler(userRepository));
-resolver.addHandler(SayHello, new SayHelloHandler(userRepository));
-
-const queryResolver =  new Application.QueryHandlerResolver()
-queryResolver.addHandler(QueryDemo, new DemoQueryHandler());
-
-const commandBus = new Application.CommandBus(resolver);
-
-const queryBus = new Application.QueryBus(queryResolver);
-
-export default commandBus;
+export default app;
 
 export {
      CreateUser,
      UserSayHello,
-     QueryDemo,
-     queryBus
+     QueryDemo
 }; 

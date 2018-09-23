@@ -8,4 +8,6 @@ const QueryBus_1 = require("./Bus/Query/QueryBus");
 exports.QueryBus = QueryBus_1.default;
 const QueryResolver_1 = require("./Bus/Query/QueryResolver");
 exports.QueryHandlerResolver = QueryResolver_1.default;
+const App_1 = require("./App");
+exports.App = App_1.default;
 //# sourceMappingURL=index.js.map

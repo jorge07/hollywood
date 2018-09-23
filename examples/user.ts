@@ -26,10 +26,13 @@ export class User extends Domain.EventSourced {
         return this.uuid
     }
 
-    create(uuid: string, email: string) {
-        super.raise(new UserWasCreated(uuid, email));
+    static create(uuid: string, email: string): User {
 
-        return this
+        const instance = new User();
+        
+        instance.raise(new UserWasCreated(uuid, email));
+
+        return instance;
     }
 
     sayHello(): string {
