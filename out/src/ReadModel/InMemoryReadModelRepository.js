@@ -10,7 +10,7 @@ class InMemoryReadModelRepository {
     oneOrFail(id) {
         const data = this.collection[id];
         if (!data) {
-            throw new Error('Not Found');
+            throw new Error("Not Found");
         }
         return data;
     }

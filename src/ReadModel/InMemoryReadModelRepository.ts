@@ -1,5 +1,5 @@
 export default class InMemoryReadModelRepository {
-    private collection: Array<any> = [];
+    private collection: any[] = [];
 
     public save(id: string, data: any) {
         this.collection[id] = data;
@@ -9,7 +9,7 @@ export default class InMemoryReadModelRepository {
         const data = this.collection[id];
 
         if (! data) {
-            throw new Error('Not Found');
+            throw new Error("Not Found");
         }
 
         return data;

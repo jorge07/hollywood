@@ -1,22 +1,22 @@
-import { 
+import {
     CommandBus,
-    ICommand,
-    ICommandHandler, 
     CommandHandlerResolver,
-    QueryBus, 
-    IQuery,  
-    IQueryHandler,
-    QueryHandlerResolver, 
-    IAppResponse, 
     IAppError,
-} from '../Application/';
+    IAppResponse,
+    ICommand,
+    ICommandHandler,
+    IQuery,
+    IQueryHandler,
+    QueryBus,
+    QueryHandlerResolver,
+} from "../Application/";
 
 export default class App {
     private readonly commandResolver: CommandHandlerResolver;
     private readonly queryResolver: QueryHandlerResolver;
     private readonly commandBus: CommandBus;
     private readonly queryBus: QueryBus;
-    
+
     constructor(commands: Map<any, ICommandHandler>, queries: Map<any, IQueryHandler>) {
         this.commandResolver = new CommandHandlerResolver();
         this.queryResolver = new QueryHandlerResolver();
@@ -34,15 +34,15 @@ export default class App {
     }
 
     public async handle(command: ICommand): Promise<void|IAppError> {
-        
+
         return this.commandBus.handle(command);
     }
 
     private registerCommand(command: any, handler: ICommandHandler): void {
-        this.commandResolver.addHandler(command, handler)
+        this.commandResolver.addHandler(command, handler);
     }
 
     private registerQuery(query: any, handler: IQueryHandler): void {
-        this.queryResolver.addHandler(query, handler)
+        this.queryResolver.addHandler(query, handler);
     }
 }
