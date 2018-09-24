@@ -60,7 +60,9 @@ class DemoQueryHandler implements Application.IQueryHandler {
     async handle(query: QueryDemo): Promise<any> {
         return new Promise((resolve, reject) => {
             setTimeout(()=> {
-                resolve(<Application.IAppResponse>{data:'This is a async return query'})
+                resolve(<Application.IAppResponse>{
+                    data:'This is a async return query'
+                })
             }, 500)
         })
 

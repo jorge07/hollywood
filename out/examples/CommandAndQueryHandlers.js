@@ -67,7 +67,9 @@ class DemoQueryHandler {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    resolve({ data: 'This is a async return query' });
+                    resolve({
+                        data: 'This is a async return query'
+                    });
                 }, 500);
             });
         });

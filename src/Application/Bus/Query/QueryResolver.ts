@@ -18,13 +18,13 @@ export default class QueryHandlerResolver {
     }
 
     public addHandler(command: any, handler: IQueryHandler): QueryHandlerResolver {
-        this.handlers[(command as any).name] = handler;
+        this.handlers[command.name] = handler;
 
         return this;
     }
 
     private getHandlerForCommand(command: IQuery): IQueryHandler | undefined {
-        const commandName = (command as any).constructor.name;
+        const commandName = command.constructor.name;
 
         return this.handlers[commandName];
     }

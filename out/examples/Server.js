@@ -18,20 +18,18 @@ app.post('/user', (req, res) => {
     const userUuid = '11a38b9a-b3da-360f-9353-a5a725514269';
     CommandAndQueryHandlers_1.default.handle(new CommandAndQueryHandlers_1.CreateUser(userUuid, email));
     res.json({ uuid: userUuid, email });
-    console.log('CLIENT LIBERATED');
 });
 app.post('/user-sync', (req, res) => __awaiter(this, void 0, void 0, function* () {
     const email = 'lol@lol.com';
     const userUuid = '11a38b9a-b3da-360f-9353-a5a725514269';
     yield CommandAndQueryHandlers_1.default.handle(new CommandAndQueryHandlers_1.CreateUser(userUuid, email));
     res.json({ uuid: userUuid, email });
-    console.log('CLIENT LIBERATED');
 }));
 app.get('/hello', (req, res) => __awaiter(this, void 0, void 0, function* () {
     const response = yield CommandAndQueryHandlers_1.default.ask(new CommandAndQueryHandlers_1.QueryDemo());
     res.json(response);
 }));
 app.listen(app.get('port'), () => {
-    console.log(('App is running at http://localhost:%d in %s mode'), app.get('port'), app.get('env'));
+    console.log('App is running at http://localhost:%d in %s mode', app.get('port'), app.get('env'));
 });
 //# sourceMappingURL=Server.js.map

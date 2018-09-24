@@ -14,7 +14,6 @@ app.post('/user', (req, res) => {
     Application.handle(new CreateUser(userUuid, email));
 
     res.json({uuid: userUuid, email});
-    console.log('CLIENT LIBERATED');
 });
 
 app.post('/user-sync', async (req, res) => {
@@ -24,7 +23,6 @@ app.post('/user-sync', async (req, res) => {
     await Application.handle(new CreateUser(userUuid, email))
     
     res.json({uuid: userUuid, email});
-    console.log('CLIENT LIBERATED');
 });
 
 app.get('/hello', async (req, res) => {
@@ -33,6 +31,9 @@ app.get('/hello', async (req, res) => {
 });
 
 app.listen(app.get('port'), () => {
-    console.log(('App is running at http://localhost:%d in %s mode'),
-    app.get('port'), app.get('env'));
+    console.log(
+        'App is running at http://localhost:%d in %s mode',
+        app.get('port'), 
+        app.get('env')
+    );
 });

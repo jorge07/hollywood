@@ -14,7 +14,7 @@ class InMemorySnapshotStoreDBAL {
     }
     get(uuid) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.snapshots[uuid] || null;
+            return this.snapshots[uuid];
         });
     }
     store(entity) {

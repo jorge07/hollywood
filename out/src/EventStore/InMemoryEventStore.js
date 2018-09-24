@@ -11,7 +11,7 @@ class InMemoryEventStore {
             const events = this.events[aggregateId];
             const stream = new Domain_1.DomainEventStream(events
                 .slice(from));
-            return new Promise((resolve, rejesct) => resolve(stream));
+            return Promise.resolve(stream);
         }
         throw new _1.AggregateRootNotFoundException();
     }
@@ -20,7 +20,7 @@ class InMemoryEventStore {
             const events = this.events[aggregateId];
             const stream = new Domain_1.DomainEventStream(events
                 .slice(from, to));
-            return new Promise((resolve, rejesct) => resolve(stream));
+            return Promise.resolve(stream);
         }
         throw new _1.AggregateRootNotFoundException();
     }
