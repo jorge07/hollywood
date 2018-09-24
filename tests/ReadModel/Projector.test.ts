@@ -1,16 +1,16 @@
 import EventBus from '../../src/EventStore/EventBus/EventBus';
-import { UserWasCreated } from '../../examples/User';
 import Projector from '../../src/ReadModel/Projector';
 import InMemoryReadModelRepository from '../../src/ReadModel/InMemoryReadModelRepository';
 import DomainMessage from '../../src/Domain/Event/DomainMessage';
+import { SayWolf } from '../Domain/AggregateRoot.test';
 
-class UserReadModelProjector extends Projector {
+class DogReadModelProjector extends Projector {
     constructor(private readonly repository: InMemoryReadModelRepository){
         super();
     }
 
-    onUserWasCreated(event: UserWasCreated): void {
-        this.repository.save(event.uuid, event.email);
+    onSayWolf(event: SayWolf): void {
+        this.repository.save(event.uuid, 'Wolf');
     }
 }
 
@@ -20,11 +20,11 @@ describe("Projector", () => {
 
         const eventBus: EventBus = new EventBus();
 
-        eventBus.attach(UserWasCreated, new UserReadModelProjector(readModel));
+        eventBus.attach(SayWolf, new DogReadModelProjector(readModel));
 
-        eventBus.publish(DomainMessage.create('demo', 0, new UserWasCreated('demo', 'kk@demo.com')));
+        eventBus.publish(DomainMessage.create('demo', 0, new SayWolf('demo')));
 
-        expect(readModel.oneOrFail('demo')).toBe('kk@demo.com')
+        expect(readModel.oneOrFail('demo')).toBe('Wolf')
     });
 
     it("In Memory repository should fail of not exist", async () => {
