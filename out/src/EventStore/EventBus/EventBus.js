@@ -19,8 +19,8 @@ class EventBus {
         return this;
     }
     addListener(listener) {
-        if (!this.listenersRegistry[listener.name]) {
-            this.listenersRegistry[listener.name] = listener;
+        if (!this.listenersRegistry[listener.constructor.name]) {
+            this.listenersRegistry[listener.constructor.name] = listener;
         }
         return this;
     }

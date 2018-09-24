@@ -13,7 +13,7 @@ export default class InMemoryEventStore implements IEventStoreDBAL {
                     .slice(from),
             );
 
-            return new Promise((resolve, rejesct) => resolve(stream));
+            return Promise.resolve(stream);
         }
 
         throw new AggregateRootNotFoundException();
@@ -27,7 +27,7 @@ export default class InMemoryEventStore implements IEventStoreDBAL {
                     .slice(from, to),
             );
 
-            return new Promise((resolve, rejesct) => resolve(stream));
+            return Promise.resolve(stream);
         }
 
         throw new AggregateRootNotFoundException();

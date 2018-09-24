@@ -24,9 +24,10 @@ class User extends Domain.EventSourced {
     getAggregateRootId() {
         return this.uuid;
     }
-    create(uuid, email) {
-        super.raise(new UserWasCreated(uuid, email));
-        return this;
+    static create(uuid, email) {
+        const instance = new User();
+        instance.raise(new UserWasCreated(uuid, email));
+        return instance;
     }
     sayHello() {
         super.raise(new UserSayHello(this.uuid, this.email));

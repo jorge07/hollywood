@@ -26,7 +26,7 @@ export default class EventBus {
     }
 
     public attach(event: any, subscriber: EventSubscriber): EventBus {
-        const eventName = (event as any).name;
+        const eventName = event.name;
         const collection = this.subscribersRegistry[eventName] || [];
 
         collection.push(subscriber);
@@ -37,14 +37,14 @@ export default class EventBus {
     }
 
     public addListener(listener: EventListener): EventBus {
-        if (! this.listenersRegistry[(listener as any).name]) {
-            this.listenersRegistry[(listener as any).name] = listener;
+        if (! this.listenersRegistry[listener.constructor.name]) {
+            this.listenersRegistry[listener.constructor.name] = listener;
         }
 
         return this;
     }
 
     private subscribersFor(event: DomainEvent): EventSubscriber[] {
-        return this.subscribersRegistry[(event as any).constructor.name] || [];
+        return this.subscribersRegistry[event.constructor.name] || [];
     }
 }

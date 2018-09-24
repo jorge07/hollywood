@@ -12,7 +12,7 @@ export default class InMemorySnapshotStoreDBAL implements ISnapshotStoreDBAL {
 
     public async get(uuid: AggregateRootId): Promise<EventSourced|null> {
 
-        return this.snapshots[uuid] as EventSourced || null;
+        return this.snapshots[uuid];
     }
 
     public async store(entity: EventSourced): Promise<void> {

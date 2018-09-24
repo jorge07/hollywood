@@ -10,4 +10,6 @@ const DomainMessage_1 = require("./Event/DomainMessage");
 exports.DomainMessage = DomainMessage_1.default;
 const EventSourced_1 = require("./EventSourced");
 exports.EventSourced = EventSourced_1.default;
+const Repository_1 = require("./Repository/Repository");
+exports.Repository = Repository_1.default;
 //# sourceMappingURL=index.js.map

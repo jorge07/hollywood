@@ -1,3 +1,4 @@
+import App from "./App";
 import { IAppError, IAppResponse } from "./Bus/CallbackArg";
 import ICommand from "./Bus/Command/Command";
 import CommandBus from "./Bus/Command/CommandBus";
@@ -19,4 +20,5 @@ export {
     IQueryHandler,
     IAppError,
     IAppResponse,
+    App,
 };

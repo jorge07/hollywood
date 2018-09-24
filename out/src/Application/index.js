@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const App_1 = require("./App");
+exports.App = App_1.default;
 const CommandBus_1 = require("./Bus/Command/CommandBus");
 exports.CommandBus = CommandBus_1.default;
 const CommandHandlerResolver_1 = require("./Bus/Command/CommandHandlerResolver");
