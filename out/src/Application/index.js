@@ -10,4 +10,6 @@ const QueryBus_1 = require("./Bus/Query/QueryBus");
 exports.QueryBus = QueryBus_1.default;
 const QueryResolver_1 = require("./Bus/Query/QueryResolver");
 exports.QueryHandlerResolver = QueryResolver_1.default;
+const autowiring_1 = require("./Bus/autowiring");
+exports.autowiring = autowiring_1.default;
 //# sourceMappingURL=index.js.map

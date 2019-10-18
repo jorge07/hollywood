@@ -8,6 +8,7 @@ import IQuery from "./Bus/Query/Query";
 import QueryBus from "./Bus/Query/QueryBus";
 import IQueryHandler from "./Bus/Query/QueryHandler";
 import QueryHandlerResolver from "./Bus/Query/QueryResolver";
+import autowiring from './Bus/autowiring';
 
 export {
     CommandBus,
@@ -21,4 +22,5 @@ export {
     IAppError,
     IAppResponse,
     App,
+    autowiring,
 };

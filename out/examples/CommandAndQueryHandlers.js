@@ -10,17 +10,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const User_1 = require("./User");
 exports.UserSayHello = User_1.UserSayHello;
-const _1 = require("../");
+const __1 = require("../");
 const App_1 = require("../src/Application/App");
 const Repository_1 = require("../src/Domain/Repository/Repository");
 class UserRepository extends Repository_1.default {
 }
-class OnUserWasCreated extends _1.EventStore.EventSubscriber {
+class OnUserWasCreated extends __1.EventStore.EventSubscriber {
     onUserWasCreated(event) {
         console.log(`EVENT: OnUserWasCreated: User ${event.email} was created`);
     }
 }
-class OnSayHello extends _1.EventStore.EventSubscriber {
+class OnSayHello extends __1.EventStore.EventSubscriber {
     onUserSayHello(event) {
         console.log(`User ${event.email} said: "Hello"`);
     }
@@ -76,12 +76,12 @@ class DemoQueryHandler {
     }
 }
 // Provision User Store
-const eventBus = new _1.EventStore.EventBus();
+const eventBus = new __1.EventStore.EventBus();
 const onUserWasCreated = new OnUserWasCreated();
 const onSayHello = new OnSayHello();
 eventBus.attach(User_1.UserWasCreated, onUserWasCreated);
 eventBus.attach(User_1.UserSayHello, onSayHello);
-const userRepository = new UserRepository(new _1.EventStore.EventStore(User_1.User, new _1.EventStore.InMemoryEventStore(), eventBus));
+const userRepository = new UserRepository(new __1.EventStore.EventStore(User_1.User, new __1.EventStore.InMemoryEventStore(), eventBus));
 const app = new App_1.default(new Map([
     [CreateUser, new UserCreateHandler(userRepository)],
     [SayHello, new SayHelloHandler(userRepository)],
