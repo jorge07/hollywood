@@ -56,12 +56,11 @@ export default abstract class EventSourced extends AggregateRoot {
         return this.playhead;
     }
 
-    protected registerChild(child: EventSourced) {
+    protected registerChild(child: EventSourced): void {
         this.aggregates.push(child);
     }
 
     protected raise(event: DomainEvent): void {
-
         this.recursiveHandling(event, this.methodToApplyEvent(event.domainEventName()));
 
         this.playhead++;
@@ -73,6 +72,7 @@ export default abstract class EventSourced extends AggregateRoot {
 
         this.events.push(domainMessage);
     }
+
     private handle(event: DomainEvent, method: string): void {
         if (this[method]) {
             this[method](event);

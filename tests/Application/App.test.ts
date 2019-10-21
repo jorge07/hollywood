@@ -11,19 +11,19 @@ describe("App", () => {
                 [
                     DemoCommand, 
                     demoHandler
-                    ]
+                ]
             ]),
             new Map([
                 [
                     DemoQuery, 
                     new DemoQueryHandler()
-                    ]
+                ]
             ])
         );
 
         const response: IAppResponse| IAppError = await app.ask(new DemoQuery());
 
-        expect(response).toMatchObject({data:'Hello!'});
+        expect(response).toMatchObject({ data:'Hello!' });
 
         await app.handle(new DemoCommand(false));
 

@@ -30,12 +30,11 @@ export default class App {
 
     public async ask(query: IQuery): Promise<IAppResponse|IAppError|null> {
 
-        return this.queryBus.ask(query);
+        return await this.queryBus.ask(query);
     }
 
     public async handle(command: ICommand): Promise<void|IAppError> {
-
-        return this.commandBus.handle(command);
+        await this.commandBus.handle(command);
     }
 
     private registerCommand(command: any, handler: ICommandHandler): void {

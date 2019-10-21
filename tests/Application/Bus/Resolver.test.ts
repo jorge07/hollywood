@@ -11,17 +11,15 @@ describe("HandlerResolver test suite", () => {
         const commandBus = new CommandBus(resolver);
         const queryBus = new QueryBus(queryResolver);
 
-        resolver
-            .addHandler(DemoCommand, demoHandler);
-        queryResolver
-            .addHandler(DemoQuery, new DemoQueryHandler());
+        resolver.addHandler(DemoCommand, demoHandler);
+        queryResolver.addHandler(DemoQuery, new DemoQueryHandler());
 
         const response: any = await queryBus.ask(new DemoQuery());
         expect(response.data).toBe("Hello!");
 
         try {
             await queryBus.ask(new DemoQuery(true));
-            expect("Exception").toBe("Not throwed");
+            expect("Query bus Exception").toBe("Not throwed");
         } catch (err) {
             expect(err.code).toBe(0);
         }

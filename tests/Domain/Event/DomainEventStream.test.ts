@@ -1,7 +1,5 @@
 import { DomainEvent, DomainEventStream, DomainMessage } from "../../../src/Domain";
-
-class DemoEvent extends DomainEvent {
-}
+import DemoEvent from './DemoEvent';
 
 describe("DomainEventStream", () => {
   it("DomainEvent wrap events collection", () => {

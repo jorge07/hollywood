@@ -3,9 +3,9 @@ import ICommand from "./Command";
 import CommandHandlerResolver from "./CommandHandlerResolver";
 
 export default class CommandBus {
-    constructor(private readonly handlerResolver: CommandHandlerResolver) {}
+    constructor(private readonly resolver: CommandHandlerResolver) {}
 
     public async handle(command: ICommand): Promise<void|IAppError> {
-        await this.handlerResolver.resolve(command);
+        await this.resolver.resolve(command);
     }
 }

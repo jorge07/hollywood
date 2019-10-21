@@ -8,7 +8,9 @@
         "rootDir": ".",
         "types": [ "node" ],
         "strictFunctionTypes": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
     },
     "compileOnSave": true,
     "include": [

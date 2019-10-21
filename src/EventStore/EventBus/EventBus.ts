@@ -20,7 +20,7 @@ export default class EventBus {
 
     public publish(message: DomainMessage): void {
         this.subscribersFor(message.event).forEach((subscriber: EventSubscriber) => subscriber.on(message));
-        Object.keys(this.listenersRegistry).forEach( (key) => {
+        Object.keys(this.listenersRegistry).forEach((key) => {
            this.listenersRegistry[key].on(message);
         });
     }
