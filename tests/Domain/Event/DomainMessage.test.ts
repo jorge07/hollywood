@@ -1,9 +1,6 @@
 import { DomainEvent } from "../../../src/Domain";
 import DomainMessage from "../../../src/Domain/Event/DomainMessage";
-
-class DemoEvent extends DomainEvent {
-
-}
+import DemoEvent from './DemoEvent';
 
 describe("DomainMessage", () => {
 

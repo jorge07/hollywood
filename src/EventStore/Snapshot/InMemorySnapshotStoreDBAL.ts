@@ -3,7 +3,7 @@ import EventSourced from "../../Domain/EventSourced";
 import ISnapshotStoreDBAL from "./SnapshotStoreDBAL";
 
 interface ISnapshotDictionary {
-    [x: string]: EventSourced;
+    [key: string]: EventSourced;
 }
 
 export default class InMemorySnapshotStoreDBAL implements ISnapshotStoreDBAL {

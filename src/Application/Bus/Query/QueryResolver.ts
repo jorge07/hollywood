@@ -8,13 +8,14 @@ export default class QueryHandlerResolver {
     private readonly handlers: IQueryRegistry = {};
 
     public async resolve(command: IQuery): Promise<IAppResponse|IAppError|null> {
-        const handler = this.getHandlerForCommand(command);
+        const handler = this.getHandlerFor(command);
 
-        if (! handler) {
-            return null;
+        if (handler) {
+
+            return await handler.handle(command);
         }
 
-        return await handler.handle(command);
+        return null;
     }
 
     public addHandler(command: any, handler: IQueryHandler): QueryHandlerResolver {
@@ -23,7 +24,7 @@ export default class QueryHandlerResolver {
         return this;
     }
 
-    private getHandlerForCommand(command: IQuery): IQueryHandler | undefined {
+    private getHandlerFor(command: IQuery): IQueryHandler | undefined {
         const commandName = command.constructor.name;
 
         return this.handlers[commandName];

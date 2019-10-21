@@ -2,8 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class EventSubscriber {
     on(message) {
-        if (this["on" + message.eventType]) {
-            this["on" + message.eventType](message.event);
+        const method = "on" + message.eventType;
+        if (this[method]) {
+            this[method](message.event);
         }
     }
 }

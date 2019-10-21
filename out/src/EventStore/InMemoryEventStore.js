@@ -4,13 +4,12 @@ const _1 = require(".");
 const Domain_1 = require("../Domain");
 class InMemoryEventStore {
     constructor() {
-        this.events = [];
+        this.events = {};
     }
     load(aggregateId, from = 0) {
         if (this.events[aggregateId]) {
             const events = this.events[aggregateId];
-            const stream = new Domain_1.DomainEventStream(events
-                .slice(from));
+            const stream = new Domain_1.DomainEventStream(events.slice(from));
             return Promise.resolve(stream);
         }
         throw new _1.AggregateRootNotFoundException();
@@ -18,8 +17,7 @@ class InMemoryEventStore {
     loadFromTo(aggregateId, from = 0, to) {
         if (this.events[aggregateId]) {
             const events = this.events[aggregateId];
-            const stream = new Domain_1.DomainEventStream(events
-                .slice(from, to));
+            const stream = new Domain_1.DomainEventStream(events.slice(from, to));
             return Promise.resolve(stream);
         }
         throw new _1.AggregateRootNotFoundException();

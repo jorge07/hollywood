@@ -3,9 +3,9 @@ import IQuery from "./Query";
 import QueryHandlerResolver from "./QueryResolver";
 
 export default class QueryBus {
-    constructor(private readonly handlerResolver: QueryHandlerResolver) {}
+    constructor(private readonly resolver: QueryHandlerResolver) {}
 
     public async ask(command: IQuery): Promise<IAppResponse|IAppError|null> {
-        return await this.handlerResolver.resolve(command);
+        return await this.resolver.resolve(command);
     }
 }

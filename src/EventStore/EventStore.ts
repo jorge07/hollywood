@@ -112,7 +112,6 @@ export default class EventStore<T extends EventSourced> {
     }
 
     private emptyStream(stream: DomainEventStream): void {
-
         if (stream.isEmpty()) {
 
             throw new AggregateRootNotFoundException();

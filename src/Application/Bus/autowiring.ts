@@ -1,11 +1,10 @@
+const metadataKey = "design:paramtypes";
+const propertykey = "handle";
+
 export default function autowiring<T>(target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<T>) {
-    const value: any = Reflect.getMetadata(
-        "design:paramtypes",
-        target,
-        "handle",
-    );
+    const methodArgs: any = Reflect.getMetadata(metadataKey, target, propertykey);
 
     target.command = {
-        name: value[0].name,
+        name: methodArgs[0].name,
     };
 }

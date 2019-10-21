@@ -2,16 +2,12 @@ import { AggregateRootNotFoundException, IEventStoreDBAL } from ".";
 import { DomainEvent, DomainEventStream, DomainMessage } from "../Domain";
 
 export default class InMemoryEventStore implements IEventStoreDBAL {
-    private readonly events: any[] = [];
+    private readonly events: { [key: string]: any } = {};
 
     public load(aggregateId: string, from: number = 0): Promise<DomainEventStream> {
         if (this.events[aggregateId]) {
             const events = this.events[aggregateId];
-
-            const stream = new DomainEventStream(
-                events
-                    .slice(from),
-            );
+            const stream = new DomainEventStream(events.slice(from));
 
             return Promise.resolve(stream);
         }
@@ -22,10 +18,7 @@ export default class InMemoryEventStore implements IEventStoreDBAL {
         if (this.events[aggregateId]) {
             const events: DomainMessage[] = this.events[aggregateId];
 
-            const stream = new DomainEventStream(
-                events
-                    .slice(from, to),
-            );
+            const stream = new DomainEventStream(events.slice(from, to));
 
             return Promise.resolve(stream);
         }

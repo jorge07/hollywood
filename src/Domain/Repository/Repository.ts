@@ -5,8 +5,7 @@ import IRepository from "./IRepository";
 
 export default abstract class Repository<T extends EventSourced> implements IRepository<T> {
 
-    constructor(private readonly eventStore: EventStore<T>) {
-    }
+    constructor(private readonly eventStore: EventStore<T>) {}
 
     public async save(aggregateRoot: T): Promise<void> {
         await this.eventStore.save(aggregateRoot);

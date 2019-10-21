@@ -45,19 +45,19 @@ export default class Scenario <T extends EventSourced> {
         return this;
     }
 
-    public when(when: (aggregate?: T) => T): Scenario<T> {
-        if (! when) {
+    public when(callable: (aggregate?: T) => T): Scenario<T> {
+        if (! callable) {
             return this;
         }
 
         if (! this.aggregateInstance) {
 
-            this.aggregateInstance = when(this.aggregateInstance);
+            this.aggregateInstance = callable(this.aggregateInstance);
 
             return this
         }
 
-        when(this.aggregateInstance);
+        callable(this.aggregateInstance);
 
         return this;
     }

@@ -11,31 +11,21 @@ export class DemoHandler implements ICommandHandler {
         this.received = true;
         if (command.exception) {
 
-            throw {
-                code: 1,
-                message: "Fail",
-            } as IAppError;
+            throw { code: 1, message: "Fail" } as IAppError;
         }
     }
 }
 
 export class DemoQuery implements IQuery {
-    constructor(public readonly exception: boolean = false) {
-    }
+    constructor(public readonly exception: boolean = false) {}
 }
 
 export class DemoQueryHandler implements IQueryHandler {
     public async handle(request: DemoQuery): Promise<IAppResponse|IAppError> {
         if (request.exception) {
-
-            throw {
-                code: 0,
-                message: "Fail",
-            } as IAppError;
+            throw { code: 0, message: "Fail" } as IAppError;
         }
 
-        return {
-            data: "Hello!",
-        } as IAppResponse;
+        return { data: "Hello!" } as IAppResponse;
     }
 }

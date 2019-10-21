@@ -28,11 +28,12 @@ describe("Projector", () => {
     });
 
     it("In Memory repository should fail of not exist", async () => {
-        const readModel: InMemoryReadModelRepository = new InMemoryReadModelRepository();
+        expect.assertions(1);
 
+        const readModel: InMemoryReadModelRepository = new InMemoryReadModelRepository();
+        
         try {
             readModel.oneOrFail('demo');
-            expect(1).toThrow('this should never be executed');
         } catch (err) {
             expect(err.message).toBe('Not Found');
         }
