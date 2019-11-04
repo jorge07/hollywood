@@ -74,8 +74,8 @@ export default abstract class EventSourced extends AggregateRoot {
     }
 
     private handle(event: DomainEvent, method: string): void {
-        if (this[method]) {
-            this[method](event);
+        if ((this as any)[method]) {
+            (this as any)[method](event);
         }
     }
 

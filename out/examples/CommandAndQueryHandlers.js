@@ -8,12 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const User_1 = require("./User");
 exports.UserSayHello = User_1.UserSayHello;
 const __1 = require("../");
-const App_1 = require("../src/Application/App");
-const Repository_1 = require("../src/Domain/Repository/Repository");
+const App_1 = __importDefault(require("../src/Application/App"));
+const Repository_1 = __importDefault(require("../src/Domain/Repository/Repository"));
 class UserRepository extends Repository_1.default {
 }
 class OnUserWasCreated extends __1.EventStore.EventSubscriber {

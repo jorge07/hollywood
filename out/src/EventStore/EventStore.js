@@ -8,9 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const AggregateRootNotFoundException_1 = require("./Exception/AggregateRootNotFoundException");
-const SnapshotStore_1 = require("./Snapshot/SnapshotStore");
+const AggregateRootNotFoundException_1 = __importDefault(require("./Exception/AggregateRootNotFoundException"));
+const SnapshotStore_1 = __importDefault(require("./Snapshot/SnapshotStore"));
 const MIN_SNAPSHOT_MARGIN = 10;
 class EventStore {
     constructor(modelConstructor, dbal, eventBus, snapshotStoreDbal, snapshotMargin) {
@@ -76,7 +79,7 @@ class EventStore {
         });
     }
     aggregateFactory() {
-        return new (this.modelConstructor)();
+        return new this.modelConstructor();
     }
     emptyStream(stream) {
         if (stream.isEmpty()) {
