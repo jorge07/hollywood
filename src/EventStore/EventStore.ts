@@ -11,11 +11,11 @@ export default class EventStore<T extends EventSourced> {
     private readonly dbal: IEventStoreDBAL;
     private readonly eventBus: EventBus;
     private readonly snapshotStore?: SnapshotStore;
-    private readonly modelConstructor: new () => T;
+    private readonly modelConstructor: new (aggregateRootID: AggregateRootId) => T;
     private readonly snapshotMargin: number;
 
     constructor(
-        modelConstructor: new () => T,
+        modelConstructor: new (aggregateRootID: AggregateRootId) => T,
         dbal: IEventStoreDBAL,
         eventBus: EventBus,
         snapshotStoreDbal?: ISnapshotStoreDBAL,
@@ -31,20 +31,20 @@ export default class EventStore<T extends EventSourced> {
         }
     }
 
-    public async load(aggregateId: AggregateRootId): Promise<T> {
+    public async load(aggregateRootId: AggregateRootId): Promise<T> {
 
         let aggregateRoot: T | null = null;
 
-        aggregateRoot = await this.fromSnapshot(aggregateId);
+        aggregateRoot = await this.fromSnapshot(aggregateRootId);
 
         const stream: DomainEventStream = await this.dbal.load(
-            aggregateId,
+            aggregateRootId,
             aggregateRoot ? aggregateRoot.version() : 0,
         );
 
         this.emptyStream(stream);
 
-        aggregateRoot = aggregateRoot || this.aggregateFactory();
+        aggregateRoot = aggregateRoot || this.aggregateFactory(aggregateRootId);
 
         return aggregateRoot.fromHistory(stream);
     }
@@ -85,30 +85,30 @@ export default class EventStore<T extends EventSourced> {
         return version !== 0 && version / this.snapshotMargin >= 1 && version % this.snapshotMargin === 0;
     }
 
-    private async fromSnapshot(aggregateId: AggregateRootId): Promise<T|null> {
+    private async fromSnapshot(aggregateRootId: AggregateRootId): Promise<T|null> {
 
         if (!this.snapshotStore) {
 
             return null;
         }
 
-        const snapshot = await this.snapshotStore.retrieve(aggregateId);
+        const snapshot = await this.snapshotStore.retrieve(aggregateRootId);
 
         if (!snapshot) {
 
             return null;
         }
 
-        const aggregateRoot = this.aggregateFactory();
+        const aggregateRoot = this.aggregateFactory(aggregateRootId);
 
         aggregateRoot.fromSnapshot(snapshot);
 
         return aggregateRoot;
     }
 
-    private aggregateFactory(): T {
+    private aggregateFactory(aggregateRootId: AggregateRootId): T {
 
-        return new this.modelConstructor();
+        return new this.modelConstructor(aggregateRootId);
     }
 
     private emptyStream(stream: DomainEventStream): void {

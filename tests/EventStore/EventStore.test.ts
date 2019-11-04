@@ -6,10 +6,6 @@ class OnWolfEventSubscriber extends EventSubscriber {
     public wolf: any;
     public grr: any;
 
-    constructor() {
-        super();
-    }
-
     private onSayWolf(event: SayWolf): void {
         this.wolf = event;
     }
@@ -52,7 +48,7 @@ describe("EventStore", () => {
         const globalListener = new GlobalListener();
         const eventBus = new EventBus();
         const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus);
-        const pluto = new Dog();
+        const pluto = new Dog("31");
 
         eventBus
             .attach(SayWolf, onWolfEventSubscriber)
@@ -81,7 +77,7 @@ describe("EventStore", () => {
         const globalListener = new GlobalListener();
         const eventBus = new EventBus();
         const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus);
-        const pluto = new Dog();
+        const pluto = new Dog("31");
 
         eventBus
             .attach(SayWolf, onWolfEventSubscriber)
@@ -115,7 +111,7 @@ describe("EventStore", () => {
     it("EventStore should throw exception when not aggregate found", async () => {
         const eventBus = new EventBus();
         const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus);
-        const pluto = new Dog();
+        const pluto = new Dog("31");
 
         const toTest = async () => {
             return await store.load(pluto.getAggregateRootId());
@@ -127,7 +123,7 @@ describe("EventStore", () => {
     it("EventStore should collect exceptions", async () => {
         const eventBus = new EventBus();
         const store = new EventStore<Dog>(Dog, new InMemoryErrorEventStore(), eventBus);
-        const pluto = new Dog();
+        const pluto = new Dog("31");
 
         pluto.sayGrr();
 

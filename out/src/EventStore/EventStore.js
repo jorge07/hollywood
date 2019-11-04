@@ -25,13 +25,13 @@ class EventStore {
             this.snapshotStore = new SnapshotStore_1.default(snapshotStoreDbal);
         }
     }
-    load(aggregateId) {
+    load(aggregateRootId) {
         return __awaiter(this, void 0, void 0, function* () {
             let aggregateRoot = null;
-            aggregateRoot = yield this.fromSnapshot(aggregateId);
-            const stream = yield this.dbal.load(aggregateId, aggregateRoot ? aggregateRoot.version() : 0);
+            aggregateRoot = yield this.fromSnapshot(aggregateRootId);
+            const stream = yield this.dbal.load(aggregateRootId, aggregateRoot ? aggregateRoot.version() : 0);
             this.emptyStream(stream);
-            aggregateRoot = aggregateRoot || this.aggregateFactory();
+            aggregateRoot = aggregateRoot || this.aggregateFactory(aggregateRootId);
             return aggregateRoot.fromHistory(stream);
         });
     }
@@ -64,22 +64,22 @@ class EventStore {
     isSnapshotNeeded(version) {
         return version !== 0 && version / this.snapshotMargin >= 1 && version % this.snapshotMargin === 0;
     }
-    fromSnapshot(aggregateId) {
+    fromSnapshot(aggregateRootId) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.snapshotStore) {
                 return null;
             }
-            const snapshot = yield this.snapshotStore.retrieve(aggregateId);
+            const snapshot = yield this.snapshotStore.retrieve(aggregateRootId);
             if (!snapshot) {
                 return null;
             }
-            const aggregateRoot = this.aggregateFactory();
+            const aggregateRoot = this.aggregateFactory(aggregateRootId);
             aggregateRoot.fromSnapshot(snapshot);
             return aggregateRoot;
         });
     }
-    aggregateFactory() {
-        return new this.modelConstructor();
+    aggregateFactory(aggregateRootId) {
+        return new this.modelConstructor(aggregateRootId);
     }
     emptyStream(stream) {
         if (stream.isEmpty()) {
