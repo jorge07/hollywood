@@ -2,33 +2,25 @@ import { DomainEvent, DomainEventStream, DomainMessage, EventSourced } from "../
 
 export class Dog extends EventSourced {
   public wolfCount: number = 0;
-  private id: string;
 
-  constructor(id?: string) {
-    super();
-    this.id = id;
+  constructor(id: string) {
+    super(id);
     this.registerChild(new VoiceRecorder())
   }
 
-  public getAggregateRootId(): string {
-
-    return this.id;
-  }
-
   public sayWolf(): string {
-    super.raise(new SayWolf(this.id || Math.random().toString()));
+    super.raise(new SayWolf(this.getAggregateRootId() || Math.random().toString()));
 
     return "Wolf!";
   }
 
   public sayGrr(): string {
-    super.raise(new SayGrr(this.id || Math.random().toString()));
+    super.raise(new SayGrr(this.getAggregateRootId() || Math.random().toString()));
 
     return "Grr!";
   }
 
   public applySayWolf(event: SayWolf) {
-    this.id = event.uuid;
     this.wolfCount++;
   }
 
@@ -40,15 +32,9 @@ export class Dog extends EventSourced {
 }
 
 class VoiceRecorder extends EventSourced {
-  private id: string = '41';
   public recorded: string[] = [];
   constructor() {
-    super();
-  }
-
-  public getAggregateRootId(): string {
-
-    return this.id;
+    super("41");
   }
 
   public applySayWolf(event: SayWolf) {
@@ -71,7 +57,7 @@ export class SayGrr extends DomainEvent {
 describe("AggregateRoot", () => {
 
   it("Aggregate Roots must store events and call apply<DomainEventName> method if exist", () => {
-    const dog = new Dog();
+    const dog = new Dog("31");
     let stream = dog.getUncommitedEvents();
 
     expect(stream.events.length).toBe(0);
@@ -87,7 +73,7 @@ describe("AggregateRoot", () => {
 
   it("Aggregate Roots must be able to reconstruct from stringified events", () => {
 
-    const dog = new Dog();
+    const dog = new Dog("31");
     const domainMessage: string = JSON.stringify(DomainMessage.create(dog.getAggregateRootId(), 1, new SayWolf('asd')));
     const stream = new DomainEventStream([JSON.parse(domainMessage) as DomainMessage]);
     const pluto = dog.fromHistory(stream) as Dog;
@@ -99,7 +85,7 @@ describe("AggregateRoot", () => {
   });
 
   it("Aggregate Roots must be able to reconstruct from events history", () => {
-    const dog = new Dog();
+    const dog = new Dog("31");
     const stream = new DomainEventStream([DomainMessage.create(dog.getAggregateRootId(), 1, new SayWolf('asd'))]);
 
     const pluto = dog.fromHistory(stream) as Dog;
@@ -110,7 +96,7 @@ describe("AggregateRoot", () => {
   });
 
   it("Aggregate Roots can have tree dependencies", () => {
-    const dog = new Dog();
+    const dog = new Dog("31");
 
     const stream = new DomainEventStream([DomainMessage.create(dog.getAggregateRootId(), 1, new SayWolf('asd'))]);
 

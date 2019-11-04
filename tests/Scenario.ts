@@ -4,6 +4,7 @@ import CommandBus from '../src/Application/Bus/Command/CommandBus';
 import DomainEvent from '../src/Domain/Event/DomainEvent';
 import DomainMessage from '../src/Domain/Event/DomainMessage';
 import DomainEventStream from '../src/Domain/Event/DomainEventStream';
+import { AggregateRootId } from '../src/Domain/AggregateRoot';
 
 export default class Scenario <T extends EventSourced> {
 
@@ -11,7 +12,7 @@ export default class Scenario <T extends EventSourced> {
     private aggregateInstance: T
 
     constructor(
-        private readonly aggregateFactory: new () => T,
+        private readonly aggregateFactory: new (aggregateRootId: AggregateRootId) => T,
         private readonly eventStore: EventStore<T>,
     ) {}
 
@@ -40,7 +41,7 @@ export default class Scenario <T extends EventSourced> {
 
         this.eventStore.append(this.aggregateId, stream);
 
-        this.aggregateInstance = (new this.aggregateFactory()).fromHistory(stream);
+        this.aggregateInstance = (new this.aggregateFactory(this.aggregateId)).fromHistory(stream);
 
         return this;
     }
