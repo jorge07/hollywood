@@ -1,5 +1,5 @@
 export default class InMemoryReadModelRepository {
-    private collection: any[] = [];
+    private collection: { [key: string]: any } = {};
 
     public save(id: string, data: any) {
         this.collection[id] = data;

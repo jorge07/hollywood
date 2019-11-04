@@ -10,6 +10,7 @@
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
+    "@types/express": "^4.17.2",
     "@types/jest": "^22.x",
     "@types/node": "^9.x",
     "coveralls": "^3.x",
@@ -41,9 +42,9 @@
   "scripts": {
     "test": "jest",
     "test:server": "node ./out/examples/Server.js",
-    "dev": "tsc -p tsconfig.json -w",
-    "build": "tsc -p tsconfig.json",
-    "lint": "tslint --project tsconfig.json -c tslint.json 'src/**/*.ts'",
-    "lint:fix": "tslint -c tslint.json 'src/**/*.ts' --fix"
+    "dev": "./node_modules/typescript/bin/tsc -p tsconfig.json -w",
+    "build": "./node_modules/typescript/bin/tsc -p tsconfig.json",
+    "lint": "./node_modules/tslint/bin/tslint --project tsconfig.json -c tslint.json 'src/**/*.ts'",
+    "lint:fix": "yarn lint --fix"
   }
 }

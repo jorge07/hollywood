@@ -11,7 +11,7 @@ export default class EventStore<T extends EventSourced> {
     private readonly dbal: IEventStoreDBAL;
     private readonly eventBus: EventBus;
     private readonly snapshotStore?: SnapshotStore;
-    private readonly modelConstructor;
+    private readonly modelConstructor: new () => T;
     private readonly snapshotMargin: number;
 
     constructor(
@@ -108,7 +108,7 @@ export default class EventStore<T extends EventSourced> {
 
     private aggregateFactory(): T {
 
-        return new (this.modelConstructor)() as T;
+        return new this.modelConstructor();
     }
 
     private emptyStream(stream: DomainEventStream): void {

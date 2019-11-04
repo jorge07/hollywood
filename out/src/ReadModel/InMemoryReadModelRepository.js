@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class InMemoryReadModelRepository {
     constructor() {
-        this.collection = [];
+        this.collection = {};
     }
     save(id, data) {
         this.collection[id] = data;
