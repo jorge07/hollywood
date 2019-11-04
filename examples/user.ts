@@ -14,12 +14,16 @@ export class UserSayHello extends Domain.DomainEvent {
 }
 
 export class User extends Domain.EventSourced {
-    protected uuid?: string;
+    uuid: string;
 
-    protected email?: string;
+    email: string;
+
+    constructor() {
+        super()
+    }
 
     getAggregateRootId(): string {
-        return this.uuid || "invalid"
+        return this.uuid
     }
 
     static create(uuid: string, email: string): User {
@@ -32,10 +36,7 @@ export class User extends Domain.EventSourced {
     }
 
     sayHello(): string {
-        this.raise(new UserSayHello(
-            this.getAggregateRootId(), 
-            this.email || "test"
-        ));
+        super.raise(new UserSayHello(this.uuid, this.email));
         
         return 'Hello!'
     }
