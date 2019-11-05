@@ -1,11 +1,18 @@
 import { IAppError } from "../CallbackArg";
+import IMiddleware from "../Middelware";
 import ICommand from "./Command";
 import CommandHandlerResolver from "./CommandHandlerResolver";
+import MessaBus from '../MessageBus';
 
-export default class CommandBus {
-    constructor(private readonly resolver: CommandHandlerResolver) {}
+export default class CommandBus extends MessaBus {
+
+    constructor(
+        ...middlewares: IMiddleware[]
+    ) {
+        super(...middlewares)
+    }
 
     public async handle(command: ICommand): Promise<void|IAppError> {
-        await this.resolver.resolve(command);
+        await this.middlewareChain(command);
     }
 }

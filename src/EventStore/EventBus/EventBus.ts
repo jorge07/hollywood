@@ -25,8 +25,8 @@ export default class EventBus {
         });
     }
 
-    public attach(event: DomainEvent, subscriber: EventSubscriber): EventBus {
-        const eventName = event.constructor.name;
+    public attach(event: new () => DomainEvent, subscriber: EventSubscriber): EventBus {
+        const eventName = event.name;
         const collection = this.subscribersRegistry[eventName] || [];
 
         collection.push(subscriber);
