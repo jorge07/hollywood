@@ -1,6 +1,6 @@
 {
   "name": "hollywood-js",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "description": "Event Sourcing DDD CQRS tool kit",
   "author": "jorge.arcoma@gmail.com",
   "url": "https://github.com/jorge07/hollywood",

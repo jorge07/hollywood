@@ -11,13 +11,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const Application_1 = require("../Application/");
 class App {
-    constructor(commands, queries) {
+    constructor(commands, queries, commandBusMiddewares = [], queryBusMiddewares = []) {
         this.commandResolver = new Application_1.CommandHandlerResolver();
         this.queryResolver = new Application_1.QueryHandlerResolver();
-        commands.forEach((handler, key) => this.registerCommand(key, handler));
-        queries.forEach((handler, key) => this.registerQuery(key, handler));
-        this.commandBus = new Application_1.CommandBus(this.commandResolver);
-        this.queryBus = new Application_1.QueryBus(this.queryResolver);
+        this.bindResolvers(commands, queries);
+        this.commandBus = new Application_1.CommandBus(...commandBusMiddewares, this.commandResolver);
+        this.queryBus = new Application_1.QueryBus(...queryBusMiddewares, this.queryResolver);
     }
     ask(query) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -28,6 +27,10 @@ class App {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.commandBus.handle(command);
         });
+    }
+    bindResolvers(commands, queries) {
+        commands.forEach((handler, key) => this.registerCommand(key, handler));
+        queries.forEach((handler, key) => this.registerQuery(key, handler));
     }
     registerCommand(command, handler) {
         this.commandResolver.addHandler(command, handler);

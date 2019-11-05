@@ -134,8 +134,8 @@
         "signature": "f95bf0322e9610944ed81e2848e69a4e566668a30685d0fcc4b4cebde9691405"
       },
       "../src/application/app.ts": {
-        "version": "10061026f8596192d0e25784c6cf539065b055a71a88520a07446a2bd35413eb",
-        "signature": "920f4f9821d9faed2368a2c291b2c4604e08b31ec70ae4e302ddc41bd85879ef"
+        "version": "aaf239466122b945ff7585b2239b104612baeee2cc8eb41c758fdf3534a43390",
+        "signature": "eb53dd0a29ad547eefd4b49896e7267ac87d1ed2e85ceb022db8e4e586941bd5"
       },
       "../src/domain/event/domainevent.ts": {
         "version": "8e7ffb964cc89e9d8d1e72011be0f37c42c7ed8c6df6d57133dd4b08510677cc",
@@ -485,6 +485,7 @@
       ],
       "../src/application/app.ts": [
         "../src/application/index.ts",
+        "../src/application/bus/middelware.ts",
         "../node_modules/@types/node/base.d.ts",
         "../node_modules/@types/node/ts3.2/index.d.ts"
       ],
@@ -834,7 +835,8 @@
         "../src/application/bus/query/queryresolver.ts"
       ],
       "../src/application/app.ts": [
-        "../src/application/index.ts"
+        "../src/application/index.ts",
+        "../src/application/bus/middelware.ts"
       ],
       "../src/domain/event/domainmessage.ts": [
         "../src/domain/event/domainevent.ts"
@@ -1012,8 +1014,6 @@
       "../src/application/bus/command/commandbus.ts",
       "../src/application/bus/query/queryresolver.ts",
       "../src/application/bus/query/querybus.ts",
-      "../src/application/index.ts",
-      "../src/application/app.ts",
       "../src/domain/event/domainevent.ts",
       "../src/domain/event/domainmessage.ts",
       "../src/domain/event/streamname.ts",
@@ -1036,8 +1036,8 @@
       "../src/eventstore/inmemoryeventstore.ts",
       "../src/readmodel/inmemoryreadmodelrepository.ts",
       "../src/readmodel/projector.ts",
+      "../examples/user.ts",
       "../node_modules/reflect-metadata/index.d.ts",
-      "../index.ts",
       "../node_modules/@types/node/inspector.d.ts",
       "../node_modules/@types/node/base.d.ts",
       "../node_modules/@types/node/ts3.2/index.d.ts",
@@ -1048,8 +1048,10 @@
       "../node_modules/@types/connect/index.d.ts",
       "../node_modules/@types/body-parser/index.d.ts",
       "../node_modules/@types/express/index.d.ts",
-      "../examples/user.ts",
+      "../src/application/app.ts",
       "../examples/commandandqueryhandlers.ts",
+      "../src/application/index.ts",
+      "../index.ts",
       "../examples/server.ts"
     ]
   },
