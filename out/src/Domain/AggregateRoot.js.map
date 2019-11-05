@@ -1,1 +1,1 @@
-{"version":3,"file":"AggregateRoot.js","sourceRoot":"","sources":["../../../src/Domain/AggregateRoot.ts"],"names":[],"mappings":";;AAIA,MAA8B,aAAa;IAGvC,YAAY,eAAgC;QACxC,IAAI,CAAC,eAAe,GAAG,eAAe,CAAC;IAC3C,CAAC;IAEM,kBAAkB;QACrB,OAAO,IAAI,CAAC,eAAe,CAAC;IAChC,CAAC;CACJ;AAVD,gCAUC"}
+{"version":3,"file":"AggregateRoot.js","sourceRoot":"","sources":["../../../src/Domain/AggregateRoot.ts"],"names":[],"mappings":";;AAIA,MAA8B,aAAa;IACvC,YAA6B,eAAgC;QAAhC,oBAAe,GAAf,eAAe,CAAiB;IAAG,CAAC;IAE1D,kBAAkB;QACrB,OAAO,IAAI,CAAC,eAAe,CAAC;IAChC,CAAC;CACJ;AAND,gCAMC"}
