@@ -13,6 +13,15 @@ class CommandHandlerResolver {
     constructor() {
         this.handlers = {};
     }
+    execute(command, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.resolve(command);
+        });
+    }
+    addHandler(command, handler) {
+        this.handlers[command.name] = handler;
+        return this;
+    }
     resolve(command) {
         return __awaiter(this, void 0, void 0, function* () {
             const handler = this.getHandlerForCommand(command);
@@ -20,10 +29,6 @@ class CommandHandlerResolver {
                 return yield handler.handle(command);
             }
         });
-    }
-    addHandler(command, handler) {
-        this.handlers[command.name] = handler;
-        return this;
     }
     getHandlerForCommand(command) {
         const commandName = command.constructor.name;

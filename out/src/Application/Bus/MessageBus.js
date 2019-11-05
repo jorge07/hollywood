@@ -8,20 +8,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const MessageBus_1 = __importDefault(require("../MessageBus"));
-class QueryBus extends MessageBus_1.default {
+class MessaBus {
     constructor(...middlewares) {
-        super(...middlewares);
+        this.middlewareChain = this.createChain(middlewares);
     }
-    ask(command) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.middlewareChain(command);
+    createChain(middelwares) {
+        const chain = {};
+        this.reverse(middelwares).forEach((middleware, key) => {
+            chain[key] = (command) => __awaiter(this, void 0, void 0, function* () {
+                return yield middleware.execute(command, chain[key - 1]);
+            });
         });
+        return chain[middelwares.length - 1];
+    }
+    reverse(middelwares) {
+        return middelwares.reverse();
     }
 }
-exports.default = QueryBus;
-//# sourceMappingURL=QueryBus.js.map
+exports.default = MessaBus;
+//# sourceMappingURL=MessageBus.js.map

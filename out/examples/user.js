@@ -1,6 +1,13 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const Domain = require("../src/Domain");
+const Domain = __importStar(require("../src/Domain"));
 class UserWasCreated extends Domain.DomainEvent {
     constructor(uuid, email) {
         super();
@@ -19,10 +26,8 @@ class UserSayHello extends Domain.DomainEvent {
 exports.UserSayHello = UserSayHello;
 class User extends Domain.EventSourced {
     constructor() {
-        super();
-    }
-    getAggregateRootId() {
-        return this.uuid;
+        super("31");
+        this.email = "";
     }
     static create(uuid, email) {
         const instance = new User();
@@ -30,11 +35,10 @@ class User extends Domain.EventSourced {
         return instance;
     }
     sayHello() {
-        super.raise(new UserSayHello(this.uuid, this.email));
+        super.raise(new UserSayHello(this.getAggregateRootId(), this.email));
         return 'Hello!';
     }
     applyUserWasCreated(event) {
-        this.uuid = event.uuid;
         this.email = event.email;
     }
 }

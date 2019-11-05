@@ -13,6 +13,15 @@ class QueryHandlerResolver {
     constructor() {
         this.handlers = {};
     }
+    execute(command, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.resolve(command);
+        });
+    }
+    addHandler(command, handler) {
+        this.handlers[command.name] = handler;
+        return this;
+    }
     resolve(command) {
         return __awaiter(this, void 0, void 0, function* () {
             const handler = this.getHandlerFor(command);
@@ -21,10 +30,6 @@ class QueryHandlerResolver {
             }
             return null;
         });
-    }
-    addHandler(command, handler) {
-        this.handlers[command.name] = handler;
-        return this;
     }
     getHandlerFor(command) {
         const commandName = command.constructor.name;
