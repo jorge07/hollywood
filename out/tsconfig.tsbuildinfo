@@ -142,8 +142,8 @@
         "signature": "6cf969309b588f494a44ba66da6d2f83e9619116db6c57c83f25a37d139c8c20"
       },
       "../src/domain/event/domainmessage.ts": {
-        "version": "5b0c4317ef6e810065492b80c0c659473ddf5fe1a35066c2f2e841ca3a593bb0",
-        "signature": "0f5e8c8a805f4e276555c9d02be09e2ff3bb3601a2a905ecc46910a41dfe7f28"
+        "version": "64a73d8670560f8f5c9e811c1aea61b02a874378683d81408ab5c20778cb6670",
+        "signature": "26fd88cc88320aaa4776c6b346f7e29519724ba5a05486ac64a6c33d831508a3"
       },
       "../src/domain/event/streamname.ts": {
         "version": "faa00e9dac776d2b5481d36692b36f42255fd99e9d3f011baac6eefd4aea215c",
@@ -218,12 +218,16 @@
         "signature": "9f8da0a2ece806574a4d72835fb1c0922df56e57faa87eef3e3c8ff341d3a247"
       },
       "../src/readmodel/inmemoryreadmodelrepository.ts": {
-        "version": "2cc5e03e0b01a1b9e3fe7b3838f04ee1e0e6c779a997341ae10de798f3a40182",
-        "signature": "0f2d2a7c15b287cde351c7ee323e42aeab1b1305f59279f6cb1b65b667c98e16"
+        "version": "5ede85c0bf085373ba272d74110ad9344847eafa075be527520629f158a63bbf",
+        "signature": "d972e324411fd0351c07cdc449965492a464c8d7b548c5427cb1bc03e4398a32"
       },
       "../src/readmodel/projector.ts": {
         "version": "7b7a3026b39f488d5502b60ce73efe4614ed6b31a6d52d52ee109a7732c80f7b",
         "signature": "eeca57323d7d3d6e48ffb7f752a4ed8946ade7e2c582048a1f3276652148e343"
+      },
+      "../src/readmodel/index.ts": {
+        "version": "018e3d653b4e61e44d2a84f7025622d2ba2df8a5b84f1d8ebb49ea914cb171ec",
+        "signature": "07debbee3d6408d8ee7bbf0b03b2e7ccb2b0ba95800b3fe48106aef4d12ce162"
       },
       "../examples/user.ts": {
         "version": "09031bf2703a4f5ed733145f2567aac645e4459bfd23e6f19f0240a8ddb23c2b",
@@ -234,8 +238,8 @@
         "signature": "8d6d51a5118d000ed3bfe6e1dd1335bebfff3fef23cd2af2f84a24d30f90cc90"
       },
       "../index.ts": {
-        "version": "f40dfaa66c6745c2a88d6a1d12a6cc72fa6ff0832fd06d9c1488a5d8aeb677f8",
-        "signature": "9ca23b1591fa80abe0fefaa46bcb996b0b71415e7e9155670ffe033208579044"
+        "version": "f362b58a0722328adde56e88949938b583edf9b5448caddca2eb356a20f9c8ca",
+        "signature": "d55013264600a016d9e769d7599d5e7d2eaaacc04a17714785074858afb1750b"
       },
       "../examples/commandandqueryhandlers.ts": {
         "version": "f4c426e3168b8b4bc81b3564b8788d072ecc50730e7cc1a3a74c9048aba2abb3",
@@ -258,8 +262,8 @@
         "signature": "4e88b833be14c7f384e0dcd57bb30acd799e8e34d212635d693e41a75a71164b"
       },
       "../node_modules/@types/express-serve-static-core/index.d.ts": {
-        "version": "79f5491e53054886824c5cfee16f4d9682d78e2ec6d13ef4eae6ec2f82fe0cec",
-        "signature": "79f5491e53054886824c5cfee16f4d9682d78e2ec6d13ef4eae6ec2f82fe0cec"
+        "version": "88300a14933efa862bf68f8444082c7ce0cfb23f67b3eeaf1575933a1ce84b3d",
+        "signature": "88300a14933efa862bf68f8444082c7ce0cfb23f67b3eeaf1575933a1ce84b3d"
       },
       "../node_modules/@types/mime/index.d.ts": {
         "version": "be27a64e821a3e5af838650e4aa25805c60f057d0c37a9762c378d19d364b3e6",
@@ -494,6 +498,7 @@
         "../node_modules/@types/node/ts3.2/index.d.ts"
       ],
       "../src/domain/event/domainmessage.ts": [
+        "../src/domain/aggregateroot.ts",
         "../src/domain/event/domainevent.ts",
         "../node_modules/@types/node/base.d.ts",
         "../node_modules/@types/node/ts3.2/index.d.ts"
@@ -626,6 +631,12 @@
         "../node_modules/@types/node/base.d.ts",
         "../node_modules/@types/node/ts3.2/index.d.ts"
       ],
+      "../src/readmodel/index.ts": [
+        "../src/readmodel/inmemoryreadmodelrepository.ts",
+        "../src/readmodel/projector.ts",
+        "../node_modules/@types/node/base.d.ts",
+        "../node_modules/@types/node/ts3.2/index.d.ts"
+      ],
       "../examples/user.ts": [
         "../src/domain/index.ts",
         "../node_modules/@types/node/base.d.ts",
@@ -640,6 +651,7 @@
         "../src/domain/index.ts",
         "../src/application/index.ts",
         "../src/eventstore/index.ts",
+        "../src/readmodel/index.ts",
         "../node_modules/@types/node/base.d.ts",
         "../node_modules/@types/node/ts3.2/index.d.ts"
       ],
@@ -839,6 +851,7 @@
         "../src/application/bus/middelware.ts"
       ],
       "../src/domain/event/domainmessage.ts": [
+        "../src/domain/aggregateroot.ts",
         "../src/domain/event/domainevent.ts"
       ],
       "../src/domain/event/domaineventstream.ts": [
@@ -915,6 +928,10 @@
       "../src/readmodel/projector.ts": [
         "../src/eventstore/eventbus/eventsubscriber.ts"
       ],
+      "../src/readmodel/index.ts": [
+        "../src/readmodel/inmemoryreadmodelrepository.ts",
+        "../src/readmodel/projector.ts"
+      ],
       "../examples/user.ts": [
         "../src/domain/index.ts"
       ],
@@ -926,7 +943,8 @@
         "../node_modules/reflect-metadata/index.d.ts",
         "../src/domain/index.ts",
         "../src/application/index.ts",
-        "../src/eventstore/index.ts"
+        "../src/eventstore/index.ts",
+        "../src/readmodel/index.ts"
       ],
       "../examples/commandandqueryhandlers.ts": [
         "../examples/user.ts",
@@ -1014,6 +1032,8 @@
       "../src/application/bus/command/commandbus.ts",
       "../src/application/bus/query/queryresolver.ts",
       "../src/application/bus/query/querybus.ts",
+      "../src/application/index.ts",
+      "../src/application/app.ts",
       "../src/domain/event/domainevent.ts",
       "../src/domain/event/domainmessage.ts",
       "../src/domain/event/streamname.ts",
@@ -1048,10 +1068,9 @@
       "../node_modules/@types/connect/index.d.ts",
       "../node_modules/@types/body-parser/index.d.ts",
       "../node_modules/@types/express/index.d.ts",
-      "../src/application/app.ts",
-      "../examples/commandandqueryhandlers.ts",
-      "../src/application/index.ts",
+      "../src/readmodel/index.ts",
       "../index.ts",
+      "../examples/commandandqueryhandlers.ts",
       "../examples/server.ts"
     ]
   },

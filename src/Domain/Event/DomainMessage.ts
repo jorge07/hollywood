@@ -1,3 +1,4 @@
+import { AggregateRootId } from "../AggregateRoot";
 import DomainEvent from "./DomainEvent";
 
 /**
@@ -5,7 +6,7 @@ import DomainEvent from "./DomainEvent";
  */
 export default class DomainMessage {
     public static create(
-        uuid: string,
+        uuid: AggregateRootId,
         playhead: number,
         event: DomainEvent,
         metadata: any[] = [],
@@ -22,7 +23,7 @@ export default class DomainMessage {
     public readonly eventType: string;
 
     private constructor(
-        public readonly uuid: string,
+        public readonly uuid: AggregateRootId,
         public readonly playhead: number,
         public readonly event: DomainEvent,
         public readonly metadata: any[],

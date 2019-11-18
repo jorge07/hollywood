@@ -14,4 +14,8 @@ export default class InMemoryReadModelRepository {
 
         return data;
     }
+
+    public find(criteria: (results: any) => any): any {
+        return criteria(this.collection);
+    }
 }

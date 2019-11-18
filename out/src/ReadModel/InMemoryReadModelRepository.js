@@ -14,6 +14,9 @@ class InMemoryReadModelRepository {
         }
         return data;
     }
+    find(criteria) {
+        return criteria(this.collection);
+    }
 }
 exports.default = InMemoryReadModelRepository;
 //# sourceMappingURL=InMemoryReadModelRepository.js.map

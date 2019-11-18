@@ -14,4 +14,6 @@ const Application = __importStar(require("./src/Application/index"));
 exports.Application = Application;
 const EventStore = __importStar(require("./src/EventStore"));
 exports.EventStore = EventStore;
+const ReadModel = __importStar(require("./src/ReadModel"));
+exports.ReadModel = ReadModel;
 //# sourceMappingURL=index.js.map

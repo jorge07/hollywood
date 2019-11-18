@@ -1,8 +1,7 @@
 import EventBus from '../../src/EventStore/EventBus/EventBus';
-import Projector from '../../src/ReadModel/Projector';
-import InMemoryReadModelRepository from '../../src/ReadModel/InMemoryReadModelRepository';
 import DomainMessage from '../../src/Domain/Event/DomainMessage';
 import { SayWolf } from '../Domain/AggregateRoot.test';
+import { InMemoryReadModelRepository, Projector } from '../../src/ReadModel';
 
 class DogReadModelProjector extends Projector {
     constructor(private readonly repository: InMemoryReadModelRepository){
