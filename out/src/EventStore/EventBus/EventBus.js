@@ -16,7 +16,7 @@ class EventBus {
     }
     publish(message) {
         return __awaiter(this, void 0, void 0, function* () {
-            const subscribers = this.subscribersFor(message.event);
+            const subscribers = this.subscribersFor(message.eventType);
             for (const key in subscribers) {
                 if (subscribers.hasOwnProperty(key)) {
                     yield subscribers[key].on(message);
@@ -43,8 +43,8 @@ class EventBus {
         }
         return this;
     }
-    subscribersFor(event) {
-        return this.subscribersRegistry[event.constructor.name] || [];
+    subscribersFor(eventType) {
+        return this.subscribersRegistry[eventType] || [];
     }
 }
 exports.default = EventBus;
