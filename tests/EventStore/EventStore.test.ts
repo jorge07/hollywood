@@ -19,9 +19,23 @@ class GlobalListener extends EventListener {
     public lastEvent: any;
     public events: DomainMessage[] = [];
 
-    public on(event: DomainMessage): void {
-        this.lastEvent = event.event;
-        this.events.push(event);
+    constructor(
+        private readonly doAsynnc: boolean = false
+    ) {
+        super();
+    }
+
+    public on(event: DomainMessage): Promise<any>|any {
+        if (!this.doAsynnc) {
+            this.lastEvent = event.event;
+            this.events.push(event);
+            return;
+        }
+        
+        setTimeout(() => {
+            this.lastEvent = event.event;
+            this.events.push(event);
+        }, 100);
     }
 }
 
@@ -61,7 +75,7 @@ describe("EventStore", () => {
 
         expect(pluto.version()).toBe(1);
 
-        store.save(pluto);
+        await store.save(pluto);
 
         const dog: Dog = await store.load(pluto.getAggregateRootId());
         expect(dog.wolfCount).toBe(1);
@@ -70,6 +84,41 @@ describe("EventStore", () => {
         expect(onWolfEventSubscriber.wolf).toBeInstanceOf(SayWolf);
         expect(onWolfEventSubscriber.grr).toBeInstanceOf(SayGrr);
         expect(globalListener.lastEvent).toBeInstanceOf(SayGrr);
+    });
+
+    it("Async Event Listeners should not stop the execution but get executed", async (done) => {
+        const onWolfEventSubscriber = new OnWolfEventSubscriber();
+        const globalListener = new GlobalListener(true);
+        const eventBus = new EventBus();
+        const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus);
+        const pluto = new Dog("31");
+
+        eventBus
+            .attach(SayWolf, onWolfEventSubscriber)
+            .attach(SayGrr, onWolfEventSubscriber)
+            .addListener(globalListener)
+        ;
+
+        pluto.sayWolf();
+        pluto.sayGrr();
+
+        expect(pluto.version()).toBe(1);
+
+        await store.save(pluto);
+
+        const dog: Dog = await store.load(pluto.getAggregateRootId());
+        expect(dog.wolfCount).toBe(1);
+        expect(dog.version()).toBe(1);
+
+        expect(onWolfEventSubscriber.wolf).toBeInstanceOf(SayWolf);
+        expect(onWolfEventSubscriber.grr).toBeInstanceOf(SayGrr);
+        expect(globalListener.lastEvent).toBe(undefined);
+        expect(globalListener.events.length).toBe(0);
+        setTimeout(() => {
+            expect(globalListener.lastEvent).toBeInstanceOf(SayGrr);
+            expect(globalListener.events.length).toBe(2);
+            done()
+        }, 150);
     });
 
     it("EventStore be able to replay events", async () => {
@@ -90,9 +139,10 @@ describe("EventStore", () => {
 
         expect(pluto.version()).toBe(1);
 
-        store.save(pluto);
+        await store.save(pluto);
 
         const dog: Dog = await store.load(pluto.getAggregateRootId());
+
         expect(dog.wolfCount).toBe(1);
         expect(dog.version()).toBe(1);
 
@@ -105,10 +155,9 @@ describe("EventStore", () => {
         await store.replayFrom(pluto.getAggregateRootId(), 0);
 
         expect(globalListener.events.length).toBe(4);
-
     });
 
-    it("EventStore should throw exception when not aggregate found", async () => {
+    it("EventStore should throw exception when not aggregate was found", async () => {
         const eventBus = new EventBus();
         const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus);
         const pluto = new Dog("31");

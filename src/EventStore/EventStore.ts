@@ -57,7 +57,9 @@ export default class EventStore<T extends EventSourced> {
 
         this.takeSnapshot(entity);
 
-        stream.events.forEach((message: DomainMessage) => this.eventBus.publish(message));
+        for (const message of stream.events) {
+            await this.eventBus.publish(message);
+        }
     }
 
     public async append(aggregateId: AggregateRootId, stream: DomainEventStream): Promise<void> {
@@ -69,7 +71,9 @@ export default class EventStore<T extends EventSourced> {
 
         const replayStream: DomainEventStream = await this.dbal.loadFromTo(uuid, from, to);
 
-        replayStream.events.forEach((event: DomainMessage) => this.eventBus.publish(event));
+        for (const message of replayStream.events) {
+            await this.eventBus.publish(message);
+        }
     }
 
     private async takeSnapshot(entity: T): Promise<void> {

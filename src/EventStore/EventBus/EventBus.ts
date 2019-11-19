@@ -18,11 +18,20 @@ export default class EventBus {
     private readonly subscribersRegistry: ISubscriberRegistry = {};
     private readonly listenersRegistry: IListenersRegistry = {};
 
-    public publish(message: DomainMessage): void {
-        this.subscribersFor(message.event).forEach((subscriber: EventSubscriber) => subscriber.on(message));
-        Object.keys(this.listenersRegistry).forEach((key) => {
-           this.listenersRegistry[key].on(message);
-        });
+    public async publish(message: DomainMessage): Promise<void> {
+        const subscribers = this.subscribersFor(message.event);
+        for (const key in subscribers) {
+            if (subscribers.hasOwnProperty(key)) {
+                await subscribers[key].on(message);
+            }
+        }
+
+        const listeners = Object.keys(this.listenersRegistry);
+        for (const key in listeners) {
+            if (listeners.hasOwnProperty(key)) {
+                await this.listenersRegistry[listeners[key]].on(message);
+            }
+        }
     }
 
     public attach(event: any, subscriber: EventSubscriber): EventBus {

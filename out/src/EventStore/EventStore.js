@@ -40,7 +40,9 @@ class EventStore {
             const stream = entity.getUncommitedEvents();
             yield this.append(entity.getAggregateRootId(), stream);
             this.takeSnapshot(entity);
-            stream.events.forEach((message) => this.eventBus.publish(message));
+            for (const message of stream.events) {
+                yield this.eventBus.publish(message);
+            }
         });
     }
     append(aggregateId, stream) {
@@ -51,7 +53,9 @@ class EventStore {
     replayFrom(uuid, from, to) {
         return __awaiter(this, void 0, void 0, function* () {
             const replayStream = yield this.dbal.loadFromTo(uuid, from, to);
-            replayStream.events.forEach((event) => this.eventBus.publish(event));
+            for (const message of replayStream.events) {
+                yield this.eventBus.publish(message);
+            }
         });
     }
     takeSnapshot(entity) {
