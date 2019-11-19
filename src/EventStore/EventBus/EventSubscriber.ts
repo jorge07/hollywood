@@ -2,11 +2,11 @@ import DomainMessage from "../../Domain/Event/DomainMessage";
 
 export default abstract class EventSubscriber {
 
-    public on(message: DomainMessage): void {
+    public async on(message: DomainMessage): Promise<void> {
         const method: string = "on" + message.eventType;
 
         if ((this as any)[method]) {
-            (this as any)[method](message.event);
+            await (this as any)[method](message.event);
         }
     }
 }

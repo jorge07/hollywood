@@ -162,16 +162,16 @@
         "signature": "e49ad0cbad32a5d9ab705a84ec5f613fdecd6371d7d50c45b1a3ad5731e0efe9"
       },
       "../src/eventstore/eventbus/eventlistener.ts": {
-        "version": "54bf9b37d127044f1f97c804e1194a18852b7c48fa0e2142c3259355d2a79691",
-        "signature": "98a3346bdfff0a037a633e7241288c12fea110ca3ad9cf77615230d2c9a79135"
+        "version": "c75618a4becbd504e7e5fbf91a0274840f1b5f178419bb884fdf39ccbeb9418f",
+        "signature": "9a8b86519de8dd697540f638057f9c9e187a152e238c206529108c04bec6669b"
       },
       "../src/eventstore/eventbus/eventsubscriber.ts": {
-        "version": "e77f5ba016d80c6bbde362f4f1aa4d31fde331bacb50ced48f10bd25dd322c63",
-        "signature": "f94c420bd14ec9fd85271b56e6d1cbfc74e20a78f4a13686d97bb577c9b3b6c7"
+        "version": "1ac72b23b2b8452b8bfc757078c1574f80d7a47c4b396583dc651b951c08942b",
+        "signature": "158869dd00a78c7a2c354e86c6d020783a250b1a0f0a24dc1bf76aa1072628dc"
       },
       "../src/eventstore/eventbus/eventbus.ts": {
-        "version": "fd70ea3f5080d1251726a8989f0431dfa8e8a67ef2ddafad39f28e818bfa3558",
-        "signature": "20489d48e03308d09fabebecceafcac542522717b25c0a2c370fd4f33787d2f5"
+        "version": "61ca26b67e9446fb1f6cb144e621a276758f3319f0e9aa94d1a0df538fb876c3",
+        "signature": "4a967dda520fe6e1c358fb7950e330ac6937ce791bc9abca504dd91417f93d80"
       },
       "../src/eventstore/exception/aggregaterootnotfoundexception.ts": {
         "version": "20320927507971305263968ab23709585e1ce67ae9c1190b559bf59fc0a6c822",
@@ -190,7 +190,7 @@
         "signature": "d85dcd6f7629f01388abe017636420bcc2aaf017bd7b0612371a9650fe6a966a"
       },
       "../src/eventstore/eventstore.ts": {
-        "version": "e7787f6921d8f014751ae39ef66c8bff99fe6c7d9d5a6adb6f9b2a8f9c2db75e",
+        "version": "6422221911080d09dfa63fd7a1e8fcc1d7935543d30af883687842ff24518a1e",
         "signature": "6f4268ddc7b83365c19c87cc1faf6b186a3eccc6837f666d85a59b2dde924850"
       },
       "../src/domain/repository/repository.ts": {
@@ -1038,25 +1038,11 @@
       "../src/domain/event/domainmessage.ts",
       "../src/domain/event/streamname.ts",
       "../src/domain/event/domaineventstream.ts",
-      "../src/domain/eventsourced.ts",
       "../src/domain/repository/irepository.ts",
-      "../src/eventstore/eventbus/eventlistener.ts",
-      "../src/eventstore/eventbus/eventsubscriber.ts",
-      "../src/eventstore/eventbus/eventbus.ts",
       "../src/eventstore/exception/aggregaterootnotfoundexception.ts",
-      "../src/eventstore/ieventstoredbal.ts",
       "../src/eventstore/snapshot/snapshotstoredbal.ts",
       "../src/eventstore/snapshot/snapshotstore.ts",
-      "../src/eventstore/eventstore.ts",
-      "../src/domain/repository/repository.ts",
-      "../src/domain/index.ts",
-      "../src/domain/aggregateroot.ts",
-      "../src/eventstore/snapshot/inmemorysnapshotstoredbal.ts",
-      "../src/eventstore/index.ts",
-      "../src/eventstore/inmemoryeventstore.ts",
       "../src/readmodel/inmemoryreadmodelrepository.ts",
-      "../src/readmodel/projector.ts",
-      "../examples/user.ts",
       "../node_modules/reflect-metadata/index.d.ts",
       "../node_modules/@types/node/inspector.d.ts",
       "../node_modules/@types/node/base.d.ts",
@@ -1068,7 +1054,21 @@
       "../node_modules/@types/connect/index.d.ts",
       "../node_modules/@types/body-parser/index.d.ts",
       "../node_modules/@types/express/index.d.ts",
+      "../src/eventstore/eventbus/eventsubscriber.ts",
+      "../src/readmodel/projector.ts",
+      "../src/domain/eventsourced.ts",
+      "../src/eventstore/eventbus/eventlistener.ts",
+      "../src/eventstore/eventbus/eventbus.ts",
+      "../src/eventstore/ieventstoredbal.ts",
+      "../src/eventstore/eventstore.ts",
+      "../src/domain/repository/repository.ts",
+      "../src/domain/index.ts",
+      "../src/domain/aggregateroot.ts",
+      "../src/eventstore/snapshot/inmemorysnapshotstoredbal.ts",
+      "../src/eventstore/index.ts",
+      "../src/eventstore/inmemoryeventstore.ts",
       "../src/readmodel/index.ts",
+      "../examples/user.ts",
       "../index.ts",
       "../examples/commandandqueryhandlers.ts",
       "../examples/server.ts"

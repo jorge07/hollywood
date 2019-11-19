@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 class EventBus {
     constructor() {
@@ -6,9 +15,19 @@ class EventBus {
         this.listenersRegistry = {};
     }
     publish(message) {
-        this.subscribersFor(message.event).forEach((subscriber) => subscriber.on(message));
-        Object.keys(this.listenersRegistry).forEach((key) => {
-            this.listenersRegistry[key].on(message);
+        return __awaiter(this, void 0, void 0, function* () {
+            const subscribers = this.subscribersFor(message.event);
+            for (const key in subscribers) {
+                if (subscribers.hasOwnProperty(key)) {
+                    yield subscribers[key].on(message);
+                }
+            }
+            const listeners = Object.keys(this.listenersRegistry);
+            for (const key in listeners) {
+                if (listeners.hasOwnProperty(key)) {
+                    yield this.listenersRegistry[listeners[key]].on(message);
+                }
+            }
         });
     }
     attach(event, subscriber) {
