@@ -19,7 +19,7 @@ export default class EventBus {
     private readonly listenersRegistry: IListenersRegistry = {};
 
     public async publish(message: DomainMessage): Promise<void> {
-        const subscribers = this.subscribersFor(message.event);
+        const subscribers = this.subscribersFor(message.eventType);
         for (const key in subscribers) {
             if (subscribers.hasOwnProperty(key)) {
                 await subscribers[key].on(message);
@@ -53,7 +53,7 @@ export default class EventBus {
         return this;
     }
 
-    private subscribersFor(event: DomainEvent): EventSubscriber[] {
-        return this.subscribersRegistry[event.constructor.name] || [];
+    private subscribersFor(eventType: string): EventSubscriber[] {
+        return this.subscribersRegistry[eventType] || [];
     }
 }
