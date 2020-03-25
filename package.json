@@ -7,6 +7,8 @@
   "license": "MIT",
   "main": "out/index.js",
   "dependencies": {
+    "config": "^3.2.5",
+    "inversify": "^5.0.1",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {

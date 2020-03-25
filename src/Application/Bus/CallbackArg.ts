@@ -3,8 +3,8 @@ export interface IAppResponse {
     meta: any[];
 }
 
-export interface IAppError {
+export interface IAppError extends Partial<IAppResponse> {
     message: string;
     code: number;
-    meta: any[];
+
 }
