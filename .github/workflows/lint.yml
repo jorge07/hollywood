@@ -1,4 +1,4 @@
-name: Tests
+name: Lint
 on: [push]
 jobs:
   test:
@@ -7,7 +7,6 @@ jobs:
       matrix:
         node-version: 
           - 13.12.x
-          - 12.x
     steps:
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
