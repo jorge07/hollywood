@@ -1,7 +1,7 @@
 import { AsyncContainerModule, Container } from "inversify";
 import { ServiceList } from "./Items/Service";
 import addModules from "./Services/AddModules";
-import attachListenersAndSubscribers from "./services/attachListenerAndSubscribers";
+import attachListenersAndSubscribers from "./services/AttachListenerAndSubscribers";
 
 export default async function serviceBinder(container: Container, services: ServiceList): Promise<void> {
     const modules: any[] = [];
