@@ -37,8 +37,8 @@ export default class Kernel {
     private readonly app: AppBridge;
 
     private constructor(
-        private readonly debug: boolean = false,
-        private readonly env: string = "dev",
+        public readonly debug: boolean = false,
+        public readonly env: string = "dev",
         private readonly container: Container,
     ) {
         this.app = this.container.get<AppBridge>("app");
