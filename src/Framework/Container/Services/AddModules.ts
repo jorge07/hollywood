@@ -20,10 +20,10 @@ function module(serviceDefinition: IService, key: string): AsyncContainerModule 
 
         switch(true) {
             case Boolean(serviceDefinition.collection):
-                processCollection(serviceDefinition.collection as Array<any>, key, bind)
+                processCollection(serviceDefinition.collection as any[], key, bind)
                 break;
             case Boolean(serviceDefinition.async):
-                await processAsync(serviceDefinition.async as Function, key, bind)
+                await processAsync(serviceDefinition.async as () => any, key, bind)
                 break;
             case Boolean(serviceDefinition.custom):
                 processCustom(serviceDefinition.custom as (context: interfaces.Context) => any, key, bind)
@@ -35,16 +35,16 @@ function module(serviceDefinition: IService, key: string): AsyncContainerModule 
 }
 
 function decorateService(serviceDefinition: IService): void {
-    if (serviceDefinition.instance 
+    if (serviceDefinition.instance
         && !isArray(serviceDefinition.instance) // Can't decorate array wrap for collections
-        && serviceDefinition.instance.name != "" // Not decorate anon
+        && serviceDefinition.instance.name !== "" // Not decorate anon
         && !Reflect.hasOwnMetadata(METADATA_KEY.PARAM_TYPES, serviceDefinition.instance) // Don't redecorate
     ) {
         decorate(injectable(), serviceDefinition.instance);
     }
 }
 
-function processCollection(collection: Array<any>, key: string, bind: interfaces.Bind): void {
+function processCollection(collection: any[], key: string, bind: interfaces.Bind): void {
     if (collection.length === 0) {
         // Empty aray as marker of no content
         bind(key).toDynamicValue(() => []).inSingletonScope();
@@ -56,8 +56,8 @@ function processCollection(collection: Array<any>, key: string, bind: interfaces
     });
 }
 
-async function processAsync(asyncFunc: Function, key: string, bind: interfaces.Bind): Promise<void> {
-    const service = await asyncFunc();            
+async function processAsync(asyncFunc: () => any, key: string, bind: interfaces.Bind): Promise<void> {
+    const service = await asyncFunc();
     bind(key).toConstantValue(service);
 }
 

@@ -6,15 +6,15 @@ import { ServiceList } from '../../src/Framework/Container/Items/Service';
 
 class Child {
 
-    do() {
+    do(): number {
         return 1
     }
 }
 
 class Parent {
     constructor(
-        @inject('child') public readonly child,
-        @inject('demo') public readonly demo,
+        @inject('child') public readonly child: Child,
+        @inject('demo') public readonly demo: number,
     ) {}
     
 }

@@ -10,7 +10,7 @@ describe("Repository", () => {
     it("Repository should store and retieve AggregateRoots", async () => {
         const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), new EventBus());
         const repo = new DogRepository(store);
-        const pluto = new Dog();
+        const pluto = new Dog("demoId");
 
         pluto.sayWolf();
 

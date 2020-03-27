@@ -9,7 +9,7 @@ import { AggregateRootId } from '../src/Domain/AggregateRoot';
 export default class Scenario <T extends EventSourced> {
 
     private aggregateId = '1';
-    private aggregateInstance: T
+    private aggregateInstance?: T;
 
     constructor(
         private readonly aggregateFactory: new (aggregateRootId: AggregateRootId) => T,
@@ -29,7 +29,7 @@ export default class Scenario <T extends EventSourced> {
             return this;
         }
 
-        const messages = [];
+        const messages: DomainMessage[] = [];
 
         events.forEach(
             (event: DomainEvent, index: number) => {
@@ -71,6 +71,9 @@ export default class Scenario <T extends EventSourced> {
     }
 
     private events(): DomainEvent[] {
+        if (! this.aggregateInstance) {
+            return [];
+        }
 
         return this.aggregateInstance.getUncommitedEvents().events.map((message)=>(message.event));
     }
