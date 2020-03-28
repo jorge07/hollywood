@@ -1,0 +1,1 @@
+{"version":3,"file":"DomainEventStream.js","sourceRoot":"","sources":["../../../../src/Domain/Event/DomainEventStream.ts"],"names":[],"mappings":";;AAIA,MAAqB,iBAAiB;IAClC,YACoB,SAA0B,EAAE,EAC5B,OAAmB,QAAQ;QAD3B,WAAM,GAAN,MAAM,CAAsB;QAC5B,SAAI,GAAJ,IAAI,CAAuB;IAC5C,CAAC;IAEG,OAAO;QACV,OAAO,CAAC,KAAK,IAAI,CAAC,MAAM,CAAC,MAAM,CAAC;IACpC,CAAC;CACJ;AATD,oCASC"}
