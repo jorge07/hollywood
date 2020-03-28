@@ -13,13 +13,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const AddModules_1 = __importDefault(require("./Services/AddModules"));
-const AttachListenerAndSubscribers_1 = __importDefault(require("./Services/AttachListenerAndSubscribers"));
+const AttachListenersAndSubscribers_1 = __importDefault(require("./Services/AttachListenersAndSubscribers"));
 function serviceBinder(container, services) {
     return __awaiter(this, void 0, void 0, function* () {
         const modules = [];
         AddModules_1.default(services, modules);
         yield container.loadAsync(...modules);
-        AttachListenerAndSubscribers_1.default(services, container);
+        AttachListenersAndSubscribers_1.default(services, container);
     });
 }
 exports.default = serviceBinder;

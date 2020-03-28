@@ -33,4 +33,4 @@ function listenerBinder(container, serviceDefinition, key) {
         }
     }
 }
-//# sourceMappingURL=AttachListenerAndSubscribers.js.map
+//# sourceMappingURL=AttachListenersAndSubscribers.js.map
