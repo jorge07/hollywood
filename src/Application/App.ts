@@ -38,7 +38,7 @@ export default class App {
         return await this.queryBus.ask(query);
     }
 
-    public async handle(command: ICommand): Promise<void|IAppError> {
+    public async handle(command: ICommand): Promise<void> {
         await this.commandBus.handle(command);
     }
 

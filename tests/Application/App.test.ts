@@ -30,7 +30,7 @@ describe("App", () => {
             ])
         );
 
-        const response: IAppResponse| IAppError = await app.ask(new DemoQuery());
+        const response: IAppResponse| IAppError | null = await app.ask(new DemoQuery());
 
         expect(response).toMatchObject({ data:'Hello!' });
 
@@ -60,7 +60,7 @@ describe("App", () => {
             [Middleware]
         );
 
-        const response: IAppResponse| IAppError = await app.ask(new DemoQuery());
+        const response: IAppResponse| IAppError | null = await app.ask(new DemoQuery());
 
         expect(response).toMatchObject({ data:'Hello!' });
 

@@ -11,7 +11,6 @@ class DemoCommand implements ICommand {
 class DemoHandler implements ICommandHandler {
     @autowiring
     public async handle(command: DemoCommand): Promise<void|IAppError> {
-        return null
     }
 }
 

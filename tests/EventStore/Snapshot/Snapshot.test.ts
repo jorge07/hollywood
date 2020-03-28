@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { AggregateRootId, DomainEvent, EventSourced } from "../../../src/Domain";
 import {
     EventBus,

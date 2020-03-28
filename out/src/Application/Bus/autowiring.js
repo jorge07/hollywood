@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+require("reflect-metadata");
 const metadataKey = "design:paramtypes";
 const propertykey = "handle";
 function autowiring(target, propertyKey, descriptor) {
