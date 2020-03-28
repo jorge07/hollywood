@@ -6,10 +6,6 @@ import ICommand from "../Application/Bus/Command/Command";
 import IMiddleware from "../Application/Bus/Middelware";
 import IQuery from "../Application/Bus/Query/Query";
 import IQueryHandler from "../Application/Bus/Query/QueryHandler";
-import { ServiceList } from './Container/Items/Service';
-import EventBus from '../EventStore/EventBus/EventBus';
-import InMemoryEventStore from '../EventStore/InMemoryEventStore';
-import { ParametersList } from './Container/Items/Parameter';
 import { QueryBusResponse } from '../Application/Bus/CallbackArg';
 import { SERVICES_ALIAS } from './Container/Bridge/Alias';
 
@@ -26,8 +22,8 @@ export default class AppBridge {
         @multiInject(SERVICES_ALIAS.QUERY_MIDDLEWARE)
         private readonly queryMiddleware: IMiddleware[] = [],
     ) {
-        let commands = new Map<any, ICommandHandler>();
-        let queries = new Map<any, IQueryHandler>();
+        const commands = new Map<any, ICommandHandler>();
+        const queries = new Map<any, IQueryHandler>();
 
         const commandName = (target: any ): string => {
             if (!target.command) {

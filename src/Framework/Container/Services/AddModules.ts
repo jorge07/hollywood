@@ -1,7 +1,6 @@
 import { AsyncContainerModule, decorate, injectable, interfaces, METADATA_KEY } from "inversify";
 import { isArray } from "util";
 import { IService, ServiceList } from "../Items/Service";
-import async from '../Builder';
 
 export default function addModules(serviceList: ServiceList, modules: AsyncContainerModule[]): void {
     for (const serviceDefinitionItem of serviceList) {

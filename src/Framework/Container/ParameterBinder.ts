@@ -1,4 +1,4 @@
-import { Container, interfaces } from "inversify";
+import { Container } from "inversify";
 import { Parameter, ParametersList } from "./Items/Parameter";
 
 export default function parameterBinder(container: Container, parameters: ParametersList): void {

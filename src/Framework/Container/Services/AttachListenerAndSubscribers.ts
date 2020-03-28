@@ -8,7 +8,7 @@ import EventSubscriber from '../../../EventStore/EventBus/EventSubscriber';
 decorate(injectable(), EventListener);
 decorate(injectable(), EventSubscriber);
 
-export default function attachListenersAndSubscribers(serviceList: ServiceList, container: Container): void {
+export default function AttachListenersAndSubscribers(serviceList: ServiceList, container: Container): void {
     for (const serviceDefinitionItem of serviceList) {
         if (serviceDefinitionItem[1].listener || serviceDefinitionItem[1].subscriber) {
             listenerBinder(container, serviceDefinitionItem[1], serviceDefinitionItem[0]);

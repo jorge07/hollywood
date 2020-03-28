@@ -1,7 +1,6 @@
 import { ServiceList } from '../Items/Service';
 import EventBus from '../../../EventStore/EventBus/EventBus';
 import InMemoryEventStore from '../../../EventStore/InMemoryEventStore';
-import { interfaces } from 'inversify';
 import AppBridge from '../../AppBridge';
 import { SERVICES_ALIAS } from './Alias';
 
