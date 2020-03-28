@@ -2,31 +2,36 @@ import { multiInject } from "inversify";
 import { isArray } from "util";
 import { ICommandHandler } from "../Application";
 import App from "../Application/App";
-import { IAppError, IAppResponse } from "../Application/Bus/CallbackArg";
 import ICommand from "../Application/Bus/Command/Command";
 import IMiddleware from "../Application/Bus/Middelware";
 import IQuery from "../Application/Bus/Query/Query";
 import IQueryHandler from "../Application/Bus/Query/QueryHandler";
+import { ServiceList } from './Container/Items/Service';
+import EventBus from '../EventStore/EventBus/EventBus';
+import InMemoryEventStore from '../EventStore/InMemoryEventStore';
+import { ParametersList } from './Container/Items/Parameter';
+import { QueryBusResponse } from '../Application/Bus/CallbackArg';
+import { SERVICES_ALIAS } from './Container/Bridge/Alias';
 
 export default class AppBridge {
     private readonly app: App;
 
     constructor(
-        @multiInject("application.command.handler")
+        @multiInject(SERVICES_ALIAS.COMMAND_HANDLERS)
         private readonly commandHandlers: ICommandHandler[],
-        @multiInject("application.query.handler")
+        @multiInject(SERVICES_ALIAS.QUERY_HANDLERS)
         private readonly queryHandlers: IQueryHandler[],
-        @multiInject("application.command.middleware")
+        @multiInject(SERVICES_ALIAS.COMMAND_MIDDLEWARE)
         private readonly commandMiddleware: IMiddleware[] = [],
-        @multiInject("application.query.middleware")
+        @multiInject(SERVICES_ALIAS.QUERY_MIDDLEWARE)
         private readonly queryMiddleware: IMiddleware[] = [],
     ) {
-        const commands = new Map<any, ICommandHandler>();
-        const queries = new Map<any, IQueryHandler>();
+        let commands = new Map<any, ICommandHandler>();
+        let queries = new Map<any, IQueryHandler>();
 
         const commandName = (target: any ): string => {
             if (!target.command) {
-                throw new Error(`Missinng @autowiring annotation in ${target.constructor.name} command`);
+                throw new Error(`Missinng @autowiring annotation in ${target.constructor.name} command/query`);
             }
 
             return target.command ;
@@ -52,7 +57,7 @@ export default class AppBridge {
         this.app = new App(commands, queries);
     }
 
-    public async ask(query: IQuery): Promise<IAppResponse|IAppError|null> {
+    public async ask(query: IQuery): Promise<QueryBusResponse> {
 
         return await this.app.ask(query);
     }

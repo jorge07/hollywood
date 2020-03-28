@@ -23,24 +23,6 @@
     "tslint-sonarts": "^1.9.0",
     "typescript": "3.8.3"
   },
-  "jest": {
-    "testEnvironment": "node",
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.{ts}",
-      "!**/node_modules/**"
-    ],
-    "coverageDirectory": "./coverage/",
-    "collectCoverage": true
-  },
   "scripts": {
     "test": "jest",
     "test:server": "node ./out/examples/Server.js",

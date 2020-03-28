@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 const metadataKey = "design:paramtypes";
 const propertykey = "handle";
 

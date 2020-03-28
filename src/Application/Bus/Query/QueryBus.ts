@@ -1,4 +1,4 @@
-import { IAppError, IAppResponse } from "../CallbackArg";
+import { QueryBusResponse } from '../CallbackArg';
 import MessaBus from "../MessageBus";
 import IMiddleware from "../Middelware";
 import IQuery from "./Query";
@@ -10,7 +10,7 @@ export default class QueryBus extends MessaBus {
     ) {
         super(...middlewares);
     }
-    public async ask(command: IQuery): Promise<IAppResponse|IAppError|null> {
+    public async ask(command: IQuery): Promise<QueryBusResponse> {
         return await this.middlewareChain(command);
     }
 }

@@ -8,3 +8,5 @@ export interface IAppError extends Partial<IAppResponse> {
     code: number;
 
 }
+
+export type QueryBusResponse = IAppResponse | IAppError | null;

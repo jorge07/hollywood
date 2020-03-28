@@ -1,10 +1,13 @@
-import { Container } from "inversify";
-import { IAppError, IAppResponse, ICommand, IQuery } from "../Application";
+import { Container, interfaces } from 'inversify';
+import { IAppResponse, ICommand, IQuery } from "../Application";
 import AppBridge from "./AppBridge";
-import { bridgeServices } from "./Bridge/services";
 import Builder from "./Container/Builder";
 import { ParametersList } from "./Container/Items/Parameter";
 import { ServiceList } from "./Container/Items/Service";
+import { LIST } from './Container/Bridge/Services';
+import { QueryBusResponse } from '../Application/Bus/CallbackArg';
+import { PARAMETERS } from './Container/Bridge/Parameters';
+import { SERVICES_ALIAS } from './Container/Bridge/Alias';
 
 export default class Kernel {
 
@@ -16,8 +19,8 @@ export default class Kernel {
         testServices: ServiceList = new Map(),
         testParameters: ParametersList = new Map(),
     ): Promise<Kernel> {
-        let servicesMap: ServiceList = new Map([...bridgeServices, ...services]);
-        let parametersMap: ParametersList = parameters;
+        let servicesMap: ServiceList = new Map([...LIST, ...services]);
+        let parametersMap: ParametersList = new Map([...PARAMETERS, ...parameters]);
         let container: Container;
 
         if (env === "test") {
@@ -41,10 +44,10 @@ export default class Kernel {
         public readonly env: string = "dev",
         private readonly container: Container,
     ) {
-        this.app = this.container.get<AppBridge>("app");
+        this.app = this.container.get<AppBridge>(SERVICES_ALIAS.APP_BRIDGE);
     }
 
-    public async ask(query: IQuery): Promise<IAppResponse|IAppError|null> {
+    public async ask(query: IQuery): Promise<QueryBusResponse> {
         return await this.app.ask(query);
     }
 
@@ -52,7 +55,11 @@ export default class Kernel {
         await this.app.handle(command);
     }
 
-    public get(identifier: string): any {
-        return this.container.get(identifier);
+    public get<T>(identifier: interfaces.ServiceIdentifier<T>): T {
+        return this.container.get<T>(identifier);
+    }
+
+    public resolve<T>(identifier: interfaces.Newable<T>): T {
+        return this.container.resolve<T>(identifier);
     }
 }
