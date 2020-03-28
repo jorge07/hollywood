@@ -8,9 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
 const util_1 = require("util");
+const EventStore_1 = __importDefault(require("../../../EventStore/EventStore"));
+const Alias_1 = require("../Bridge/Alias");
 function addModules(serviceList, modules) {
     for (const serviceDefinitionItem of serviceList) {
         modules.push(module(serviceDefinitionItem[1], serviceDefinitionItem[0]));
@@ -29,6 +34,9 @@ function module(serviceDefinition, key) {
                 break;
             case Boolean(serviceDefinition.custom):
                 processCustom(serviceDefinition.custom, key, bind);
+                break;
+            case Boolean(serviceDefinition.eventStore):
+                eventStoreFactory(serviceDefinition.eventStore, key, bind);
                 break;
             default:
                 bind(key).to(serviceDefinition.instance).inSingletonScope();
@@ -62,5 +70,10 @@ function processAsync(asyncFunc, key, bind) {
 }
 function processCustom(custom, key, bind) {
     bind(key).toDynamicValue(custom).inSingletonScope();
+}
+function eventStoreFactory(eventSourcedEntity, key, bind) {
+    bind(key).toDynamicValue(({ container }) => {
+        return new EventStore_1.default(eventSourcedEntity, container.get(Alias_1.SERVICES_ALIAS.DEFAULT_EVENT_STORE_DBAL), container.get(Alias_1.SERVICES_ALIAS.DEFAULT_EVENT_BUS), container.get(Alias_1.SERVICES_ALIAS.DEFAULT_EVENT_STORE_SNAPSHOT_DBAL), container.get(Alias_1.PARAMETERS_ALIAS.DEFAULT_EVENT_STORE_MARGIN));
+    }).inSingletonScope();
 }
 //# sourceMappingURL=AddModules.js.map

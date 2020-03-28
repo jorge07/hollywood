@@ -7,6 +7,7 @@ const EventBus_1 = __importDefault(require("../../../EventStore/EventBus/EventBu
 const InMemoryEventStore_1 = __importDefault(require("../../../EventStore/InMemoryEventStore"));
 const AppBridge_1 = __importDefault(require("../../AppBridge"));
 const Alias_1 = require("./Alias");
+const InMemorySnapshotStoreDBAL_1 = __importDefault(require("../../../EventStore/Snapshot/InMemorySnapshotStoreDBAL"));
 exports.LIST = new Map([
     // Application Layer
     [Alias_1.SERVICES_ALIAS.COMMAND_HANDLERS, { collection: [] }],
@@ -17,6 +18,7 @@ exports.LIST = new Map([
     [Alias_1.SERVICES_ALIAS.QUERY_MIDDLEWARE, { collection: [] }],
     [Alias_1.SERVICES_ALIAS.DEFAULT_EVENT_BUS, { instance: EventBus_1.default }],
     [Alias_1.SERVICES_ALIAS.DEFAULT_EVENT_STORE_DBAL, { instance: InMemoryEventStore_1.default }],
+    [Alias_1.SERVICES_ALIAS.DEFAULT_EVENT_STORE_SNAPSHOT_DBAL, { instance: InMemorySnapshotStoreDBAL_1.default }],
     [Alias_1.SERVICES_ALIAS.APP_BRIDGE, { instance: AppBridge_1.default }],
 ]);
 //# sourceMappingURL=Services.js.map

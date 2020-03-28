@@ -15,11 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
 const ParameterBinder_1 = __importDefault(require("./ParameterBinder"));
 const ServiceBinder_1 = __importDefault(require("./ServiceBinder"));
+const Parameters_1 = require("./Bridge/Parameters");
+const Services_1 = require("./Bridge/Services");
 function Builder(services, parameters) {
     return __awaiter(this, void 0, void 0, function* () {
         const container = new inversify_1.Container();
-        ParameterBinder_1.default(container, parameters);
-        yield ServiceBinder_1.default(container, services);
+        ParameterBinder_1.default(container, new Map([...Parameters_1.PARAMETERS, ...parameters]));
+        yield ServiceBinder_1.default(container, new Map([...Services_1.LIST, ...services]));
         return container;
     });
 }

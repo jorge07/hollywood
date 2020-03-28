@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { EventBus, EventStore, InMemoryEventStore } from "../../../src/EventStore";
 import { Dog } from "../AggregateRoot.test";
 import Repository from '../../../src/Domain/Repository/Repository';

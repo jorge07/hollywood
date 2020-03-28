@@ -20,27 +20,36 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const Alias_1 = require("../../Framework/Container/Bridge/Alias");
+const EventStore_1 = __importDefault(require("../../src/EventStore/EventStore"));
+const User_1 = __importDefault(require("../domain/User"));
+const CreateUser_1 = __importDefault(require("./CreateUser"));
+const Application_1 = require("../../src/Application");
 const inversify_1 = require("inversify");
-let SnapshotStore = class SnapshotStore {
-    constructor(store) {
-        this.store = store;
+let CreateUserHandler = class CreateUserHandler {
+    constructor(eventStore) {
+        this.eventStore = eventStore;
     }
-    retrieve(aggregateRootId) {
+    handle(command) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.store.get(aggregateRootId);
-        });
-    }
-    snapshot(entity) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.store.store(entity);
+            const user = User_1.default.create(command.uuid, command.email);
+            yield this.eventStore.save(user);
         });
     }
 };
-SnapshotStore = __decorate([
-    __param(0, inversify_1.inject(Alias_1.SERVICES_ALIAS.DEFAULT_EVENT_STORE_SNAPSHOT_DBAL)),
-    __metadata("design:paramtypes", [Object])
-], SnapshotStore);
-exports.default = SnapshotStore;
-//# sourceMappingURL=SnapshotStore.js.map
+__decorate([
+    Application_1.autowiring,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CreateUser_1.default]),
+    __metadata("design:returntype", Promise)
+], CreateUserHandler.prototype, "handle", null);
+CreateUserHandler = __decorate([
+    inversify_1.injectable(),
+    __param(0, inversify_1.inject("user.eventStore")),
+    __metadata("design:paramtypes", [EventStore_1.default])
+], CreateUserHandler);
+exports.default = CreateUserHandler;
+//# sourceMappingURL=CreateUserHandler.js.map

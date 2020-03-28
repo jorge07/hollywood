@@ -8,6 +8,11 @@ import DomainEvent from '../../../src/Domain/Event/DomainEvent';
 import EventSubscriber from '../../../src/EventStore/EventBus/EventSubscriber';
 import { DomainMessage } from '../../../src/Domain';
 import EventListener from '../../../src/EventStore/EventBus/EventListener';
+import { Dog } from '../../Domain/AggregateRoot.test';
+import EventStore from '../../../src/EventStore/EventStore';
+import { LIST } from '../../../src/Framework/Container/Bridge/Services';
+import parameterBinder from '../../../src/Framework/Container/ParameterBinder';
+import { PARAMETERS } from '../../../src/Framework/Container/Bridge/Parameters';
 
 class TestEvent extends DomainEvent {
 
@@ -144,5 +149,20 @@ describe("Framework:Container:ServiceBinder", () => {
 
         expect(container.get<Sub>('subscriber').hit).toEqual(1);
         expect(container.get<Sub>('listener').hit).toEqual(1);
+    });
+    it("Should be able to generate an event store", async () => {
+        expect.assertions(1);
+
+        const services: ServiceList = new Map([
+            ['dog.eventStore', { 
+                eventStore: Dog
+            }],
+        ]);
+
+        const container = new Container();
+        parameterBinder(container, PARAMETERS);
+        await serviceBinder(container, new Map([...LIST,...services]));
+
+        expect(container.get<Sub>('dog.eventStore')).toBeInstanceOf(EventStore);
     });
 });

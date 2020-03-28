@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { DomainEvent, DomainMessage, DomainEventStream } from "../../src/Domain";
 import { EventBus, EventListener, EventStore, EventSubscriber, InMemoryEventStore, IEventStoreDBAL, AggregateRootNotFoundException } from "../../src/EventStore";
 import { Dog, SayWolf, SayGrr } from '../Domain/AggregateRoot.test';

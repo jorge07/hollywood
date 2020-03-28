@@ -13,8 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Alias_1 = require("./Container/Bridge/Alias");
-const Services_1 = require("./Container/Bridge/Services");
-const Parameters_1 = require("./Container/Bridge/Parameters");
 const Builder_1 = __importDefault(require("./Container/Builder"));
 class Kernel {
     constructor(debug = false, env = "dev", container) {
@@ -25,15 +23,13 @@ class Kernel {
     }
     static create(env = "dev", debug = false, services, parameters, testServices = new Map(), testParameters = new Map()) {
         return __awaiter(this, void 0, void 0, function* () {
-            let servicesMap = new Map([...Services_1.LIST, ...services]);
-            let parametersMap = new Map([...Parameters_1.PARAMETERS, ...parameters]);
             let container;
             if (env === "test") {
-                parametersMap = new Map([...parameters, ...testParameters]);
-                servicesMap = new Map([...servicesMap, ...testServices]);
+                parameters = new Map([...parameters, ...testParameters]);
+                services = new Map([...services, ...testServices]);
             }
             try {
-                container = yield Builder_1.default(servicesMap, parametersMap);
+                container = yield Builder_1.default(services, parameters);
             }
             catch (error) {
                 throw new Error("Container Compilation Error: " + error.message);

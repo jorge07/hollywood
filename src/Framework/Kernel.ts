@@ -2,8 +2,6 @@ import { SERVICES_ALIAS } from './Container/Bridge/Alias';
 import { ParametersList } from "./Container/Items/Parameter";
 import { ServiceList } from "./Container/Items/Service";
 import { Container, interfaces } from 'inversify';
-import { LIST } from './Container/Bridge/Services';
-import { PARAMETERS } from './Container/Bridge/Parameters';
 import Builder from "./Container/Builder";
 import { ICommand, IQuery } from "../Application";
 import { QueryBusResponse } from '../Application/Bus/CallbackArg';
@@ -19,17 +17,15 @@ export default class Kernel {
         testServices: ServiceList = new Map(),
         testParameters: ParametersList = new Map(),
     ): Promise<Kernel> {
-        let servicesMap: ServiceList = new Map([...LIST, ...services]);
-        let parametersMap: ParametersList = new Map([...PARAMETERS, ...parameters]);
         let container: Container;
 
         if (env === "test") {
-            parametersMap = new Map([...parameters, ...testParameters]);
-            servicesMap = new Map([...servicesMap, ...testServices]);
+            parameters = new Map([...parameters, ...testParameters]);
+            services = new Map([...services, ...testServices]);
         }
 
         try {
-            container = await Builder(servicesMap, parametersMap);
+            container = await Builder(services, parameters);
         } catch (error) {
             throw new Error("Container Compilation Error: " + error.message);
         }

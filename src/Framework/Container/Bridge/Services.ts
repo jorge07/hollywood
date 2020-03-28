@@ -4,7 +4,6 @@ import InMemoryEventStore from '../../../EventStore/InMemoryEventStore';
 import AppBridge from '../../AppBridge';
 import { SERVICES_ALIAS } from './Alias';
 import InMemorySnapshotStoreDBAL from '../../../EventStore/Snapshot/InMemorySnapshotStoreDBAL';
-import SnapshotStore from '../../../EventStore/Snapshot/SnapshotStore';
 
 export const LIST: ServiceList = new Map([
     // Application Layer
