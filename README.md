@@ -30,13 +30,13 @@ export class UserWasCreated extends Domain.DomainEvent {
 
 export class User extends Domain.EventSourced {
 
-    private uuid: string;
+    private uuid: string = "";
 
-    private email: string;
+    private email?: string;
 
     public static create(uuid: string, email: string): User {
 
-        const instance = new User();
+        const instance = new User(uuid);
 
         instance.raise(new UserWasCreated(uuid, email));
 
@@ -47,7 +47,6 @@ export class User extends Domain.EventSourced {
 
         return this.uuid;
     }
-
 
     protected applyUserWasCreated(event: UserWasCreated): void {
         this.uuid = event.uuid;

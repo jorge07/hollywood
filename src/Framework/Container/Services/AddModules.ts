@@ -1,6 +1,10 @@
 import { AsyncContainerModule, decorate, injectable, interfaces, METADATA_KEY } from "inversify";
 import { isArray } from "util";
 import { IService, ServiceList } from "../Items/Service";
+import { EventSourced } from "../../../Domain";
+import EventStore from '../../../EventStore/EventStore';
+import { AggregateFactory } from '../../../EventStore/EventStore';
+import { SERVICES_ALIAS, PARAMETERS_ALIAS } from '../Bridge/Alias';
 
 export default function addModules(serviceList: ServiceList, modules: AsyncContainerModule[]): void {
     for (const serviceDefinitionItem of serviceList) {
@@ -26,6 +30,9 @@ function module(serviceDefinition: IService, key: string): AsyncContainerModule 
                 break;
             case Boolean(serviceDefinition.custom):
                 processCustom(serviceDefinition.custom as (context: interfaces.Context) => any, key, bind)
+                break;
+            case Boolean(serviceDefinition.eventStore):
+                eventStoreFactory(serviceDefinition.eventStore as AggregateFactory<any>, key, bind)
                 break;
             default:
                 bind(key).to(serviceDefinition.instance).inSingletonScope();
@@ -64,3 +71,14 @@ function processCustom(custom: (context: interfaces.Context) => any, key: string
     bind(key).toDynamicValue(custom).inSingletonScope();
 }
 
+function eventStoreFactory<T extends EventSourced>(eventSourcedEntity: AggregateFactory<T>, key: string, bind: interfaces.Bind) {
+    bind(key).toDynamicValue(({container}: interfaces.Context) =>  {
+        return new EventStore<T>(
+            eventSourcedEntity,
+            container.get(SERVICES_ALIAS.DEFAULT_EVENT_STORE_DBAL),
+            container.get(SERVICES_ALIAS.DEFAULT_EVENT_BUS),
+            container.get(SERVICES_ALIAS.DEFAULT_EVENT_STORE_SNAPSHOT_DBAL),
+            container.get(PARAMETERS_ALIAS.DEFAULT_EVENT_STORE_MARGIN),
+        )
+    }).inSingletonScope();
+}

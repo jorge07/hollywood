@@ -6,6 +6,8 @@ export const SERVICES_ALIAS = {
     QUERY_MIDDLEWARE: "hollywood.application.query.middleware",
     DEFAULT_EVENT_BUS: "hollywood.infrastructure.eventBus.default",
     DEFAULT_EVENT_STORE_DBAL: "hollywood.infrastructure.eventStore.dbal.default",
+    DEFAULT_EVENT_STORE_SNAPSHOT: "hollywood.infrastructure.eventStore.snapshot.default",
+    DEFAULT_EVENT_STORE_SNAPSHOT_DBAL: "hollywood.infrastructure.eventStore.snapshot.dbal.default",
     APP_BRIDGE: "hollywood.app.bridge",
 };
 

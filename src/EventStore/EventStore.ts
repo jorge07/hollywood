@@ -5,17 +5,19 @@ import IEventStoreDBAL from "./IEventStoreDBAL";
 import SnapshotStore from "./Snapshot/SnapshotStore";
 import ISnapshotStoreDBAL from "./Snapshot/SnapshotStoreDBAL";
 
+export type AggregateFactory<T> = new (aggregateRootID: AggregateRootId) => T;
+
 const MIN_SNAPSHOT_MARGIN: number = 10;
 
 export default class EventStore<T extends EventSourced> {
     private readonly dbal: IEventStoreDBAL;
     private readonly eventBus: EventBus;
     private readonly snapshotStore?: SnapshotStore;
-    private readonly modelConstructor: new (aggregateRootID: AggregateRootId) => T;
+    private readonly modelConstructor: AggregateFactory<T>;
     private readonly snapshotMargin: number;
 
     constructor(
-        modelConstructor: new (aggregateRootID: AggregateRootId) => T,
+        modelConstructor: AggregateFactory<T>,
         dbal: IEventStoreDBAL,
         eventBus: EventBus,
         snapshotStoreDbal?: ISnapshotStoreDBAL,
