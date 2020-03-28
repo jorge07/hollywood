@@ -34,8 +34,8 @@ let AppBridge = class AppBridge {
         this.queryHandlers = queryHandlers;
         this.commandMiddleware = commandMiddleware;
         this.queryMiddleware = queryMiddleware;
-        let commands = new Map();
-        let queries = new Map();
+        const commands = new Map();
+        const queries = new Map();
         const commandName = (target) => {
             if (!target.command) {
                 throw new Error(`Missinng @autowiring annotation in ${target.constructor.name} command/query`);

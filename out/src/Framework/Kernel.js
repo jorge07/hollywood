@@ -12,10 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Builder_1 = __importDefault(require("./Container/Builder"));
+const Alias_1 = require("./Container/Bridge/Alias");
 const Services_1 = require("./Container/Bridge/Services");
 const Parameters_1 = require("./Container/Bridge/Parameters");
-const Alias_1 = require("./Container/Bridge/Alias");
+const Builder_1 = __importDefault(require("./Container/Builder"));
 class Kernel {
     constructor(debug = false, env = "dev", container) {
         this.debug = debug;
