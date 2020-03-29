@@ -39,9 +39,9 @@ describe("Kernel", () => {
             parameters
         );
 
-        const parentInstance: Parent = kernel.get('parent');
+        const parentInstance: Parent = kernel.container.get('parent');
         expect(parentInstance).toBeInstanceOf(Parent);
-        expect(parentInstance).toEqual(kernel.get('parent'));
+        expect(parentInstance).toEqual(kernel.container.get('parent'));
         expect(parentInstance.child.do()).toEqual(1);
         expect(parentInstance.demo).toEqual(1);
     });

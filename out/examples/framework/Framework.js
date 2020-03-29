@@ -46,9 +46,9 @@ const services = new Map([
 (() => __awaiter(void 0, void 0, void 0, function* () {
     const kernel = yield Kernel_1.default.create("dev", true, services, parameters);
     yield kernel.handle(new CreateUser_1.default("1", "demo@example.org"));
-    const recreatedUser = yield kernel.get("user.eventStore").load("1"); // Recreate User from events
+    const recreatedUser = yield kernel.container.get("user.eventStore").load("1"); // Recreate User from events
     console.log(recreatedUser); // Display the created user
-    console.log(kernel.get("user.eventStore") // Conform overwrited default parameters (snapshotMargin 10 -> 40)
+    console.log(kernel.container.get("user.eventStore") // Conform overwrited default parameters (snapshotMargin 10 -> 40)
     );
 }))();
 //# sourceMappingURL=Framework.js.map

@@ -38,7 +38,7 @@ export default class Kernel {
     private constructor(
         public readonly debug: boolean = false,
         public readonly env: string = "dev",
-        private readonly container: Container,
+        public readonly container: Container,
     ) {
         this.app = this.container.get<AppBridge>(SERVICES_ALIAS.APP_BRIDGE);
     }
@@ -49,13 +49,5 @@ export default class Kernel {
 
     public async handle(command: ICommand): Promise<void> {
         await this.app.handle(command);
-    }
-
-    public get<T>(identifier: interfaces.ServiceIdentifier<T>): T {
-        return this.container.get<T>(identifier);
-    }
-
-    public resolve<T>(identifier: interfaces.Newable<T>): T {
-        return this.container.resolve<T>(identifier);
     }
 }

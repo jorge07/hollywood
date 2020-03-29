@@ -41,11 +41,11 @@ const services = new Map([
 
     await kernel.handle(new CreateUser("1", "demo@example.org"));
 
-    const recreatedUser = await kernel.get<EventStore<User>>("user.eventStore").load("1"); // Recreate User from events
+    const recreatedUser = await kernel.container.get<EventStore<User>>("user.eventStore").load("1"); // Recreate User from events
 
     console.log(recreatedUser); // Display the created user
 
     console.log(
-        kernel.get("user.eventStore") // Conform overwrited default parameters (snapshotMargin 10 -> 40)
+        kernel.container.get("user.eventStore") // Conform overwrited default parameters (snapshotMargin 10 -> 40)
     );
 })()

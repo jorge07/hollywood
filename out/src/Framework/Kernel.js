@@ -47,12 +47,6 @@ class Kernel {
             yield this.app.handle(command);
         });
     }
-    get(identifier) {
-        return this.container.get(identifier);
-    }
-    resolve(identifier) {
-        return this.container.resolve(identifier);
-    }
 }
 exports.default = Kernel;
 //# sourceMappingURL=Kernel.js.map
