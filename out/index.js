@@ -16,4 +16,6 @@ const EventStore = __importStar(require("./src/EventStore"));
 exports.EventStore = EventStore;
 const ReadModel = __importStar(require("./src/ReadModel"));
 exports.ReadModel = ReadModel;
+const Framework = __importStar(require("./src/Framework"));
+exports.Framework = Framework;
 //# sourceMappingURL=index.js.map
