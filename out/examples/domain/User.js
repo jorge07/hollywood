@@ -19,6 +19,9 @@ class User extends __1.Domain.EventSourced {
         this.uuid = event.uuid;
         this.email = event.email;
     }
+    get mail() {
+        return this.email;
+    }
 }
 exports.default = User;
 //# sourceMappingURL=User.js.map

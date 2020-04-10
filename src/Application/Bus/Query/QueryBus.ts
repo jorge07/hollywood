@@ -1,10 +1,9 @@
-import { QueryBusResponse } from '../CallbackArg';
-import MessaBus from "../MessageBus";
-import IMiddleware from "../Middelware";
-import IQuery from "./Query";
-import QueryHandlerResolver from "./QueryResolver";
+import type { QueryBusResponse } from '../CallbackArg';
+import MessageBus from "../MessageBus";
+import type IMiddleware from "../Middelware";
+import type IQuery from "./Query";
 
-export default class QueryBus extends MessaBus {
+export default class QueryBus extends MessageBus {
     constructor(
         ...middlewares: IMiddleware[]
     ) {

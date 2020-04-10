@@ -1,9 +1,9 @@
-import { AggregateRootId, DomainEvent, DomainEventStream, DomainMessage, EventSourced } from "../Domain";
-import EventBus from "./EventBus/EventBus";
+import type { AggregateRootId, DomainEventStream, EventSourced } from "../Domain";
+import type EventBus from "./EventBus/EventBus";
 import AggregateRootNotFoundException from "./Exception/AggregateRootNotFoundException";
-import IEventStoreDBAL from "./IEventStoreDBAL";
+import type IEventStoreDBAL from "./IEventStoreDBAL";
 import SnapshotStore from "./Snapshot/SnapshotStore";
-import ISnapshotStoreDBAL from "./Snapshot/SnapshotStoreDBAL";
+import type ISnapshotStoreDBAL from "./Snapshot/SnapshotStoreDBAL";
 
 export type AggregateFactory<T> = new (aggregateRootID: AggregateRootId) => T;
 

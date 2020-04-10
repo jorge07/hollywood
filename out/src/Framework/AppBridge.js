@@ -30,10 +30,6 @@ const App_1 = __importDefault(require("../Application/App"));
 const Alias_1 = require("./Container/Bridge/Alias");
 let AppBridge = class AppBridge {
     constructor(commandHandlers, queryHandlers, commandMiddleware = [], queryMiddleware = []) {
-        this.commandHandlers = commandHandlers;
-        this.queryHandlers = queryHandlers;
-        this.commandMiddleware = commandMiddleware;
-        this.queryMiddleware = queryMiddleware;
         const commands = new Map();
         const queries = new Map();
         const commandName = (target) => {

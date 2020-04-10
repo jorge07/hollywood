@@ -1,6 +1,5 @@
-import AggregateRoot from "../AggregateRoot";
-import DomainMessage from "./DomainMessage";
-import { StreamName } from "./StreamName";
+import type DomainMessage from "./DomainMessage";
+import type { StreamName } from "./StreamName";
 
 export default class DomainEventStream {
     constructor(

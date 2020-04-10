@@ -1,5 +1,4 @@
-import AggregateRoot from "../AggregateRoot";
-import EventSourced from "../AggregateRoot";
+import type EventSourced from "../AggregateRoot";
 
 export default interface IRepository<T extends EventSourced> {
     save(aggregateRoot: T): Promise<void>;

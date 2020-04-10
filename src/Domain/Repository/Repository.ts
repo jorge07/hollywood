@@ -1,7 +1,6 @@
-import EventBus from "../../EventStore/EventBus/EventBus";
-import EventStore from "../../EventStore/EventStore";
-import EventSourced from "../EventSourced";
-import IRepository from "./IRepository";
+import type EventStore from "../../EventStore/EventStore";
+import type EventSourced from "../EventSourced";
+import type IRepository from "./IRepository";
 
 export default abstract class Repository<T extends EventSourced> implements IRepository<T> {
 
