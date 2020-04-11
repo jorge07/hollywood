@@ -1,4 +1,4 @@
-import { CommandBus, CommandHandlerResolver, ICommand, IQuery, QueryBus, QueryHandlerResolver } from "../../../src/Application/";
+import { CommandBus, CommandHandlerResolver, QueryBus, QueryHandlerResolver } from "../../../src/Application/";
 import { DemoCommand, DemoHandler, DemoQuery, DemoQueryHandler } from "./DemoHandlers";
 
 describe("HandlerResolver test suite", () => {
@@ -24,7 +24,7 @@ describe("HandlerResolver test suite", () => {
             expect(err.code).toBe(0);
         }
 
-        const res: any = await commandBus.handle(new DemoCommand(false));
+        await commandBus.handle(new DemoCommand(false));
         expect(demoHandler.received).toBeTruthy();
 
         try {
@@ -35,14 +35,14 @@ describe("HandlerResolver test suite", () => {
         }
 
         try {
-            const resp = await commandBus.handle(new DemoCommand(true));
+            await commandBus.handle(new DemoCommand(true));
             expect("Exception Command").toBe("Not throwed");
         } catch (err) {
             expect(err.message).toBe("Fail");
         }
 
         try {
-            const resp = await commandBus.handle(new DemoCommand(true));
+            await commandBus.handle(new DemoCommand(true));
             expect("Exception Command").toBe("Not throwed");
         } catch (err) {
             expect(err.message).toBe("Fail");

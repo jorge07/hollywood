@@ -16,14 +16,6 @@ class DemoHandler implements ICommandHandler {
 
 describe("Autowirign annotation test suite", () => {
     it("It should modify the object and add the command name", async () => {
-        const command = (target: any ) => {
-            if (!target.command) {
-                throw new Error(`Missinng @autowiring annotation in ${target.constructor.name} command`);
-            }
-
-            return target.command;
-        };
-
         const demo: any = new DemoHandler();
 
         expect(demo.command).toEqual({ name: "DemoCommand" });

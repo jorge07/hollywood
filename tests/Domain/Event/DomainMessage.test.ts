@@ -1,4 +1,3 @@
-import { DomainEvent } from "../../../src/Domain";
 import DomainMessage from "../../../src/Domain/Event/DomainMessage";
 import DemoEvent from './DemoEvent';
 

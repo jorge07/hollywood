@@ -1,4 +1,4 @@
-import { DomainEvent, DomainEventStream, DomainMessage } from "../../../src/Domain";
+import { DomainEventStream, DomainMessage } from "../../../src/Domain";
 import DemoEvent from './DemoEvent';
 
 describe("DomainEventStream", () => {

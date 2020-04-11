@@ -1,4 +1,3 @@
-import { DomainEvent } from "../../../src/Domain";
 import DemoEvent from './DemoEvent';
 
 describe("DomainEvent", () => {
