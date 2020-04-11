@@ -1,17 +1,17 @@
 import "reflect-metadata";
-import { DomainEvent, DomainMessage, DomainEventStream } from "../../src/Domain";
-import { EventBus, EventListener, EventStore, EventSubscriber, InMemoryEventStore, IEventStoreDBAL, AggregateRootNotFoundException } from "../../src/EventStore";
+import { DomainMessage, DomainEventStream } from "../../src/Domain";
+import { EventBus, EventListener, EventStore, EventSubscriber, InMemoryEventStore, IEventStoreDBAL } from "../../src/EventStore";
 import { Dog, SayWolf, SayGrr } from '../Domain/AggregateRoot.test';
 
 class OnWolfEventSubscriber extends EventSubscriber {
     public wolf: any;
     public grr: any;
 
-    private onSayWolf(event: SayWolf): void {
+    protected onSayWolf(event: SayWolf): void {
         this.wolf = event;
     }
 
-    private onSayGrr(event: SayWolf): void {
+    protected onSayGrr(event: SayWolf): void {
         this.grr = event;
     }
 }
@@ -41,7 +41,6 @@ class GlobalListener extends EventListener {
 }
 
 export default class InMemoryErrorEventStore implements IEventStoreDBAL {
-    private readonly events: any[] = [];
 
     public async load(aggregateId: string, from: number = 0): Promise<DomainEventStream> {
         throw new Error('Fail Read');

@@ -1,16 +1,11 @@
 import "reflect-metadata";
-import { AggregateRootId, DomainEvent, EventSourced } from "../../../src/Domain";
 import {
     EventBus,
-    EventListener,
     EventStore,
-    EventSubscriber,
     InMemoryEventStore,
-    ISnapshotStoreDBAL,
     InMemorySnapshotStoreDBAL,
 } from "../../../src/EventStore";
-import { Dog, SayWolf } from "../../Domain/AggregateRoot.test";
-
+import { Dog } from "../../Domain/AggregateRoot.test";
 
 describe("SnapshotStore", () => {
     it("EventStore should store, publish and retrieve events when snapshot is found", async () => {

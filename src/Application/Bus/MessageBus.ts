@@ -1,6 +1,5 @@
-import { IAppError } from "./CallbackArg";
-import ICommand from "./Command/Command";
-import IMiddleware from "./Middelware";
+import type ICommand from "./Command/Command";
+import type IMiddleware from "./Middelware";
 
 export default abstract class MessaBus {
     protected readonly middlewareChain: (command: ICommand) => any;

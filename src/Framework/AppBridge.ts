@@ -14,13 +14,13 @@ export default class AppBridge {
 
     constructor(
         @multiInject(SERVICES_ALIAS.COMMAND_HANDLERS)
-        private readonly commandHandlers: ICommandHandler[],
+        commandHandlers: ICommandHandler[],
         @multiInject(SERVICES_ALIAS.QUERY_HANDLERS)
-        private readonly queryHandlers: IQueryHandler[],
+        queryHandlers: IQueryHandler[],
         @multiInject(SERVICES_ALIAS.COMMAND_MIDDLEWARE)
-        private readonly commandMiddleware: IMiddleware[] = [],
+        commandMiddleware: IMiddleware[] = [],
         @multiInject(SERVICES_ALIAS.QUERY_MIDDLEWARE)
-        private readonly queryMiddleware: IMiddleware[] = [],
+        queryMiddleware: IMiddleware[] = [],
     ) {
         const commands = new Map<any, ICommandHandler>();
         const queries = new Map<any, IQueryHandler>();

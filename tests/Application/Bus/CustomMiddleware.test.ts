@@ -1,4 +1,4 @@
-import { CommandBus, CommandHandlerResolver, ICommand, IQuery, QueryBus, QueryHandlerResolver } from "../../../src/Application/";
+import { CommandBus, CommandHandlerResolver, QueryBus, QueryHandlerResolver } from "../../../src/Application/";
 import { DemoCommand, DemoHandler, DemoQuery, DemoQueryHandler } from "./DemoHandlers";
 import IMiddleware from '../../../src/Application/Bus/Middelware';
 
@@ -45,7 +45,7 @@ describe("Custom Middlewares", () => {
 
         expect(customQueryMiddleware.calls).toBe(2);
 
-        const res: any = await commandBus.handle(new DemoCommand(false));
+        await commandBus.handle(new DemoCommand(false));
         expect(demoHandler.received).toBeTruthy();
         expect(customMiddleware.calls).toBe(1);
         try {
@@ -57,7 +57,7 @@ describe("Custom Middlewares", () => {
         expect(customQueryMiddleware.calls).toBe(3);
 
         try {
-            const resp = await commandBus.handle(new DemoCommand(true));
+            await commandBus.handle(new DemoCommand(true));
             expect("Exception Command").toBe("Not throwed");
         } catch (err) {
             expect(err.message).toBe("Fail");

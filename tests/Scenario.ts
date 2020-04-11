@@ -1,10 +1,9 @@
 import EventStore from '../src/EventStore/EventStore';
 import EventSourced from '../src/Domain/EventSourced';
-import CommandBus from '../src/Application/Bus/Command/CommandBus';
 import DomainEvent from '../src/Domain/Event/DomainEvent';
 import DomainMessage from '../src/Domain/Event/DomainMessage';
 import DomainEventStream from '../src/Domain/Event/DomainEventStream';
-import { AggregateRootId } from '../src/Domain/AggregateRoot';
+import type { AggregateRootId } from '../src/Domain/AggregateRoot';
 
 export default class Scenario <T extends EventSourced> {
 

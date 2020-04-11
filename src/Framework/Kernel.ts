@@ -1,11 +1,11 @@
 import { SERVICES_ALIAS } from './Container/Bridge/Alias';
 import { ParametersList } from "./Container/Items/Parameter";
 import { ServiceList } from "./Container/Items/Service";
-import { Container, interfaces } from 'inversify';
+import type { Container } from 'inversify';
 import Builder from "./Container/Builder";
-import { ICommand, IQuery } from "../Application";
-import { QueryBusResponse } from '../Application/Bus/CallbackArg';
-import AppBridge from "./AppBridge";
+import type { ICommand, IQuery } from "../Application";
+import type { QueryBusResponse } from '../Application/Bus/CallbackArg';
+import type AppBridge from "./AppBridge";
 
 export default class Kernel {
 

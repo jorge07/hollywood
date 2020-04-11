@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 import { ServiceList } from '../../../src/Framework/Container/Items/Service';
-import { AsyncContainerModule, Container, inject, multiInject, interfaces } from 'inversify';
-import { Parameter } from '../../../src/Framework/Container/Items/Parameter';
+import { Container, inject, multiInject, interfaces } from 'inversify';
 import serviceBinder from '../../../src/Framework/Container/ServiceBinder';
 import EventBus from '../../../src/EventStore/EventBus/EventBus';
 import DomainEvent from '../../../src/Domain/Event/DomainEvent';

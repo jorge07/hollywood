@@ -1,10 +1,9 @@
-import { IAppError } from "../CallbackArg";
-import MessaBus from "../MessageBus";
-import IMiddleware from "../Middelware";
-import ICommand from "./Command";
-import CommandHandlerResolver from "./CommandHandlerResolver";
+import type { IAppError } from "../CallbackArg";
+import MessageBus from "../MessageBus";
+import type IMiddleware from "../Middelware";
+import type ICommand from "./Command";
 
-export default class CommandBus extends MessaBus {
+export default class CommandBus extends MessageBus {
 
     constructor(
         ...middlewares: IMiddleware[]

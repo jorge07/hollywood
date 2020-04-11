@@ -1,9 +1,6 @@
-import { addListener } from "cluster";
-import {isArray} from "util";
-import DomainEvent from "../../Domain/Event/DomainEvent";
-import DomainMessage from "../../Domain/Event/DomainMessage";
-import EventListener from "./EventListener";
-import EventSubscriber from "./EventSubscriber";
+import type DomainMessage from "../../Domain/Event/DomainMessage";
+import type EventListener from "./EventListener";
+import type EventSubscriber from "./EventSubscriber";
 
 interface ISubscriberRegistry {
     [key: string]: EventSubscriber[];
