@@ -43,7 +43,7 @@ export default abstract class EventSourced extends AggregateRoot {
         return this;
     }
 
-    public recursiveHandling(event: DomainEvent, method: string): void {
+    public recursiveHandling(event: object|DomainEvent, method: string): void {
         this.handle(event, method);
 
         this.aggregates.forEach((aggregate: EventSourced) => {
@@ -60,20 +60,22 @@ export default abstract class EventSourced extends AggregateRoot {
         this.aggregates.push(child);
     }
 
-    protected raise(event: DomainEvent): void {
-        this.recursiveHandling(event, this.methodToApplyEvent(event.domainEventName()));
-
-        this.playhead++;
+    protected raise(event: object|DomainEvent): void {
         const domainMessage: DomainMessage = DomainMessage.create(
             this.getAggregateRootId(),
             this.playhead,
             event,
         );
 
+        this.recursiveHandling(event, this.methodToApplyEvent(domainMessage.eventType));
+
+        this.playhead++;
+
+
         this.events.push(domainMessage);
     }
 
-    private handle(event: DomainEvent, method: string): void {
+    private handle(event: object|DomainEvent, method: string): void {
         if ((this as any)[method]) {
             (this as any)[method](event);
         }

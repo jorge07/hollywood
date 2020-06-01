@@ -6,6 +6,7 @@ class User extends __1.Domain.EventSourced {
     constructor() {
         super(...arguments);
         this.uuid = "";
+        this.email = "";
     }
     static create(uuid, email) {
         const instance = new User(uuid);

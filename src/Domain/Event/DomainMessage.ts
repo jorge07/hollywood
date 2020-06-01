@@ -8,7 +8,7 @@ export default class DomainMessage {
     public static create(
         uuid: AggregateRootId,
         playhead: number,
-        event: DomainEvent,
+        event: object|DomainEvent,
         metadata: any[] = [],
     ): DomainMessage {
         return new DomainMessage(
@@ -25,10 +25,14 @@ export default class DomainMessage {
     private constructor(
         public readonly uuid: AggregateRootId,
         public readonly playhead: number,
-        public readonly event: DomainEvent,
+        public readonly event: object|DomainEvent,
         public readonly metadata: any[],
     ) {
-        this.eventType = event.domainEventName();
+        this.eventType = this.extractEventType(event);
         this.ocurredOn = new Date();
+    }
+
+    private extractEventType(event: object|DomainEvent) {
+        return event.constructor.name;
     }
 }
