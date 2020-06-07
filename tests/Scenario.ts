@@ -62,14 +62,14 @@ export default class Scenario <T extends EventSourced> {
         return this;
     }
 
-    public then(thens: DomainEvent[]): Scenario<T> {
+    public then(thens: object[]|DomainEvent[]): Scenario<T> {
 
         expect(thens).toEqual(this.events())
 
         return this;
     }
 
-    private events(): DomainEvent[] {
+    private events(): object[]|DomainEvent[] {
         if (! this.aggregateInstance) {
             return [];
         }
