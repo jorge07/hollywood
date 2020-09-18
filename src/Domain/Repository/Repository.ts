@@ -1,8 +1,8 @@
 import type EventStore from "../../EventStore/EventStore";
-import type EventSourced from "../EventSourced";
 import type IRepository from "./IRepository";
+import {EventSourcedAggregateRoot} from "../index";
 
-export default abstract class Repository<T extends EventSourced> implements IRepository<T> {
+export default abstract class Repository<T extends EventSourcedAggregateRoot> implements IRepository<T> {
 
     constructor(private readonly eventStore: EventStore<T>) {}
 

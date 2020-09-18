@@ -19,7 +19,7 @@ export default class DomainMessage {
         );
     }
 
-    public readonly ocurredOn: Date;
+    public readonly occurred: Date;
     public readonly eventType: string;
 
     private constructor(
@@ -28,11 +28,11 @@ export default class DomainMessage {
         public readonly event: object|DomainEvent,
         public readonly metadata: any[],
     ) {
-        this.eventType = this.extractEventType(event);
-        this.ocurredOn = new Date();
+        this.eventType = DomainMessage.extractEventType(event);
+        this.occurred = new Date();
     }
 
-    private extractEventType(event: object|DomainEvent) {
+    private static extractEventType(event: object) {
         return event.constructor.name;
     }
 }

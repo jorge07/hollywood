@@ -1,18 +1,19 @@
-import type { AggregateRootId, DomainEventStream, EventSourced } from "../Domain";
+import type { AggregateRootId, DomainEventStream } from "../Domain";
 import type EventBus from "./EventBus/EventBus";
 import AggregateRootNotFoundException from "./Exception/AggregateRootNotFoundException";
 import type IEventStoreDBAL from "./IEventStoreDBAL";
 import SnapshotStore from "./Snapshot/SnapshotStore";
 import type ISnapshotStoreDBAL from "./Snapshot/SnapshotStoreDBAL";
+import EventSourcedAggregateRoot from "../Domain/EventSourcedAggregateRoot";
 
-export type AggregateFactory<T> = new (aggregateRootID: AggregateRootId) => T;
+export type AggregateFactory<T extends EventSourcedAggregateRoot> = new (aggregateRootID: AggregateRootId) => T;
 
 const MIN_SNAPSHOT_MARGIN: number = 10;
 
-export default class EventStore<T extends EventSourced> {
+export default class EventStore<T extends EventSourcedAggregateRoot> {
     private readonly dbal: IEventStoreDBAL;
     private readonly eventBus: EventBus;
-    private readonly snapshotStore?: SnapshotStore;
+    private readonly snapshotStore?: SnapshotStore<T>;
     private readonly modelConstructor: AggregateFactory<T>;
     private readonly snapshotMargin: number;
 
@@ -35,7 +36,7 @@ export default class EventStore<T extends EventSourced> {
 
     public async load(aggregateRootId: AggregateRootId): Promise<T> {
 
-        let aggregateRoot: T | null = null;
+        let aggregateRoot: T | null;
 
         aggregateRoot = await this.fromSnapshot(aggregateRootId);
 
@@ -44,7 +45,7 @@ export default class EventStore<T extends EventSourced> {
             aggregateRoot ? aggregateRoot.version() : 0,
         );
 
-        this.emptyStream(stream);
+        EventStore.emptyStream(stream);
 
         aggregateRoot = aggregateRoot || this.aggregateFactory(aggregateRootId);
 
@@ -53,11 +54,11 @@ export default class EventStore<T extends EventSourced> {
 
     public async save(entity: T): Promise<void> {
 
-        const stream: DomainEventStream = entity.getUncommitedEvents();
+        const stream: DomainEventStream = entity.getUncommittedEvents();
 
         await this.append(entity.getAggregateRootId(), stream);
 
-        this.takeSnapshot(entity);
+        await this.takeSnapshot(entity);
 
         for (const message of stream.events) {
             await this.eventBus.publish(message);
@@ -117,7 +118,7 @@ export default class EventStore<T extends EventSourced> {
         return new this.modelConstructor(aggregateRootId);
     }
 
-    private emptyStream(stream: DomainEventStream): void {
+    private static emptyStream(stream: DomainEventStream): void {
         if (stream.isEmpty()) {
 
             throw new AggregateRootNotFoundException();

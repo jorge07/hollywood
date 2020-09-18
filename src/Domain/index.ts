@@ -5,11 +5,13 @@ import DomainMessage from "./Event/DomainMessage";
 import EventSourced from "./EventSourced";
 import IRepository from "./Repository/IRepository";
 import Repository from "./Repository/Repository";
+import EventSourcedAggregateRoot from "./EventSourcedAggregateRoot";
 
 export {
     AggregateRootId,
     AggregateRoot,
     EventSourced,
+    EventSourcedAggregateRoot,
     Repository,
     IRepository,
     DomainEvent,

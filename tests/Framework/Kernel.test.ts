@@ -1,9 +1,11 @@
 import 'reflect-metadata';
-import { inject } from 'inversify';
+import {inject} from 'inversify';
 import Kernel from '../../src/Framework/Kernel';
-import { ParametersList, UniqueParameterIdentifier, Parameter } from '../../src/Framework/Container/Items/Parameter';
-import { ServiceList } from '../../src/Framework/Container/Items/Service';
+import {ParametersList, UniqueParameterIdentifier, Parameter} from '../../src/Framework/Container/Items/Parameter';
+import {ServiceList} from '../../src/Framework';
 
+
+// tslint:disable-next-line:max-classes-per-file
 class Child {
 
     do(): number {
@@ -11,13 +13,16 @@ class Child {
     }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 class Parent {
     constructor(
         @inject('child') public readonly child: Child,
         @inject('demo') public readonly demo: number,
-    ) {}
-    
+    ) {
+    }
+
 }
+
 
 const parameters: ParametersList = new Map<UniqueParameterIdentifier, Parameter>([
     ['demo', 1]
@@ -28,14 +33,14 @@ const services: ServiceList = new Map([
     ['parent', {instance: Parent}],
 ]);
 
-describe("Kernel", () => { 
+describe("Kernel", () => {
     it("Kernel should be able to create a container", async () => {
         expect.assertions(4);
 
         const kernel = await Kernel.create(
-            'test', 
-            true, 
-            services, 
+            'test',
+            true,
+            services,
             parameters
         );
 

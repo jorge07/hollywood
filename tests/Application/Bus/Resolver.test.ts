@@ -1,5 +1,5 @@
-import { CommandBus, CommandHandlerResolver, QueryBus, QueryHandlerResolver } from "../../../src/Application/";
-import { DemoCommand, DemoHandler, DemoQuery, DemoQueryHandler } from "./DemoHandlers";
+import {CommandBus, CommandHandlerResolver, QueryBus, QueryHandlerResolver} from "../../../src/Application/";
+import {DemoCommand, DemoHandler, DemoQuery, DemoQueryHandler} from "./DemoHandlers";
 
 describe("HandlerResolver test suite", () => {
     it("It should routing to correct handler", async () => {

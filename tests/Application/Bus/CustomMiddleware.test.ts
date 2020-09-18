@@ -1,16 +1,19 @@
-import { CommandBus, CommandHandlerResolver, QueryBus, QueryHandlerResolver } from "../../../src/Application/";
-import { DemoCommand, DemoHandler, DemoQuery, DemoQueryHandler } from "./DemoHandlers";
+import {CommandBus, CommandHandlerResolver, QueryBus, QueryHandlerResolver} from "../../../src/Application/";
+import {DemoCommand, DemoHandler, DemoQuery, DemoQueryHandler} from "./DemoHandlers";
 import IMiddleware from '../../../src/Application/Bus/Middelware';
 
 class CustomMiddleware implements IMiddleware {
     calls: number = 0
+
     async execute(command: any, next: (command: any) => any): Promise<any> {
         this.calls++;
         return await next(command);
     }
 }
+
 class CustomQueryMiddleware implements IMiddleware {
     calls: number = 0
+
     async execute(command: any, next: (command: any) => any): Promise<any> {
         this.calls++;
         return await next(command);

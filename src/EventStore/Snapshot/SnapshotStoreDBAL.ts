@@ -1,7 +1,6 @@
-import EventSourced from "../../Domain/AggregateRoot";
-import { AggregateRootId } from "../../Domain/AggregateRoot";
+import {AggregateRootId, EventSourcedAggregateRoot} from "../../Domain";
 
 export default interface ISnapshotStoreDBAL {
     get(uuid: AggregateRootId): Promise<any|null>;
-    store(entity: EventSourced): Promise<void>;
+    store(entity: EventSourcedAggregateRoot): Promise<void>;
 }

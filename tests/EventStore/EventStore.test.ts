@@ -1,7 +1,14 @@
 import "reflect-metadata";
-import { DomainMessage, DomainEventStream } from "../../src/Domain";
-import { EventBus, EventListener, EventStore, EventSubscriber, InMemoryEventStore, IEventStoreDBAL } from "../../src/EventStore";
-import { Dog, SayWolf, SayGrr } from '../Domain/AggregateRoot.test';
+import {DomainMessage, DomainEventStream} from "../../src/Domain";
+import {
+    EventBus,
+    EventListener,
+    EventStore,
+    EventSubscriber,
+    InMemoryEventStore,
+    IEventStoreDBAL
+} from "../../src/EventStore";
+import {Dog, SayWolf, SayGrr} from '../Domain/AggregateRoot.test';
 
 class OnWolfEventSubscriber extends EventSubscriber {
     public wolf: any;
@@ -26,13 +33,13 @@ class GlobalListener extends EventListener {
         super();
     }
 
-    public on(event: DomainMessage): Promise<any>|any {
+    public on(event: DomainMessage): Promise<any> | any {
         if (!this.doAsynnc) {
             this.lastEvent = event.event;
             this.events.push(event);
             return;
         }
-        
+
         setTimeout(() => {
             this.lastEvent = event.event;
             this.events.push(event);

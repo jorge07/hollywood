@@ -1,21 +1,20 @@
-import { AggregateRootId } from "../../Domain/AggregateRoot";
-import EventSourced from "../../Domain/EventSourced";
+import {AggregateRootId, EventSourcedAggregateRoot} from "../../Domain";
 import ISnapshotStoreDBAL from "./SnapshotStoreDBAL";
 
 interface ISnapshotDictionary {
-    [key: string]: EventSourced;
+    [key: string]: EventSourcedAggregateRoot;
 }
 
 export default class InMemorySnapshotStoreDBAL implements ISnapshotStoreDBAL {
 
     public snapshots: ISnapshotDictionary = {};
 
-    public async get(uuid: AggregateRootId): Promise<EventSourced|null> {
+    public async get(uuid: AggregateRootId): Promise<EventSourcedAggregateRoot|null> {
 
         return this.snapshots[uuid];
     }
 
-    public async store(entity: EventSourced): Promise<void> {
+    public async store(entity: EventSourcedAggregateRoot): Promise<void> {
 
         this.snapshots[entity.getAggregateRootId()] = Object.assign({}, entity);
     }

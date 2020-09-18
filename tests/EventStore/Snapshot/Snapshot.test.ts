@@ -5,7 +5,7 @@ import {
     InMemoryEventStore,
     InMemorySnapshotStoreDBAL,
 } from "../../../src/EventStore";
-import { Dog } from "../../Domain/AggregateRoot.test";
+import {Dog} from "../../Domain/AggregateRoot.test";
 
 describe("SnapshotStore", () => {
     it("EventStore should store, publish and retrieve events when snapshot is found", async () => {

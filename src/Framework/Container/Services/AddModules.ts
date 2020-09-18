@@ -1,7 +1,6 @@
 import { AsyncContainerModule, decorate, injectable, interfaces, METADATA_KEY } from "inversify";
-import { isArray } from "util";
 import { IService, ServiceList } from "../Items/Service";
-import { EventSourced } from "../../../Domain";
+import { EventSourcedAggregateRoot } from "../../../Domain";
 import EventStore from '../../../EventStore/EventStore';
 import { AggregateFactory } from '../../../EventStore/EventStore';
 import { SERVICES_ALIAS, PARAMETERS_ALIAS } from '../Bridge/Alias';
@@ -42,7 +41,7 @@ function module(serviceDefinition: IService, key: string): AsyncContainerModule 
 
 function decorateService(serviceDefinition: IService): void {
     if (serviceDefinition.instance
-        && !isArray(serviceDefinition.instance) // Can't decorate array wrap for collections
+        && !Array.isArray(serviceDefinition.instance) // Can't decorate array wrap for collections
         && serviceDefinition.instance.name !== "" // Not decorate anon
         && !Reflect.hasOwnMetadata(METADATA_KEY.PARAM_TYPES, serviceDefinition.instance) // Don't redecorate
     ) {
@@ -71,7 +70,7 @@ function processCustom(custom: (context: interfaces.Context) => any, key: string
     bind(key).toDynamicValue(custom).inSingletonScope();
 }
 
-function eventStoreFactory<T extends EventSourced>(eventSourcedEntity: AggregateFactory<T>, key: string, bind: interfaces.Bind) {
+function eventStoreFactory<T extends EventSourcedAggregateRoot>(eventSourcedEntity: AggregateFactory<T>, key: string, bind: interfaces.Bind) {
     bind(key).toDynamicValue(({container}: interfaces.Context) =>  {
         return new EventStore<T>(
             eventSourcedEntity,

@@ -9,11 +9,14 @@ class DomainMessage {
         this.playhead = playhead;
         this.event = event;
         this.metadata = metadata;
-        this.eventType = event.domainEventName();
-        this.ocurredOn = new Date();
+        this.eventType = DomainMessage.extractEventType(event);
+        this.occurred = new Date();
     }
     static create(uuid, playhead, event, metadata = []) {
         return new DomainMessage(uuid, playhead, event, metadata);
+    }
+    static extractEventType(event) {
+        return event.constructor.name;
     }
 }
 exports.default = DomainMessage;
