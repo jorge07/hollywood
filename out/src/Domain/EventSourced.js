@@ -9,7 +9,7 @@ class EventSourced extends _1.AggregateRoot {
         this.playhead = -1;
         this.events = [];
     }
-    getUncommitedEvents() {
+    getUncommittedEvents() {
         const stream = new _1.DomainEventStream(this.events);
         this.events = [];
         return stream;
@@ -43,9 +43,9 @@ class EventSourced extends _1.AggregateRoot {
         this.aggregates.push(child);
     }
     raise(event) {
-        this.recursiveHandling(event, this.methodToApplyEvent(event.domainEventName()));
-        this.playhead++;
         const domainMessage = _1.DomainMessage.create(this.getAggregateRootId(), this.playhead, event);
+        this.recursiveHandling(event, this.methodToApplyEvent(domainMessage.eventType));
+        this.playhead++;
         this.events.push(domainMessage);
     }
     handle(event, method) {

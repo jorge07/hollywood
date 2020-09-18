@@ -1,17 +1,17 @@
 import 'reflect-metadata';
-import { ServiceList } from '../../../src/Framework/Container/Items/Service';
-import { Container, inject, multiInject, interfaces } from 'inversify';
+import {ServiceList} from '../../../src/Framework/Container/Items/Service';
+import {Container, inject, multiInject, interfaces} from 'inversify';
 import serviceBinder from '../../../src/Framework/Container/ServiceBinder';
 import EventBus from '../../../src/EventStore/EventBus/EventBus';
 import DomainEvent from '../../../src/Domain/Event/DomainEvent';
 import EventSubscriber from '../../../src/EventStore/EventBus/EventSubscriber';
-import { DomainMessage } from '../../../src/Domain';
+import {DomainMessage} from '../../../src/Domain';
 import EventListener from '../../../src/EventStore/EventBus/EventListener';
-import { Dog } from '../../Domain/AggregateRoot.test';
+import {Dog} from '../../Domain/AggregateRoot.test';
 import EventStore from '../../../src/EventStore/EventStore';
-import { LIST } from '../../../src/Framework/Container/Bridge/Services';
+import {LIST} from '../../../src/Framework/Container/Bridge/Services';
 import parameterBinder from '../../../src/Framework/Container/ParameterBinder';
-import { PARAMETERS } from '../../../src/Framework/Container/Bridge/Parameters';
+import {PARAMETERS} from '../../../src/Framework/Container/Bridge/Parameters';
 
 class TestEvent extends DomainEvent {
 
@@ -42,14 +42,16 @@ class Single {
 }
 
 class Wrap {
-    constructor(@inject('single') public readonly single: Single) {}
+    constructor(@inject('single') public readonly single: Single) {
+    }
 }
 
 class Registry {
-    constructor(@multiInject('multi') public readonly multi: []) {}
+    constructor(@multiInject('multi') public readonly multi: []) {
+    }
 }
 
-describe("Framework:Container:ServiceBinder", () => { 
+describe("Framework:Container:ServiceBinder", () => {
     it("Should be able to add a basic services to the container and build the relations", async () => {
         expect.assertions(3);
 
@@ -70,7 +72,7 @@ describe("Framework:Container:ServiceBinder", () => {
         expect.assertions(1);
 
         const services: ServiceList = new Map([
-            ['multi', { collection: [Single, Single] }],
+            ['multi', {collection: [Single, Single]}],
             ['registry', {instance: Registry}],
         ]);
 
@@ -92,8 +94,8 @@ describe("Framework:Container:ServiceBinder", () => {
         }
 
         const services: ServiceList = new Map([
-            ['async', { async: asyncFactory }],
-            ['async-class', { async: asyncFactoryClass }],
+            ['async', {async: asyncFactory}],
+            ['async-class', {async: asyncFactoryClass}],
         ]);
 
         const container = new Container();
@@ -105,14 +107,14 @@ describe("Framework:Container:ServiceBinder", () => {
     it("Should be able to generate custom, container requried, services", async () => {
         expect.assertions(1);
 
-        const containerAwarefactory = ( { container }: interfaces.Context) => {
-            
+        const containerAwarefactory = ({container}: interfaces.Context) => {
+
             return new Wrap(container.get<Single>('single'));
         }
 
         const services: ServiceList = new Map([
-            ['single', { instance: Single }],
-            ['containerAwareFactory', { custom: containerAwarefactory }],
+            ['single', {instance: Single}],
+            ['containerAwareFactory', {custom: containerAwarefactory}],
         ]);
 
         const container = new Container();
@@ -124,19 +126,19 @@ describe("Framework:Container:ServiceBinder", () => {
         expect.assertions(2);
 
         const services: ServiceList = new Map([
-            ['event-bus', { 
-                instance: EventBus 
+            ['event-bus', {
+                instance: EventBus
             }],
-            ['subscriber', { 
-                instance: Sub, 
-                bus: "event-bus", 
+            ['subscriber', {
+                instance: Sub,
+                bus: "event-bus",
                 subscriber: [
                     TestEvent
-                ] 
+                ]
             }],
-            ['listener', { 
-                instance: Listener, 
-                bus: "event-bus", 
+            ['listener', {
+                instance: Listener,
+                bus: "event-bus",
                 listener: true
             }],
         ]);
@@ -153,14 +155,14 @@ describe("Framework:Container:ServiceBinder", () => {
         expect.assertions(1);
 
         const services: ServiceList = new Map([
-            ['dog.eventStore', { 
+            ['dog.eventStore', {
                 eventStore: Dog
             }],
         ]);
 
         const container = new Container();
         parameterBinder(container, PARAMETERS);
-        await serviceBinder(container, new Map([...LIST,...services]));
+        await serviceBinder(container, new Map([...LIST, ...services]));
 
         expect(container.get<Sub>('dog.eventStore')).toBeInstanceOf(EventStore);
     });

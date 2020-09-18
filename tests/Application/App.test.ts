@@ -1,10 +1,11 @@
 import App from '../../src/Application/App';
-import { DemoHandler, DemoCommand, DemoQuery, DemoQueryHandler } from './Bus/DemoHandlers';
-import { IAppResponse, IAppError } from '../../src/Application/Bus/CallbackArg';
+import {DemoHandler, DemoCommand, DemoQuery, DemoQueryHandler} from './Bus/DemoHandlers';
+import {IAppResponse, IAppError} from '../../src/Application';
 import IMiddleware from '../../src/Application/Bus/Middelware';
 
 class CustomMiddleware implements IMiddleware {
     calls: number = 0
+
     async execute(command: any, next: (command: any) => any): Promise<any> {
         this.calls++;
         return await next(command);
@@ -18,27 +19,27 @@ describe("App", () => {
         const app: App = new App(
             new Map([
                 [
-                    DemoCommand, 
+                    DemoCommand,
                     demoHandler
                 ]
             ]),
             new Map([
                 [
-                    DemoQuery, 
+                    DemoQuery,
                     new DemoQueryHandler()
                 ]
             ])
         );
 
-        const response: IAppResponse| IAppError | null = await app.ask(new DemoQuery());
+        const response: IAppResponse | IAppError | null = await app.ask(new DemoQuery());
 
-        expect(response).toMatchObject({ data:'Hello!' });
+        expect(response).toMatchObject({data: 'Hello!'});
 
         await app.handle(new DemoCommand(false));
 
         expect(demoHandler.received).toBe(true);
     });
-    
+
     it("App should be able to handle Queries and Commands and setup middlewares", async () => {
         const demoHandler = new DemoHandler();
         const Middleware = new CustomMiddleware();
@@ -46,13 +47,13 @@ describe("App", () => {
         const app: App = new App(
             new Map([
                 [
-                    DemoCommand, 
+                    DemoCommand,
                     demoHandler
                 ]
             ]),
             new Map([
                 [
-                    DemoQuery, 
+                    DemoQuery,
                     new DemoQueryHandler()
                 ]
             ]),
@@ -60,9 +61,9 @@ describe("App", () => {
             [Middleware]
         );
 
-        const response: IAppResponse| IAppError | null = await app.ask(new DemoQuery());
+        const response: IAppResponse | IAppError | null = await app.ask(new DemoQuery());
 
-        expect(response).toMatchObject({ data:'Hello!' });
+        expect(response).toMatchObject({data: 'Hello!'});
 
         await app.handle(new DemoCommand(false));
 

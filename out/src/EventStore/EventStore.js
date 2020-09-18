@@ -37,7 +37,7 @@ class EventStore {
     }
     save(entity) {
         return __awaiter(this, void 0, void 0, function* () {
-            const stream = entity.getUncommitedEvents();
+            const stream = entity.getUncommittedEvents();
             yield this.append(entity.getAggregateRootId(), stream);
             this.takeSnapshot(entity);
             for (const message of stream.events) {

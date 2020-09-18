@@ -1,11 +1,11 @@
 import EventStore from '../src/EventStore/EventStore';
-import EventSourced from '../src/Domain/EventSourced';
 import DomainEvent from '../src/Domain/Event/DomainEvent';
 import DomainMessage from '../src/Domain/Event/DomainMessage';
 import DomainEventStream from '../src/Domain/Event/DomainEventStream';
-import type { AggregateRootId } from '../src/Domain/AggregateRoot';
+import type {AggregateRootId} from '../src/Domain';
+import {EventSourcedAggregateRoot} from "../src/Domain";
 
-export default class Scenario <T extends EventSourced> {
+export default class Scenario<T extends EventSourcedAggregateRoot> {
 
     private aggregateId = '1';
     private aggregateInstance?: T;
@@ -13,19 +13,19 @@ export default class Scenario <T extends EventSourced> {
     constructor(
         private readonly aggregateFactory: new (aggregateRootId: AggregateRootId) => T,
         private readonly eventStore: EventStore<T>,
-    ) {}
+    ) {
+    }
 
-    public withAggregateId(aggregateId: string): Scenario<T>
-    {
+    public withAggregateId(aggregateId: string): Scenario<T> {
         this.aggregateId = aggregateId;
 
         return this;
     }
 
-    public given(events: DomainEvent[]): Scenario<T> {
+    public async given(events: DomainEvent[]):  Promise<void> {
 
         if (0 === events.length) {
-            return this;
+            return;
         }
 
         const messages: DomainMessage[] = [];
@@ -38,42 +38,36 @@ export default class Scenario <T extends EventSourced> {
 
         const stream = new DomainEventStream(messages);
 
-        this.eventStore.append(this.aggregateId, stream);
+        await this.eventStore.append(this.aggregateId, stream);
 
         this.aggregateInstance = (new this.aggregateFactory(this.aggregateId)).fromHistory(stream);
-
-        return this;
     }
 
-    public when(callable: (aggregate?: T) => T): Scenario<T> {
-        if (! callable) {
-            return this;
+    public when(callable: (aggregate?: T) => T): void {
+        if (!callable) {
+            return;
         }
 
-        if (! this.aggregateInstance) {
+        if (!this.aggregateInstance) {
 
             this.aggregateInstance = callable(this.aggregateInstance);
 
-            return this
+            return;
         }
 
         callable(this.aggregateInstance);
-
-        return this;
     }
 
-    public then(thens: object[]|DomainEvent[]): Scenario<T> {
+    public then(thens: object[] | DomainEvent[]): void {
 
         expect(thens).toEqual(this.events())
-
-        return this;
     }
 
-    private events(): object[]|DomainEvent[] {
-        if (! this.aggregateInstance) {
+    private events(): object[] | DomainEvent[] {
+        if (!this.aggregateInstance) {
             return [];
         }
 
-        return this.aggregateInstance.getUncommitedEvents().events.map((message)=>(message.event));
+        return this.aggregateInstance.getUncommittedEvents().events.map((message) => (message.event));
     }
 }

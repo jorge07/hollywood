@@ -3,4 +3,4 @@ import User from './User';
 
 const user = User.create("1", "demo@example.org");
 
-console.log(user.getUncommitedEvents());
+console.log(user.getUncommittedEvents());

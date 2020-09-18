@@ -1,9 +1,9 @@
-import EventSourced, { AggregateRootId } from "../../Domain/AggregateRoot";
+import { AggregateRootId, EventSourcedAggregateRoot } from "../../Domain";
 import ISnapshotStoreDBAL from "./SnapshotStoreDBAL";
-import { SERVICES_ALIAS } from '../../Framework/Container/Bridge/Alias';
+import { SERVICES_ALIAS } from '../../Framework';
 import { inject } from 'inversify';
 
-export default class SnapshotStore {
+export default class SnapshotStore<T extends EventSourcedAggregateRoot> {
     constructor(
         @inject(SERVICES_ALIAS.DEFAULT_EVENT_STORE_SNAPSHOT_DBAL) private readonly store: ISnapshotStoreDBAL
     ) {}
@@ -12,7 +12,7 @@ export default class SnapshotStore {
         return await this.store.get(aggregateRootId);
     }
 
-    public async snapshot(entity: EventSourced): Promise<void> {
+    public async snapshot(entity: T): Promise<void> {
         await this.store.store(entity);
     }
 }

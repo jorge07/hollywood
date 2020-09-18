@@ -1,23 +1,23 @@
 import 'reflect-metadata';
 import Kernel from '../../src/Framework/Kernel';
-import { ServiceList } from '../../src/Framework/Container/Items/Service';
-import { DemoQuery, DemoQueryHandler, DemoCommand, DemoHandler } from '../Application/Bus/DemoHandlers';
-import { SERVICES_ALIAS } from '../../src/Framework/Container/Bridge/Alias';
-import type { QueryBusResponse } from '../../src/Application/Bus/CallbackArg';
+import {ServiceList} from '../../src/Framework';
+import {DemoQuery, DemoQueryHandler, DemoCommand, DemoHandler} from '../Application/Bus/DemoHandlers';
+import {SERVICES_ALIAS} from '../../src/Framework';
+import type {QueryBusResponse} from '../../src/Application/Bus/CallbackArg';
 
 const services: ServiceList = new Map([
     [SERVICES_ALIAS.QUERY_HANDLERS, {instance: DemoQueryHandler}],
     [SERVICES_ALIAS.COMMAND_HANDLERS, {instance: DemoHandler}],
 ]);
 
-describe("AppBridge", () => { 
+describe("AppBridge", () => {
     it("Should be able to compose and performa a query", async () => {
         expect.assertions(1);
 
         const kernel = await Kernel.create(
-            'test', 
-            true, 
-            services, 
+            'test',
+            true,
+            services,
             new Map()
         );
 
@@ -28,9 +28,9 @@ describe("AppBridge", () => {
         expect.assertions(1);
 
         const kernel = await Kernel.create(
-            'test', 
-            true, 
-            services, 
+            'test',
+            true,
+            services,
             new Map()
         );
 

@@ -1,10 +1,10 @@
 import EventBus from '../../src/EventStore/EventBus/EventBus';
 import DomainMessage from '../../src/Domain/Event/DomainMessage';
-import { SayWolf } from '../Domain/AggregateRoot.test';
-import { InMemoryReadModelRepository, Projector } from '../../src/ReadModel';
+import {SayWolf} from '../Domain/AggregateRoot.test';
+import {InMemoryReadModelRepository, Projector} from '../../src/ReadModel';
 
 class DogReadModelProjector extends Projector {
-    constructor(private readonly repository: InMemoryReadModelRepository){
+    constructor(private readonly repository: InMemoryReadModelRepository) {
         super();
     }
 
@@ -30,7 +30,7 @@ describe("Projector", () => {
         expect.assertions(1);
 
         const readModel: InMemoryReadModelRepository = new InMemoryReadModelRepository();
-        
+
         try {
             readModel.oneOrFail('demo');
         } catch (err) {
