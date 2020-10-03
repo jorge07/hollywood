@@ -11,12 +11,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const Application_1 = require("../Application/");
 class App {
-    constructor(commands, queries, commandBusMiddewares = [], queryBusMiddewares = []) {
+    constructor(commands, queries, commandBusMiddlewares = [], queryBusMiddlewares = []) {
         this.commandResolver = new Application_1.CommandHandlerResolver();
         this.queryResolver = new Application_1.QueryHandlerResolver();
         this.bindResolvers(commands, queries);
-        this.commandBus = new Application_1.CommandBus(...commandBusMiddewares, this.commandResolver);
-        this.queryBus = new Application_1.QueryBus(...queryBusMiddewares, this.queryResolver);
+        this.commandBus = new Application_1.CommandBus(...commandBusMiddlewares, this.commandResolver);
+        this.queryBus = new Application_1.QueryBus(...queryBusMiddlewares, this.queryResolver);
     }
     ask(query) {
         return __awaiter(this, void 0, void 0, function* () {

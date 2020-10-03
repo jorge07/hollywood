@@ -9,22 +9,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-class MessaBus {
+class MessageBus {
     constructor(...middlewares) {
         this.middlewareChain = this.createChain(middlewares);
     }
-    createChain(middelwares) {
+    createChain(middlewares) {
         const chain = {};
-        this.reverse(middelwares).forEach((middleware, key) => {
+        MessageBus.reverse(middlewares).forEach((middleware, key) => {
             chain[key] = (command) => __awaiter(this, void 0, void 0, function* () {
                 return yield middleware.execute(command, chain[key - 1]);
             });
         });
-        return chain[middelwares.length - 1];
+        return chain[middlewares.length - 1];
     }
-    reverse(middelwares) {
-        return middelwares.reverse();
+    static reverse(middlewares) {
+        return middlewares.reverse();
     }
 }
-exports.default = MessaBus;
+exports.default = MessageBus;
 //# sourceMappingURL=MessageBus.js.map

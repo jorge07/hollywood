@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PARAMETERS_ALIAS = exports.SERVICES_ALIAS = void 0;
 exports.SERVICES_ALIAS = {
     COMMAND_HANDLERS: "hollywood.application.command.handlers",
     QUERY_HANDLERS: "hollywood.application.query.handlers",

@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.handler = void 0;
 // ts-node examples/application/example.application.ts
 require("reflect-metadata");
 const EventStore_1 = require("../../src/EventStore");

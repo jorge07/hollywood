@@ -25,25 +25,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
-const util_1 = require("util");
 const App_1 = __importDefault(require("../Application/App"));
 const Alias_1 = require("./Container/Bridge/Alias");
+const MissingAutowiringAnnotationException_1 = __importDefault(require("../Application/Bus/Exception/MissingAutowiringAnnotationException"));
 let AppBridge = class AppBridge {
     constructor(commandHandlers, queryHandlers, commandMiddleware = [], queryMiddleware = []) {
         const commands = new Map();
         const queries = new Map();
         const commandName = (target) => {
             if (!target.command) {
-                throw new Error(`Missinng @autowiring annotation in ${target.constructor.name} command/query`);
+                throw new MissingAutowiringAnnotationException_1.default(target);
             }
             return target.command;
         };
-        if (!util_1.isArray(commandHandlers[0])) {
+        if (!Array.isArray(commandHandlers[0])) {
             commandHandlers.forEach((handler) => {
                 commands.set(commandName(handler), handler);
             });
         }
-        if (!util_1.isArray(queryHandlers[0])) {
+        if (!Array.isArray(queryHandlers[0])) {
             queryHandlers.forEach((handler) => {
                 queries.set(commandName(handler), handler);
             });

@@ -21,7 +21,7 @@ function Builder(services, parameters) {
     return __awaiter(this, void 0, void 0, function* () {
         const container = new inversify_1.Container();
         ParameterBinder_1.default(container, new Map([...Parameters_1.PARAMETERS, ...parameters]));
-        yield ServiceBinder_1.default(container, new Map([...Services_1.LIST, ...services]));
+        yield ServiceBinder_1.default(container, new Map([...Services_1.SERVICES, ...services]));
         return container;
     });
 }

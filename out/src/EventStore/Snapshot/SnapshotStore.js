@@ -21,7 +21,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Alias_1 = require("../../Framework/Container/Bridge/Alias");
+const Framework_1 = require("../../Framework");
 const inversify_1 = require("inversify");
 let SnapshotStore = class SnapshotStore {
     constructor(store) {
@@ -39,7 +39,7 @@ let SnapshotStore = class SnapshotStore {
     }
 };
 SnapshotStore = __decorate([
-    __param(0, inversify_1.inject(Alias_1.SERVICES_ALIAS.DEFAULT_EVENT_STORE_SNAPSHOT_DBAL)),
+    __param(0, inversify_1.inject(Framework_1.SERVICES_ALIAS.DEFAULT_EVENT_STORE_SNAPSHOT_DBAL)),
     __metadata("design:paramtypes", [Object])
 ], SnapshotStore);
 exports.default = SnapshotStore;

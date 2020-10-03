@@ -27,10 +27,10 @@ class EventStore {
     }
     load(aggregateRootId) {
         return __awaiter(this, void 0, void 0, function* () {
-            let aggregateRoot = null;
+            let aggregateRoot;
             aggregateRoot = yield this.fromSnapshot(aggregateRootId);
             const stream = yield this.dbal.load(aggregateRootId, aggregateRoot ? aggregateRoot.version() : 0);
-            this.emptyStream(stream);
+            EventStore.emptyStream(stream);
             aggregateRoot = aggregateRoot || this.aggregateFactory(aggregateRootId);
             return aggregateRoot.fromHistory(stream);
         });
@@ -39,7 +39,7 @@ class EventStore {
         return __awaiter(this, void 0, void 0, function* () {
             const stream = entity.getUncommittedEvents();
             yield this.append(entity.getAggregateRootId(), stream);
-            this.takeSnapshot(entity);
+            yield this.takeSnapshot(entity);
             for (const message of stream.events) {
                 yield this.eventBus.publish(message);
             }
@@ -85,7 +85,7 @@ class EventStore {
     aggregateFactory(aggregateRootId) {
         return new this.modelConstructor(aggregateRootId);
     }
-    emptyStream(stream) {
+    static emptyStream(stream) {
         if (stream.isEmpty()) {
             throw new AggregateRootNotFoundException_1.default();
         }

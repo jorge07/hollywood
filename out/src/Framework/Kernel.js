@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Alias_1 = require("./Container/Bridge/Alias");
 const Builder_1 = __importDefault(require("./Container/Builder"));
+const ContainerCompilationException_1 = __importDefault(require("./Container/Exception/ContainerCompilationException"));
 class Kernel {
     constructor(debug = false, env = "dev", container) {
         this.debug = debug;
@@ -32,7 +33,7 @@ class Kernel {
                 container = yield Builder_1.default(services, parameters);
             }
             catch (error) {
-                throw new Error("Container Compilation Error: " + error.message);
+                throw new ContainerCompilationException_1.default(error.message);
             }
             return new Kernel(debug, env, container);
         });

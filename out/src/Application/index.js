@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.autowiring = exports.App = exports.CommandHandlerResolver = exports.QueryHandlerResolver = exports.QueryBus = exports.CommandBus = void 0;
 const App_1 = __importDefault(require("./App"));
 exports.App = App_1.default;
 const autowiring_1 = __importDefault(require("./Bus/autowiring"));
