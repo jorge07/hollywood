@@ -1,8 +1,8 @@
-import { IAppError } from "../CallbackArg";
-import { ICommandRegistry } from "../CommandRegistry";
-import IMiddleware from "../Middelware";
-import ICommand from "./Command";
-import ICommandHandler from "./CommandHandler";
+import type { IAppError } from "../CallbackArg";
+import type { ICommandRegistry } from "../CommandRegistry";
+import type IMiddleware from "../Middelware";
+import type ICommand from "./Command";
+import type ICommandHandler from "./CommandHandler";
 
 export default class CommandHandlerResolver implements IMiddleware {
 

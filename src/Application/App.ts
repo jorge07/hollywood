@@ -1,16 +1,18 @@
 import {
     CommandBus,
     CommandHandlerResolver,
+    QueryBus,
+    QueryHandlerResolver,
+} from "../Application/";
+import type {
     IAppError,
     IAppResponse,
     ICommand,
     ICommandHandler,
     IQuery,
     IQueryHandler,
-    QueryBus,
-    QueryHandlerResolver,
 } from "../Application/";
-import IMiddleware from "./Bus/Middelware";
+import type IMiddleware from "./Bus/Middelware";
 
 export default class App {
     private readonly commandResolver: CommandHandlerResolver;
@@ -21,16 +23,16 @@ export default class App {
     constructor(
         commands: Map<any, ICommandHandler>,
         queries: Map<any, IQueryHandler>,
-        commandBusMiddewares: IMiddleware[] = [],
-        queryBusMiddewares: IMiddleware[] = [],
+        commandBusMiddlewares: IMiddleware[] = [],
+        queryBusMiddlewares: IMiddleware[] = [],
     ) {
         this.commandResolver = new CommandHandlerResolver();
         this.queryResolver = new QueryHandlerResolver();
 
         this.bindResolvers(commands, queries);
 
-        this.commandBus = new CommandBus(...commandBusMiddewares, this.commandResolver);
-        this.queryBus = new QueryBus(...queryBusMiddewares, this.queryResolver);
+        this.commandBus = new CommandBus(...commandBusMiddlewares, this.commandResolver);
+        this.queryBus = new QueryBus(...queryBusMiddlewares, this.queryResolver);
     }
 
     public async ask(query: IQuery): Promise<IAppResponse|IAppError|null> {

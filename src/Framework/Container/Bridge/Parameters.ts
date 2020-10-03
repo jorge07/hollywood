@@ -1,4 +1,4 @@
-import { ParametersList } from '../Items/Parameter';
+import { ParametersList } from '../..';
 import { PARAMETERS_ALIAS } from './Alias';
 
 export const PARAMETERS: ParametersList = new Map([

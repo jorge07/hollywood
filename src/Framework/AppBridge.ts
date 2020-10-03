@@ -1,22 +1,23 @@
 import { multiInject } from "inversify";
-import { isArray } from "util";
-import { ICommandHandler } from "../Application";
+import type { ICommandHandler } from "../Application";
 import App from "../Application/App";
-import ICommand from "../Application/Bus/Command/Command";
-import IMiddleware from "../Application/Bus/Middelware";
-import IQuery from "../Application/Bus/Query/Query";
-import IQueryHandler from "../Application/Bus/Query/QueryHandler";
-import { QueryBusResponse } from '../Application/Bus/CallbackArg';
+import type ICommand from "../Application/Bus/Command/Command";
+import type IMiddleware from "../Application/Bus/Middelware";
+import type IQuery from "../Application/Bus/Query/Query";
+import type IQueryHandler from "../Application/Bus/Query/QueryHandler";
+import type { QueryBusResponse } from '../Application/Bus/CallbackArg';
 import { SERVICES_ALIAS } from './Container/Bridge/Alias';
+import type { IAnnotatedCommandHandler, IAnnotatedQueryHandler } from "../Application/Bus/autowiring";
+import MissingAutowiringAnnotationException from "../Application/Bus/Exception/MissingAutowiringAnnotationException";
 
 export default class AppBridge {
     private readonly app: App;
 
     constructor(
         @multiInject(SERVICES_ALIAS.COMMAND_HANDLERS)
-        commandHandlers: ICommandHandler[],
+        commandHandlers: IAnnotatedCommandHandler[],
         @multiInject(SERVICES_ALIAS.QUERY_HANDLERS)
-        queryHandlers: IQueryHandler[],
+        queryHandlers: IAnnotatedQueryHandler[],
         @multiInject(SERVICES_ALIAS.COMMAND_MIDDLEWARE)
         commandMiddleware: IMiddleware[] = [],
         @multiInject(SERVICES_ALIAS.QUERY_MIDDLEWARE)
@@ -25,15 +26,16 @@ export default class AppBridge {
         const commands = new Map<any, ICommandHandler>();
         const queries = new Map<any, IQueryHandler>();
 
-        const commandName = (target: any ): string => {
+        const commandName = (target: IAnnotatedCommandHandler|IAnnotatedQueryHandler ): { name: string } => {
             if (!target.command) {
-                throw new Error(`Missinng @autowiring annotation in ${target.constructor.name} command/query`);
+                throw new MissingAutowiringAnnotationException(target);
             }
 
-            return target.command ;
+            return target.command;
         };
-        if (!isArray(commandHandlers[0])) {
-            commandHandlers.forEach((handler: ICommandHandler) => {
+
+        if (!Array.isArray(commandHandlers[0])) {
+            commandHandlers.forEach((handler: IAnnotatedCommandHandler) => {
                 commands.set(
                     commandName(handler),
                     handler,
@@ -41,8 +43,8 @@ export default class AppBridge {
             });
         }
 
-        if (!isArray(queryHandlers[0])) {
-            queryHandlers.forEach((handler: IQueryHandler) => {
+        if (!Array.isArray(queryHandlers[0])) {
+            queryHandlers.forEach((handler: IAnnotatedQueryHandler) => {
                 queries.set(
                     commandName(handler),
                     handler,

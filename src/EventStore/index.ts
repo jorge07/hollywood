@@ -3,10 +3,10 @@ import EventListener from "./EventBus/EventListener";
 import EventSubscriber from "./EventBus/EventSubscriber";
 import EventStore from "./EventStore";
 import AggregateRootNotFoundException from "./Exception/AggregateRootNotFoundException";
-import IEventStoreDBAL from "./IEventStoreDBAL";
+import type IEventStoreDBAL from "./IEventStoreDBAL";
 import InMemoryEventStore from "./InMemoryEventStore";
 import InMemorySnapshotStoreDBAL from "./Snapshot/InMemorySnapshotStoreDBAL";
-import ISnapshotStoreDBAL from "./Snapshot/SnapshotStoreDBAL";
+import type ISnapshotStoreDBAL from "./Snapshot/SnapshotStoreDBAL";
 
 export {
     EventBus,

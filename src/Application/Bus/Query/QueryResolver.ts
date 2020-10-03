@@ -11,7 +11,7 @@ export default class QueryHandlerResolver implements IMiddleware {
         return await this.resolve(command);
     }
 
-    public addHandler(command: any, handler: IQueryHandler): QueryHandlerResolver {
+    public addHandler(command: { name: string }, handler: IQueryHandler): QueryHandlerResolver {
         this.handlers[command.name] = handler;
 
         return this;

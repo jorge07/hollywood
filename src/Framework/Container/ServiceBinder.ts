@@ -1,5 +1,5 @@
-import { Container } from "inversify";
-import { ServiceList } from "./Items/Service";
+import type { Container } from "inversify";
+import type { ServiceList } from "./Items/Service";
 import addModules from "./Services/AddModules";
 import AttachListenersAndSubscribers from "./Services/AttachListenersAndSubscribers";
 
