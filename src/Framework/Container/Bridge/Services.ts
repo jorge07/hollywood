@@ -1,11 +1,11 @@
-import { ServiceList } from '../Items/Service';
+import type { ServiceList } from '../..';
 import EventBus from '../../../EventStore/EventBus/EventBus';
 import InMemoryEventStore from '../../../EventStore/InMemoryEventStore';
 import AppBridge from '../../AppBridge';
 import { SERVICES_ALIAS } from './Alias';
 import InMemorySnapshotStoreDBAL from '../../../EventStore/Snapshot/InMemorySnapshotStoreDBAL';
 
-export const LIST: ServiceList = new Map([
+export const SERVICES: ServiceList = new Map([
     // Application Layer
     [SERVICES_ALIAS.COMMAND_HANDLERS, { collection: [] }],
     [SERVICES_ALIAS.QUERY_HANDLERS, { collection: [] }],

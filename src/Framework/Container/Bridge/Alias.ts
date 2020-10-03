@@ -1,4 +1,3 @@
-
 export const SERVICES_ALIAS = {
     COMMAND_HANDLERS: "hollywood.application.command.handlers",
     QUERY_HANDLERS: "hollywood.application.query.handlers",

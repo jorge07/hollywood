@@ -1,10 +1,10 @@
 import { Container } from "inversify";
-import { ParametersList } from "./Items/Parameter";
-import { ServiceList } from "./Items/Service";
+import type { ParametersList } from "./Items/Parameter";
+import type { ServiceList } from "./Items/Service";
 import parametersBinder from "./ParameterBinder";
 import serviceBinder from "./ServiceBinder";
 import { PARAMETERS } from './Bridge/Parameters';
-import { LIST } from './Bridge/Services';
+import { SERVICES } from './Bridge/Services';
 
 export default async function Builder(
     services: ServiceList,
@@ -13,7 +13,7 @@ export default async function Builder(
     const container: Container = new Container();
 
     parametersBinder(container, new Map([...PARAMETERS, ...parameters]));
-    await serviceBinder(container, new Map([...LIST, ...services]));
+    await serviceBinder(container, new Map([...SERVICES, ...services]));
 
     return container;
 }

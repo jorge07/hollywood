@@ -1,11 +1,12 @@
 import { SERVICES_ALIAS } from './Container/Bridge/Alias';
-import { ParametersList } from "./Container/Items/Parameter";
-import { ServiceList } from "./Container/Items/Service";
+import type { ParametersList } from "./Container/Items/Parameter";
+import type { ServiceList } from "./Container/Items/Service";
 import type { Container } from 'inversify';
 import Builder from "./Container/Builder";
 import type { ICommand, IQuery } from "../Application";
 import type { QueryBusResponse } from '../Application/Bus/CallbackArg';
 import type AppBridge from "./AppBridge";
+import ContainerCompilationException from "./Container/Exception/ContainerCompilationException";
 
 export default class Kernel {
 
@@ -27,7 +28,7 @@ export default class Kernel {
         try {
             container = await Builder(services, parameters);
         } catch (error) {
-            throw new Error("Container Compilation Error: " + error.message);
+            throw new ContainerCompilationException(error.message);
         }
 
         return new Kernel(debug, env, container);

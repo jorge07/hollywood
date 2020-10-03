@@ -1,7 +1,7 @@
 import { Container, decorate, injectable } from 'inversify';
 import DomainEvent from "../../../Domain/Event/DomainEvent";
 import EventBus from "../../../EventStore/EventBus/EventBus";
-import { IService, ServiceList } from "../Items/Service";
+import type { IService, ServiceList } from "../Items/Service";
 import EventListener from '../../../EventStore/EventBus/EventListener';
 import EventSubscriber from '../../../EventStore/EventBus/EventSubscriber';
 

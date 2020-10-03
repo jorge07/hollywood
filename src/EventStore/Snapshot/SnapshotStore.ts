@@ -1,5 +1,5 @@
 import { AggregateRootId, EventSourcedAggregateRoot } from "../../Domain";
-import ISnapshotStoreDBAL from "./SnapshotStoreDBAL";
+import type ISnapshotStoreDBAL from "./SnapshotStoreDBAL";
 import { SERVICES_ALIAS } from '../../Framework';
 import { inject } from 'inversify';
 

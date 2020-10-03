@@ -1,8 +1,8 @@
 import { AsyncContainerModule, decorate, injectable, interfaces, METADATA_KEY } from "inversify";
-import { IService, ServiceList } from "../Items/Service";
+import type { IService, ServiceList } from "../Items/Service";
 import { EventSourcedAggregateRoot } from "../../../Domain";
 import EventStore from '../../../EventStore/EventStore';
-import { AggregateFactory } from '../../../EventStore/EventStore';
+import type { AggregateFactory } from '../../../EventStore/EventStore';
 import { SERVICES_ALIAS, PARAMETERS_ALIAS } from '../Bridge/Alias';
 
 export default function addModules(serviceList: ServiceList, modules: AsyncContainerModule[]): void {

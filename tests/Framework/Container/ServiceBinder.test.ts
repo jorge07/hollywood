@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import {ServiceList} from '../../../src/Framework/Container/Items/Service';
+import {ServiceList} from '../../../src/Framework';
 import {Container, inject, multiInject, interfaces} from 'inversify';
 import serviceBinder from '../../../src/Framework/Container/ServiceBinder';
 import EventBus from '../../../src/EventStore/EventBus/EventBus';
@@ -9,7 +9,7 @@ import {DomainMessage} from '../../../src/Domain';
 import EventListener from '../../../src/EventStore/EventBus/EventListener';
 import {Dog} from '../../Domain/AggregateRoot.test';
 import EventStore from '../../../src/EventStore/EventStore';
-import {LIST} from '../../../src/Framework/Container/Bridge/Services';
+import {SERVICES} from '../../../src/Framework/Container/Bridge/Services';
 import parameterBinder from '../../../src/Framework/Container/ParameterBinder';
 import {PARAMETERS} from '../../../src/Framework/Container/Bridge/Parameters';
 
@@ -17,6 +17,7 @@ class TestEvent extends DomainEvent {
 
 }
 
+// tslint:disable-next-line:max-classes-per-file
 class Sub extends EventSubscriber {
 
     public hit: number = 0;
@@ -26,6 +27,7 @@ class Sub extends EventSubscriber {
     }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 class Listener extends EventListener {
 
     public hit: number = 0;
@@ -35,17 +37,20 @@ class Listener extends EventListener {
     }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 class Single {
     hi() {
         return 'hi';
     }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 class Wrap {
     constructor(@inject('single') public readonly single: Single) {
     }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 class Registry {
     constructor(@multiInject('multi') public readonly multi: []) {
     }
@@ -162,7 +167,7 @@ describe("Framework:Container:ServiceBinder", () => {
 
         const container = new Container();
         parameterBinder(container, PARAMETERS);
-        await serviceBinder(container, new Map([...LIST, ...services]));
+        await serviceBinder(container, new Map([...SERVICES, ...services]));
 
         expect(container.get<Sub>('dog.eventStore')).toBeInstanceOf(EventStore);
     });

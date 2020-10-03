@@ -1,5 +1,5 @@
 import { interfaces } from "inversify";
-import { AggregateFactory } from '../../../EventStore/EventStore';
+import type { AggregateFactory } from '../../../EventStore/EventStore';
 
 type UniqueServiceIdentifier = string;
 
