@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const __1 = require("../..");
 const UserWasCreated_1 = require("./UserWasCreated");
-class User extends __1.Domain.EventSourced {
+class User extends __1.Domain.EventSourcedAggregateRoot {
     constructor() {
         super(...arguments);
         this.uuid = "";

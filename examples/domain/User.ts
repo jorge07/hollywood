@@ -1,7 +1,7 @@
 import { Domain } from "../..";
 import { UserWasCreated } from './UserWasCreated';
 
-export default class User extends Domain.EventSourced {
+export default class User extends Domain.EventSourcedAggregateRoot {
     private uuid: string = "";
     private email: string = "";
 

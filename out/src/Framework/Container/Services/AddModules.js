@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
-const util_1 = require("util");
 const EventStore_1 = __importDefault(require("../../../EventStore/EventStore"));
 const Alias_1 = require("../Bridge/Alias");
 function addModules(serviceList, modules) {
@@ -45,7 +44,7 @@ function module(serviceDefinition, key) {
 }
 function decorateService(serviceDefinition) {
     if (serviceDefinition.instance
-        && !util_1.isArray(serviceDefinition.instance) // Can't decorate array wrap for collections
+        && !Array.isArray(serviceDefinition.instance) // Can't decorate array wrap for collections
         && serviceDefinition.instance.name !== "" // Not decorate anon
         && !Reflect.hasOwnMetadata(inversify_1.METADATA_KEY.PARAM_TYPES, serviceDefinition.instance) // Don't redecorate
     ) {
