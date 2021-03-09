@@ -16,7 +16,7 @@ export default abstract class MessageBus {
         MessageBus.reverse(middlewares).forEach((middleware: IMiddleware, key: number) => {
             if (middleware) {
                 chain[key] = async (command: any): Promise<any> =>  {
-                    return await middleware.execute(command, chain[key - 1]);
+                    return middleware.execute(command, chain[key - 1]);
                 };
             }
         });

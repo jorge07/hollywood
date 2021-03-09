@@ -32,7 +32,7 @@ export default class App {
 
     public async ask(query: IQuery): Promise<IAppResponse|IAppError|null> {
 
-        return await this.queryBus.ask(query);
+        return this.queryBus.ask(query);
     }
 
     public async handle(command: ICommand): Promise<void> {

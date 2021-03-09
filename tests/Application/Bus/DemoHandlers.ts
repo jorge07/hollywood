@@ -4,6 +4,7 @@ import ICommand from "../../../src/Application/Bus/Command/Command";
 import {IAppError, IAppResponse} from "../../../src/Application/Bus/CallbackArg";
 import IQuery from "../../../src/Application/Bus/Query/Query";
 import IQueryHandler from "../../../src/Application/Bus/Query/QueryHandler";
+import {injectable} from "inversify";
 
 export class DemoCommand implements ICommand {
     constructor(public readonly exception: boolean) {
@@ -11,6 +12,7 @@ export class DemoCommand implements ICommand {
 }
 
 // tslint:disable-next-line:max-classes-per-file
+@injectable()
 export class DemoHandler implements ICommandHandler {
     public received: boolean = false;
 
@@ -30,7 +32,9 @@ export class DemoQuery implements IQuery {
     }
 }
 
+
 // tslint:disable-next-line:max-classes-per-file
+@injectable()
 export class DemoQueryHandler implements IQueryHandler {
     @autowiring
     public async handle(request: DemoQuery): Promise<IAppResponse | IAppError> {
@@ -44,6 +48,7 @@ export class DemoQueryHandler implements IQueryHandler {
 
 
 // tslint:disable-next-line:max-classes-per-file
+@injectable()
 export class MissingAnnotationDemoQueryHandler implements IQueryHandler {
     public async handle(request: DemoQuery): Promise<IAppResponse | IAppError> {
         // noop

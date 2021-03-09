@@ -10,7 +10,7 @@ export default class SnapshotStore<T extends EventSourcedAggregateRoot> {
     ) {}
 
     public async retrieve(aggregateRootId: AggregateRootId): Promise<any> {
-        return await this.store.get(aggregateRootId);
+        return this.store.get(aggregateRootId);
     }
 
     public async snapshot(entity: T): Promise<void> {

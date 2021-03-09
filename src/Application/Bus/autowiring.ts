@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import IHandler from "./Handler";
+import IHandler from "./IHandler";
 
 const metadataKey = "design:paramtypes";
 const propertykey = "handle";
