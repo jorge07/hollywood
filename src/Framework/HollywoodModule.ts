@@ -1,9 +1,9 @@
 import ModuleContext from "./Modules/ModuleContext";
 import { ServiceList } from "./Container/Items/Service";
 import { SERVICES_ALIAS } from "./Container/Bridge/Alias";
-import EventBus from "../EventStore/EventBus/EventBus";
-import InMemorySnapshotStoreDBAL from "../EventStore/Snapshot/InMemorySnapshotStoreDBAL";
-import InMemoryEventStore from "../EventStore/InMemoryEventStore";
+import EventBus from "../EventSourcing/EventBus/EventBus";
+import InMemorySnapshotStoreDBAL from "../EventSourcing/Snapshot/InMemorySnapshotStoreDBAL";
+import InMemoryEventStore from "../EventSourcing/InMemoryEventStore";
 
 const HOLLYWOOD_SERVICES: ServiceList = new Map([
     // Application Layer

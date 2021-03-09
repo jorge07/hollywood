@@ -92,4 +92,4 @@ class EventStore {
     }
 }
 exports.default = EventStore;
-//# sourceMappingURL=EventStore.js.map
+//# sourceMappingURL=EventSourcing.js.map

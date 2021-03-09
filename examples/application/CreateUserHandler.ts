@@ -1,4 +1,4 @@
-import EventStore from '../../src/EventStore/EventStore';
+import EventStore from '../../src/EventSourcing/EventStore';
 import User from '../domain/User';
 import CreateUser from './CreateUser';
 import { inject, injectable } from 'inversify';

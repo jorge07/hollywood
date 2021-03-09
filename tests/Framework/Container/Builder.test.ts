@@ -8,7 +8,7 @@ import {BuildFromModuleContext} from "../../../src/Framework/Container/Builder";
 import type {IService} from "../../../src/Framework/Container/Items/Service";
 import ContainerCompilationException from "../../../src/Framework/Container/Exception/ContainerCompilationException";
 import {UserWasCreated} from "../../../examples/domain/UserWasCreated";
-import EventListener from "../../../src/EventStore/EventBus/EventListener";
+import EventListener from "../../../src/EventSourcing/EventBus/EventListener";
 import {SERVICES_ALIAS} from "../../../src/Framework/Container/Bridge/Alias";
 import AppBuilder from "../../../src/Framework/AppBuilder";
 import {DemoQueryHandler} from "../../Application/Bus/DemoHandlers";

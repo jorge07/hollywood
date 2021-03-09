@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.IsEventStoreType = void 0;
-const EventStore_1 = __importDefault(require("../../../../../EventStore/EventStore"));
+const EventStore_1 = __importDefault(require("../../../../../EventSourcing/EventStore"));
 const Alias_1 = require("../../../Bridge/Alias");
 function IsEventStoreType(serviceDefinition) {
     return !!serviceDefinition.eventStore;

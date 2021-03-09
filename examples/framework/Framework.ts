@@ -2,13 +2,13 @@
 import "reflect-metadata";
 import { PARAMETERS_ALIAS, SERVICES_ALIAS } from '../../src/Framework/Container/Bridge/Alias';
 import CreateUserHandler from '../application/CreateUserHandler';
-import EventStore from '../../src/EventStore/EventStore';
+import EventStore from '../../src/EventSourcing/EventStore';
 import User from '../domain/User';
 import Kernel from '../../src/Framework/Kernel';
 import CreateUser from '../application/CreateUser';
 import DomainMessage from '../../src/Domain/Event/DomainMessage';
 import ModuleContext from "../../src/Framework/Modules/ModuleContext";
-import EventListener from "../../src/EventStore/EventBus/EventListener";
+import EventListener from "../../src/EventSourcing/EventBus/EventListener";
 
 class EchoListener extends EventListener {
     public counter = 0

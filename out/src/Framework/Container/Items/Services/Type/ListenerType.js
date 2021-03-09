@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BindListeners = exports.IsListenerType = void 0;
 const inversify_1 = require("inversify");
-const EventListener_1 = __importDefault(require("../../../../../EventStore/EventBus/EventListener"));
-const EventSubscriber_1 = __importDefault(require("../../../../../EventStore/EventBus/EventSubscriber"));
+const EventListener_1 = __importDefault(require("../../../../../EventSourcing/EventBus/EventListener"));
+const EventSubscriber_1 = __importDefault(require("../../../../../EventSourcing/EventBus/EventSubscriber"));
 inversify_1.decorate(inversify_1.injectable(), EventListener_1.default);
 inversify_1.decorate(inversify_1.injectable(), EventSubscriber_1.default);
 const LISTENERS_SELECTOR = 'hollywood.listeners';

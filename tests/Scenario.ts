@@ -1,4 +1,4 @@
-import EventStore from '../src/EventStore/EventStore';
+import EventStore from '../src/EventSourcing/EventStore';
 import DomainEvent from '../src/Domain/Event/DomainEvent';
 import DomainMessage from '../src/Domain/Event/DomainMessage';
 import DomainEventStream from '../src/Domain/Event/DomainEventStream';

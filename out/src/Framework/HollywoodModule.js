@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HollywoodModule = void 0;
 const ModuleContext_1 = __importDefault(require("./Modules/ModuleContext"));
 const Alias_1 = require("./Container/Bridge/Alias");
-const EventBus_1 = __importDefault(require("../EventStore/EventBus/EventBus"));
-const InMemorySnapshotStoreDBAL_1 = __importDefault(require("../EventStore/Snapshot/InMemorySnapshotStoreDBAL"));
-const InMemoryEventStore_1 = __importDefault(require("../EventStore/InMemoryEventStore"));
+const EventBus_1 = __importDefault(require("../EventSourcing/EventBus/EventBus"));
+const InMemorySnapshotStoreDBAL_1 = __importDefault(require("../EventSourcing/Snapshot/InMemorySnapshotStoreDBAL"));
+const InMemoryEventStore_1 = __importDefault(require("../EventSourcing/InMemoryEventStore"));
 const HOLLYWOOD_SERVICES = new Map([
     // Application Layer
     [Alias_1.SERVICES_ALIAS.COMMAND_HANDLERS, { collection: [] }],

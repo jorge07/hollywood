@@ -1,13 +1,13 @@
 import "reflect-metadata";
 
 import {Dog} from "../../Domain/AggregateRoot.test";
-import InMemorySnapshotStoreDBAL from "../../../src/EventStore/Snapshot/InMemorySnapshotStoreDBAL";
-import EventBus from "../../../src/EventStore/EventBus/EventBus";
-import InMemoryEventStore from "../../../src/EventStore/InMemoryEventStore";
-import EventStore from "../../../src/EventStore/EventStore";
+import InMemorySnapshotStoreDBAL from "../../../src/EventSourcing/Snapshot/InMemorySnapshotStoreDBAL";
+import EventBus from "../../../src/EventSourcing/EventBus/EventBus";
+import InMemoryEventStore from "../../../src/EventSourcing/InMemoryEventStore";
+import EventStore from "../../../src/EventSourcing/EventStore";
 
 describe("SnapshotStore", () => {
-    it("EventStore should store, publish and retrieve events when snapshot is found", async () => {
+    it("EventSourcing should store, publish and retrieve events when snapshot is found", async () => {
         const eventBus = new EventBus();
         const snapshotDBAL = new InMemorySnapshotStoreDBAL();
         const inMemoryEventStore = new InMemoryEventStore();
@@ -39,7 +39,7 @@ describe("SnapshotStore", () => {
     });
 
 
-    it("EventStore should store, publish and retrieve events when no snapshot is found", async () => {
+    it("EventSourcing should store, publish and retrieve events when no snapshot is found", async () => {
         const eventBus = new EventBus();
         const snapshotDBAL = new InMemorySnapshotStoreDBAL();
 

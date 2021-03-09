@@ -1,9 +1,9 @@
 import { decorate, injectable } from 'inversify';
 import type {interfaces} from "inversify";
 import type { IService } from "../../Service";
-import type EventBus from "../../../../../EventStore/EventBus/EventBus";
-import EventListener from "../../../../../EventStore/EventBus/EventListener";
-import EventSubscriber from "../../../../../EventStore/EventBus/EventSubscriber";
+import type EventBus from "../../../../../EventSourcing/EventBus/EventBus";
+import EventListener from "../../../../../EventSourcing/EventBus/EventListener";
+import EventSubscriber from "../../../../../EventSourcing/EventBus/EventSubscriber";
 
 
 decorate(injectable(), EventListener);

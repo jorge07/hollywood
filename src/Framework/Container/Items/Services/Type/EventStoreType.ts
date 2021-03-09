@@ -1,5 +1,5 @@
 import type {interfaces} from "inversify";
-import EventStore, {AggregateFactory} from "../../../../../EventStore/EventStore";
+import EventStore, {AggregateFactory} from "../../../../../EventSourcing/EventStore";
 import {PARAMETERS_ALIAS, SERVICES_ALIAS} from "../../../Bridge/Alias";
 import type {IService} from "../../Service";
 

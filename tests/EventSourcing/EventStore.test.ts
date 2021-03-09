@@ -1,14 +1,14 @@
 import "reflect-metadata";
 
 import {Dog, SayWolf, SayGrr} from '../Domain/AggregateRoot.test';
-import EventSubscriber from "../../src/EventStore/EventBus/EventSubscriber";
-import EventListener from "../../src/EventStore/EventBus/EventListener";
+import EventSubscriber from "../../src/EventSourcing/EventBus/EventSubscriber";
+import EventListener from "../../src/EventSourcing/EventBus/EventListener";
 import DomainMessage from "../../src/Domain/Event/DomainMessage";
-import IEventStoreDBAL from "../../src/EventStore/IEventStoreDBAL";
+import IEventStoreDBAL from "../../src/EventSourcing/IEventStoreDBAL";
 import DomainEventStream from "../../src/Domain/Event/DomainEventStream";
-import EventBus from "../../src/EventStore/EventBus/EventBus";
-import EventStore from "../../src/EventStore/EventStore";
-import InMemoryEventStore from "../../src/EventStore/InMemoryEventStore";
+import EventBus from "../../src/EventSourcing/EventBus/EventBus";
+import EventStore from "../../src/EventSourcing/EventStore";
+import InMemoryEventStore from "../../src/EventSourcing/InMemoryEventStore";
 
 class OnWolfEventSubscriber extends EventSubscriber {
     public wolf: any;
@@ -66,7 +66,7 @@ export default class InMemoryErrorEventStore implements IEventStoreDBAL {
 
 
 describe("EventStore", () => {
-    it("EventStore should store, publish and retrieve events", async () => {
+    it("EventSourcing should store, publish and retrieve events", async () => {
         const onWolfEventSubscriber = new OnWolfEventSubscriber();
         const globalListener = new GlobalListener();
         const eventBus = new EventBus();
@@ -130,7 +130,7 @@ describe("EventStore", () => {
         }, 150);
     });
 
-    it("EventStore be able to replay events", async () => {
+    it("EventSourcing be able to replay events", async () => {
         const onWolfEventSubscriber = new OnWolfEventSubscriber();
         const globalListener = new GlobalListener();
         const eventBus = new EventBus();
@@ -166,7 +166,7 @@ describe("EventStore", () => {
         expect(globalListener.events.length).toBe(4);
     });
 
-    it("EventStore should throw exception when not aggregate was found", async () => {
+    it("EventSourcing should throw exception when not aggregate was found", async () => {
         const eventBus = new EventBus();
         const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus);
         const pluto = new Dog("31");
@@ -178,7 +178,7 @@ describe("EventStore", () => {
         expect(toTest()).rejects.toMatchObject(new Error("Not found"));
     });
 
-    it("EventStore should collect exceptions", async () => {
+    it("EventSourcing should collect exceptions", async () => {
         const eventBus = new EventBus();
         const store = new EventStore<Dog>(Dog, new InMemoryErrorEventStore(), eventBus);
         const pluto = new Dog("31");

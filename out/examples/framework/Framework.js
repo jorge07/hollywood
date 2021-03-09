@@ -20,7 +20,7 @@ const User_1 = __importDefault(require("../domain/User"));
 const Kernel_1 = __importDefault(require("../../src/Framework/Kernel"));
 const CreateUser_1 = __importDefault(require("../application/CreateUser"));
 const ModuleContext_1 = __importDefault(require("../../src/Framework/Modules/ModuleContext"));
-const EventListener_1 = __importDefault(require("../../src/EventStore/EventBus/EventListener"));
+const EventListener_1 = __importDefault(require("../../src/EventSourcing/EventBus/EventListener"));
 class EchoListener extends EventListener_1.default {
     constructor() {
         super(...arguments);

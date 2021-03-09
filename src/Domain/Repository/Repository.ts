@@ -1,4 +1,4 @@
-import type EventStore from "../../EventStore/EventStore";
+import type EventStore from "../../EventSourcing/EventStore";
 import type IRepository from "./IRepository";
 import type EventSourcedAggregateRoot from "../EventSourcedAggregateRoot";
 

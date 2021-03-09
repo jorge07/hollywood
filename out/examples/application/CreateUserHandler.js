@@ -24,7 +24,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const EventStore_1 = __importDefault(require("../../src/EventStore/EventStore"));
+const EventStore_1 = __importDefault(require("../../src/EventSourcing/EventStore"));
 const User_1 = __importDefault(require("../domain/User"));
 const CreateUser_1 = __importDefault(require("./CreateUser"));
 const inversify_1 = require("inversify");

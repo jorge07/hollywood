@@ -16,12 +16,12 @@ exports.handler = void 0;
 // ts-node examples/application/example.application.ts
 require("reflect-metadata");
 const User_1 = __importDefault(require("../domain/User"));
-const InMemorySnapshotStoreDBAL_1 = __importDefault(require("../../src/EventStore/Snapshot/InMemorySnapshotStoreDBAL"));
+const InMemorySnapshotStoreDBAL_1 = __importDefault(require("../../src/EventSourcing/Snapshot/InMemorySnapshotStoreDBAL"));
 const CreateUserHandler_1 = __importDefault(require("./CreateUserHandler"));
 const CreateUser_1 = __importDefault(require("./CreateUser"));
-const InMemoryEventStore_1 = __importDefault(require("../../src/EventStore/InMemoryEventStore"));
-const EventBus_1 = __importDefault(require("../../src/EventStore/EventBus/EventBus"));
-const EventStore_1 = __importDefault(require("../../src/EventStore/EventStore"));
+const InMemoryEventStore_1 = __importDefault(require("../../src/EventSourcing/InMemoryEventStore"));
+const EventBus_1 = __importDefault(require("../../src/EventSourcing/EventBus/EventBus"));
+const EventStore_1 = __importDefault(require("../../src/EventSourcing/EventStore"));
 const eventStore = new EventStore_1.default(User_1.default, new InMemoryEventStore_1.default(), new EventBus_1.default(), new InMemorySnapshotStoreDBAL_1.default(), 10);
 exports.handler = new CreateUserHandler_1.default(eventStore);
 (() => __awaiter(void 0, void 0, void 0, function* () {
