@@ -1,10 +1,12 @@
 // ts-node examples/application/example.application.ts
 import "reflect-metadata";
-import { EventStore, InMemoryEventStore, EventBus } from "../../src/EventStore";
 import User from "../domain/User";
 import InMemorySnapshotStoreDBAL from '../../src/EventStore/Snapshot/InMemorySnapshotStoreDBAL';
 import CreateUserHandler from './CreateUserHandler';
 import CreateUser from './CreateUser';
+import InMemoryEventStore from "../../src/EventStore/InMemoryEventStore";
+import EventBus from "../../src/EventStore/EventBus/EventBus";
+import EventStore from "../../src/EventStore/EventStore";
 
 const eventStore = new EventStore<User>(
     User,

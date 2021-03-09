@@ -15,148 +15,148 @@ Yarn:
 
 `yarn add hollywood-js`
 
-### Usage
 
-See it in action here: https://github.com/jorge07/billing-api
+### CQRS Framework with Event Sourcing support.
+
+Features:
+
+- Dependency Injection (Built around Inversify).
+  - Module hierarchy DI.
+- DDD toolbox
+  - Event Driven
+    - Support for different event streams
+  - In Memory implementations for testing
+  - AggregateRoot and EventSourced abstractions
+- Event Store
+  - Event Store decoupled from storage implementation thanks to DBAL (Database Abstraction Layer)
+  - **In Memory** Event Store DBAL implementations for testing
+  - Configurable **SnapshotStore** support.
+  - In Memory Snapshot DBAL implementation for testing
+  - Built in Event Bus 
+- Command and Query Bus
+  - Command and Query handlers autowiring
+  - Middlewares support for Command and Query bus
+- Libraries should NOT log, I don't log, I throw Errors.
+
+
+### Basic Usage
 
 ```typescript
-import "reflect-metadata";
-import { PARAMETERS_ALIAS, SERVICES_ALIAS } from 'hollywood-js/src/Framework/Container/Bridge/Alias';
-import { Framework } from "hollywood-js";
-import { EventListener } from "hollywood-js/src/EventStore";
-import { Domain } from 'hollywood-js';
-import { ICommand } from "hollywood-js/src/Application";
-import type EventStore from 'hollywood-js/src/EventStore/EventStore';
-import { autowiring } from 'hollywood-js/src/Application';
-import { injectable, inject } from 'inversify';
-
-// Domain definition
-
-export class UserWasCreated extends Domain.DomainEvent {
-    constructor(public uuid: string, public email: string){
-        super()
-    }
-}
-
-export default class User extends Domain.EventSourcedAggregateRoot {
-    private uuid: string = "";
-    private email: string = "";
-
-    public static create(uuid: string, email: string): User {
-        const instance = new User(uuid);
-
-        instance.raise(new UserWasCreated(uuid, email));
-
-        return instance;
-    }
-
-    public getAggregateRootId(): string {
-        return this.uuid;
-    }
-
-    protected applyUserWasCreated(event: UserWasCreated): void {
-        this.uuid = event.uuid;
-        this.email = event.email;
-    }
-
-    get mail(): string {
-        return this.email;
-    }
-}
-
-// Application layer
-
-@injectable()
-export default class CreateUserHandler {
-
-    constructor(
-        @inject("user.eventStore") private readonly eventStore: EventStore<User>
-    ) {}
-
-    @autowiring
-    async handle(command: CreateUser): Promise<void> {
-        const user = User.create(command.uuid, command.email);
-
-        await this.eventStore.save(user);
-    }
-}
-
-export default class CreateUser implements ICommand {
-    constructor(
-        public readonly uuid: string,
-        public readonly email: string,
-    ) {}
-}
-
-
-class EchoListener extends EventListener {
-    public on(message: DomainMessage): void | Promise<void> {
-        console.log(`The following event with id ${message.uuid} was Stored in Memory`, message.event); // Confirm that event was received
-    }
-}
-
-// Define parameters and services
+import ModuleContext from "./ModuleContext";
+import Kernel from "./Kernel";
+import {inject} from "inversify";
 
 const parameters = new Map([
-    [PARAMETERS_ALIAS.DEFAULT_EVENT_STORE_MARGIN, "40"] // You can overwrite default parameters
+  ['hello.style', 'hey']
 ]);
 
-const services = new Map([
-    [SERVICES_ALIAS.COMMAND_HANDLERS, {
-        collection: [
-            CreateUserHandler
-        ]
-    }],
-    ["user.eventStore", {
-        eventStore: User
-    }],
-    ["generic.subscriber", {
-        instance: EchoListener,
-        bus: SERVICES_ALIAS.DEFAULT_EVENT_BUS,
-        listener: true
-    }],
-]);
+class Hey {
+  constructor(@inject('hello.style') private readonly style: string) {}
 
+  hello(): string {
+    return this.style
+  }
+}
 
-(async () => {
-    // Boot application
-    const kernel = await Framework.Kernel.create("dev", true, services, parameters);
-    // Create a user
-    await kernel.handle(new CreateUser("1", "demo@example.org"));
-    // Load from InMemoryStore
-    // And recreate User from events
-    const recreatedUser = await kernel.container.get<EventStore<User>>("user.eventStore").load("1"); 
-    // Display the created user
-    console.log(recreatedUser); 
-    // Confirm overwrite default parameters (snapshotMargin 10 -> 40)
-    console.log(
-        kernel.container.get("user.eventStore") 
-    );
-})()
+const MainModule = new ModuleContext({
+  services: [
+    ['hey', {instance: Hey}]
+  ]
+})
+
+const kernel = new Kernel('dev', true, parameters, MainModule);
+
+kernel.container.get<Hey>('key').hello() // 'key'
 ```
-
-Look at [examples](https://github.com/jorge07/hollywood/tree/master/examples) for a better understanding.
-
-#### Testing
-
-This library allows you to define test services and parameters that overwrites the main ones and only gets loaded on test environment.
-An example of how to use this can e something like this:
+### Module dependencies
 
 ```typescript
-import { Framework } from "hollywood-js";
-import { parameters } from "../config/parameters";
-import { testParameters } from "../config/testParameters";
-import { services } from "../config/services";
-import { testServices } from "../config/testServices";
+import ModuleContext from "./ModuleContext";
+import Kernel from "./Kernel";
+import {inject} from "inversify";
 
-export default async function KernelFactory(debug: boolean): Promise<Framework.Kernel> {
-    return await Framework.Kernel.create(
-        process.env.NODE_ENV,
-        debug,
-        services,
-        parameters,
-        testServices,
-        testParameters,
-    );
+const parameters = new Map([
+  ['hello.style', 'hey']
+]);
+
+class Hey {
+  constructor(@inject('hello.style') private readonly style: string) {}
+
+  hello(): string {
+    return this.style
+  }
 }
+
+const HeyModule = new ModuleContext({
+  services: [
+    ['hey', {instance: Hey}]
+  ]
+})
+
+class Person {
+    constructor(@inject('hey') private readonly hey: Hey) {}
+
+    sayHello(): string {
+        return this.key.hello()
+    }
+}
+
+const PersonModule = new ModuleContext({
+  services: [
+    ['person', {instance: Person}]
+  ],
+  modules: [HeyModule]
+})
+const kernel = new Kernel('dev', true, parameters, MainModule);
+
+kernel.container.get<Person>('person').sayHello() // 'key'
+```
+
+### Overwrite during testing
+
+```typescript
+import ModuleContext from "./ModuleContext";
+import Kernel from "./Kernel";
+import {inject} from "inversify";
+
+const parameters = new Map([
+  ['hello.style', 'hey']
+]);
+
+
+const TestingParameters = new Map([
+  ['hello.style', 'HELLOOOOOOO!']
+]);
+
+class Hey {
+  constructor(@inject('hello.style') private readonly style: string) {}
+
+  hello(): string {
+    return this.style
+  }
+}
+
+const HeyModule = new ModuleContext({
+  services: [
+    ['hey', {instance: Hey}]
+  ]
+})
+
+class Person {
+    constructor(@inject('hey') private readonly hey: Hey) {}
+
+    sayHello(): string {
+        return this.key.hello()
+    }
+}
+
+const PersonModule = new ModuleContext({
+  services: [
+    ['person', {instance: Person}]
+  ],
+  modules: [HeyModule]
+})
+const kernel = new Kernel('dev', true, parameters, MainModule, TestingParameters);
+
+kernel.container.get<Person>('person').sayHello() // 'HELLOOOOOOO!'
 ```

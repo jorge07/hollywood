@@ -1,7 +1,8 @@
-import { AggregateRootId, EventSourcedAggregateRoot } from "../../Domain";
 import type ISnapshotStoreDBAL from "./SnapshotStoreDBAL";
-import { SERVICES_ALIAS } from '../../Framework';
 import { inject } from 'inversify';
+import type EventSourcedAggregateRoot from "../../Domain/EventSourcedAggregateRoot";
+import {SERVICES_ALIAS} from "../../Framework/Container/Bridge/Alias";
+import type {AggregateRootId} from "../../Domain/AggregateRoot";
 
 export default class SnapshotStore<T extends EventSourcedAggregateRoot> {
     constructor(

@@ -2,8 +2,8 @@ import EventStore from '../src/EventStore/EventStore';
 import DomainEvent from '../src/Domain/Event/DomainEvent';
 import DomainMessage from '../src/Domain/Event/DomainMessage';
 import DomainEventStream from '../src/Domain/Event/DomainEventStream';
-import type {AggregateRootId} from '../src/Domain';
-import {EventSourcedAggregateRoot} from "../src/Domain";
+import EventSourcedAggregateRoot from "../src/Domain/EventSourcedAggregateRoot";
+import {AggregateRootId} from "../src/Domain/AggregateRoot";
 
 export default class Scenario<T extends EventSourcedAggregateRoot> {
 

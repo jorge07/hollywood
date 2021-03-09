@@ -1,12 +1,10 @@
 import "reflect-metadata";
-import {
-    EventBus,
-    EventStore,
-    InMemoryEventStore,
-    InMemorySnapshotStoreDBAL,
-} from "../src/EventStore";
 import {Dog, SayWolf} from './Domain/AggregateRoot.test';
 import Scenario from "./Scenario"
+import EventBus from "../src/EventStore/EventBus/EventBus";
+import InMemorySnapshotStoreDBAL from "../src/EventStore/Snapshot/InMemorySnapshotStoreDBAL";
+import InMemoryEventStore from "../src/EventStore/InMemoryEventStore";
+import EventStore from "../src/EventStore/EventStore";
 
 describe("Scenario", () => {
     it("BDD Scenario for an action", async () => {

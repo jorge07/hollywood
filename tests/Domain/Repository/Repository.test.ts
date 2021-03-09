@@ -1,7 +1,9 @@
 import "reflect-metadata";
-import {EventBus, EventStore, InMemoryEventStore} from "../../../src/EventStore";
 import {Dog} from "../AggregateRoot.test";
 import Repository from '../../../src/Domain/Repository/Repository';
+import InMemoryEventStore from "../../../src/EventStore/InMemoryEventStore";
+import EventBus from "../../../src/EventStore/EventBus/EventBus";
+import EventStore from "../../../src/EventStore/EventStore";
 
 export class DogRepository extends Repository<Dog> {
 

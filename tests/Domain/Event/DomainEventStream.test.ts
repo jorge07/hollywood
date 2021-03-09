@@ -1,5 +1,6 @@
-import {DomainEventStream, DomainMessage} from "../../../src/Domain";
 import DemoEvent from './DemoEvent';
+import DomainEventStream from "../../../src/Domain/Event/DomainEventStream";
+import DomainMessage from "../../../src/Domain/Event/DomainMessage";
 
 describe("DomainEventStream", () => {
     it("DomainEvent wrap events collection", () => {

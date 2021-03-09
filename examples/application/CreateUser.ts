@@ -1,4 +1,4 @@
-import { ICommand } from "../../src/Application";
+import type ICommand from "../../src/Application/Bus/Command/Command";
 
 export default class CreateUser implements ICommand {
     constructor(

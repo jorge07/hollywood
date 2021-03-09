@@ -19,6 +19,9 @@ module.exports = {
     "coveragePathIgnorePatterns": [
         "/node_modules/",
         "tests/",
+        "out/",
+        "coverage/",
+        "examples/",
     ],
     "coverageDirectory": "./coverage/",
     "collectCoverage": true

@@ -1,8 +1,8 @@
 import EventStore from '../../src/EventStore/EventStore';
 import User from '../domain/User';
 import CreateUser from './CreateUser';
-import { autowiring } from '../../src/Application';
 import { injectable, inject } from 'inversify';
+import autowiring from "../../src/Application/Bus/autowiring";
 
 @injectable()
 export default class CreateUserHandler {

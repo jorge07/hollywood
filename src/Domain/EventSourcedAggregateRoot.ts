@@ -1,5 +1,10 @@
-import {AggregateRoot, DomainEvent, DomainEventStream, DomainMessage, EventSourced} from ".";
+
 import type IEventSourced from "./IEventSourced";
+import DomainMessage from "./Event/DomainMessage";
+import DomainEventStream from "./Event/DomainEventStream";
+import EventSourced from "./EventSourced";
+import DomainEvent from "./Event/DomainEvent";
+import AggregateRoot from "./AggregateRoot";
 
 export default abstract class EventSourcedAggregateRoot extends AggregateRoot implements IEventSourced {
 

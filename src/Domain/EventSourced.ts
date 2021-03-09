@@ -1,5 +1,5 @@
-import { DomainEvent } from ".";
 import type IEventSourced from "./IEventSourced";
+import DomainEvent from "./Event/DomainEvent";
 
 export default abstract class EventSourced implements IEventSourced {
     private children: EventSourced[] = [];
