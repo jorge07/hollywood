@@ -11,6 +11,7 @@ import {UserWasCreated} from "../../../examples/domain/UserWasCreated";
 import EventListener from "../../../src/EventStore/EventBus/EventListener";
 import {SERVICES_ALIAS} from "../../../src/Framework/Container/Bridge/Alias";
 import AppBuilder from "../../../src/Framework/AppBuilder";
+import {DemoQueryHandler} from "../../Application/Bus/DemoHandlers";
 
 class EchoListener extends EventListener {
     public counter = 0;
@@ -22,11 +23,6 @@ class EchoListener extends EventListener {
 describe("Framework:Container", () => {
     it("Builder should be able to register a StandardType and bind ListenersTypes", async () => {
         const services = new Map([
-            [SERVICES_ALIAS.COMMAND_HANDLERS, {
-                collection: [
-                    CreateUserHandler
-                ]
-            }],
             ["user.eventStore", {
                 eventStore: User
             }],
@@ -38,7 +34,7 @@ describe("Framework:Container", () => {
             }],
         ]);
 
-        const testModule = new ModuleContext({services});
+        const testModule = new ModuleContext({services, commands: [CreateUserHandler]});
 
         const container = await BuildFromModuleContext(new Map(), testModule);
 
@@ -51,11 +47,6 @@ describe("Framework:Container", () => {
     });
     it("Builder should be able to register a ListenersTypes as Subscriber", async () => {
         const services = new Map([
-            [SERVICES_ALIAS.COMMAND_HANDLERS, {
-                collection: [
-                    CreateUserHandler
-                ]
-            }],
             ["user.eventStore", {
                 eventStore: User
             }],
@@ -68,7 +59,7 @@ describe("Framework:Container", () => {
             }],
         ]);
 
-        const testModule = new ModuleContext({services});
+        const testModule = new ModuleContext({services, commands: [CreateUserHandler], queries: [DemoQueryHandler]});
 
         const container = await BuildFromModuleContext(new Map(), testModule);
 

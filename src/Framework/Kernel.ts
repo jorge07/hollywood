@@ -39,7 +39,7 @@ export default class Kernel {
     }
 
     public async ask(query: IQuery): Promise<QueryBusResponse> {
-        return await this.app.ask(query);
+        return this.app.ask(query);
     }
 
     public async handle(command: ICommand): Promise<void> {

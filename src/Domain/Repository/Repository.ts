@@ -10,6 +10,6 @@ export default abstract class Repository<T extends EventSourcedAggregateRoot> im
     }
 
     public async load(aggregateRootId: string): Promise<T> {
-        return await this.eventStore.load(aggregateRootId);
+        return this.eventStore.load(aggregateRootId);
     }
 }

@@ -8,7 +8,7 @@ import type { QueryBusResponse } from '../Application/Bus/CallbackArg';
 import { SERVICES_ALIAS } from './Container/Bridge/Alias';
 import type { IAnnotatedHandler } from "../Application/Bus/autowiring";
 import MissingAutowiringAnnotationException from "../Application/Bus/Exception/MissingAutowiringAnnotationException";
-import type IHandler from "../Application/Bus/Handler";
+import type IHandler from "../Application/Bus/IHandler";
 import type ICommandHandler from "../Application/Bus/Command/CommandHandler";
 
 export default class AppBuilder {
@@ -50,7 +50,7 @@ export default class AppBuilder {
 
     public async ask(query: IQuery): Promise<QueryBusResponse> {
 
-        return await this.app.ask(query);
+        return this.app.ask(query);
     }
 
     public async handle(command: ICommand): Promise<void> {
