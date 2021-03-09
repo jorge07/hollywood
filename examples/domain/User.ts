@@ -1,7 +1,7 @@
-import { Domain } from "../..";
 import { UserWasCreated } from './UserWasCreated';
+import EventSourcedAggregateRoot from "../../src/Domain/EventSourcedAggregateRoot";
 
-export default class User extends Domain.EventSourcedAggregateRoot {
+export default class User extends EventSourcedAggregateRoot {
     private uuid: string = "";
     private email: string = "";
 

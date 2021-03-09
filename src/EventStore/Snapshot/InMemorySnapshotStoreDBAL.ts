@@ -1,5 +1,6 @@
-import {AggregateRootId, EventSourcedAggregateRoot} from "../../Domain";
 import type ISnapshotStoreDBAL from "./SnapshotStoreDBAL";
+import type EventSourcedAggregateRoot from "../../Domain/EventSourcedAggregateRoot";
+import type {AggregateRootId} from "../../Domain/AggregateRoot";
 
 interface ISnapshotDictionary {
     [key: string]: EventSourcedAggregateRoot;

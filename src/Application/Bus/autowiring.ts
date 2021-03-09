@@ -1,16 +1,13 @@
 import "reflect-metadata";
-import type ICommandHandler from "./Command/CommandHandler";
-import type IQueryHandler from "./Query/QueryHandler";
+import IHandler from "./Handler";
 
 const metadataKey = "design:paramtypes";
 const propertykey = "handle";
 
-export interface IAnnotatedCommandHandler extends ICommandHandler {
+export interface IAnnotatedHandler<T extends IHandler>  {
     command: { name: string }
 }
-export interface IAnnotatedQueryHandler extends IQueryHandler {
-    command: { name: string }
-}
+
 
 export default function autowiring<T>(target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<T>) {
     const methodArgs: any = Reflect.getMetadata(metadataKey, target, propertykey);

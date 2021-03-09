@@ -1,18 +1,13 @@
-import {
-    CommandBus,
-    CommandHandlerResolver,
-    QueryBus,
-    QueryHandlerResolver,
-} from "../Application/";
-import type {
-    IAppError,
-    IAppResponse,
-    ICommand,
-    ICommandHandler,
-    IQuery,
-    IQueryHandler,
-} from "../Application/";
+import CommandHandlerResolver from "./Bus/Command/CommandHandlerResolver";
+import QueryHandlerResolver from "./Bus/Query/QueryResolver";
+import CommandBus from "./Bus/Command/CommandBus";
+import QueryBus from "./Bus/Query/QueryBus";
 import type IMiddleware from "./Bus/Middelware";
+import type ICommandHandler from "./Bus/Command/CommandHandler";
+import type IQueryHandler from "./Bus/Query/QueryHandler";
+import type {IAppError, IAppResponse} from "./Bus/CallbackArg";
+import type IQuery from "./Bus/Query/Query";
+import type ICommand from "./Bus/Command/Command";
 
 export default class App {
     private readonly commandResolver: CommandHandlerResolver;

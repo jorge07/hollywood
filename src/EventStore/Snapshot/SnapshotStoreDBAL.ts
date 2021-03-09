@@ -1,4 +1,5 @@
-import {AggregateRootId, EventSourcedAggregateRoot} from "../../Domain";
+import type {AggregateRootId} from "../../Domain/AggregateRoot";
+import type EventSourcedAggregateRoot from "../../Domain/EventSourcedAggregateRoot";
 
 export default interface ISnapshotStoreDBAL {
     get(uuid: AggregateRootId): Promise<any|null>;

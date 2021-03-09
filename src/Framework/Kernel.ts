@@ -1,47 +1,41 @@
-import { SERVICES_ALIAS } from './Container/Bridge/Alias';
 import type { ParametersList } from "./Container/Items/Parameter";
-import type { ServiceList } from "./Container/Items/Service";
 import type { Container } from 'inversify';
-import Builder from "./Container/Builder";
-import type { ICommand, IQuery } from "../Application";
 import type { QueryBusResponse } from '../Application/Bus/CallbackArg';
-import type AppBridge from "./AppBridge";
-import ContainerCompilationException from "./Container/Exception/ContainerCompilationException";
+import type ModuleContext from "./Modules/ModuleContext";
+import type IQuery from "../Application/Bus/Query/Query";
+import type ICommand from "../Application/Bus/Command/Command";
+import AppBuilder from "./AppBuilder";
+import { BuildFromModuleContext } from "./Container/Builder";
 
 export default class Kernel {
 
-    public static async create(
+    public static async createFromModuleContext(
         env: string = "dev",
         debug: boolean = false,
-        services: ServiceList,
         parameters: ParametersList,
-        testServices: ServiceList = new Map(),
-        testParameters: ParametersList = new Map(),
+        moduleContext: ModuleContext,
+        testParameters: ParametersList = new Map()
     ): Promise<Kernel> {
-        let container: Container;
-
-        if (env === "test") {
-            parameters = new Map([...parameters, ...testParameters]);
-            services = new Map([...services, ...testServices]);
-        }
-
-        try {
-            container = await Builder(services, parameters);
-        } catch (error) {
-            throw new ContainerCompilationException(error.message);
-        }
-
+        parameters = Kernel.overwriteParamsOnTest(env, parameters, testParameters)
+        const container = await BuildFromModuleContext(parameters, moduleContext);
         return new Kernel(debug, env, container);
     }
 
-    private readonly app: AppBridge;
+    private readonly app: AppBuilder;
 
     private constructor(
         public readonly debug: boolean = false,
         public readonly env: string = "dev",
         public readonly container: Container,
     ) {
-        this.app = this.container.get<AppBridge>(SERVICES_ALIAS.APP_BRIDGE);
+        this.app = new AppBuilder(this.container);
+    }
+
+    private static overwriteParamsOnTest(env: string, parameters: ParametersList, testParameters: ParametersList,): ParametersList {
+        if (env === "test") {
+            return new Map([...parameters, ...testParameters]);
+        }
+        return parameters;
     }
 
     public async ask(query: IQuery): Promise<QueryBusResponse> {

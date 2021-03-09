@@ -1,6 +1,9 @@
-import {CommandBus, CommandHandlerResolver, QueryBus, QueryHandlerResolver} from "../../../src/Application/";
 import {DemoCommand, DemoHandler, DemoQuery, DemoQueryHandler} from "./DemoHandlers";
 import IMiddleware from '../../../src/Application/Bus/Middelware';
+import QueryHandlerResolver from "../../../src/Application/Bus/Query/QueryResolver";
+import CommandHandlerResolver from "../../../src/Application/Bus/Command/CommandHandlerResolver";
+import CommandBus from "../../../src/Application/Bus/Command/CommandBus";
+import QueryBus from "../../../src/Application/Bus/Query/QueryBus";
 
 class CustomMiddleware implements IMiddleware {
     calls: number = 0
@@ -11,6 +14,7 @@ class CustomMiddleware implements IMiddleware {
     }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 class CustomQueryMiddleware implements IMiddleware {
     calls: number = 0
 
@@ -20,7 +24,7 @@ class CustomQueryMiddleware implements IMiddleware {
     }
 }
 
-describe("Custom Middlewares", () => {
+describe("CustomType Middlewares", () => {
     it("It call custom middlewares present always before the resolver", async () => {
         expect.assertions(10);
 
@@ -41,7 +45,8 @@ describe("Custom Middlewares", () => {
 
         try {
             await queryBus.ask(new DemoQuery(true));
-            expect("Query bus Exception").toBe("Not throwed");
+            // tslint:disable-next-line:no-duplicate-string
+            expect("Query bus Exception").toBe("Not threw");
         } catch (err) {
             expect(err.code).toBe(0);
         }
@@ -53,7 +58,7 @@ describe("Custom Middlewares", () => {
         expect(customMiddleware.calls).toBe(1);
         try {
             await queryBus.ask(new DemoQuery(true));
-            expect("Exception Query").toBe("Not throwed");
+            expect("Exception Query").toBe("Not threw");
         } catch (err) {
             expect(err.code).toBe(0);
         }
@@ -61,7 +66,7 @@ describe("Custom Middlewares", () => {
 
         try {
             await commandBus.handle(new DemoCommand(true));
-            expect("Exception Command").toBe("Not throwed");
+            expect("Exception Command").toBe("Not threw");
         } catch (err) {
             expect(err.message).toBe("Fail");
         }

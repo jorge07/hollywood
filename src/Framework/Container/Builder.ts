@@ -1,19 +1,25 @@
 import { Container } from "inversify";
 import type { ParametersList } from "./Items/Parameter";
-import type { ServiceList } from "./Items/Service";
 import parametersBinder from "./ParameterBinder";
-import serviceBinder from "./ServiceBinder";
 import { PARAMETERS } from './Bridge/Parameters';
-import { SERVICES } from './Bridge/Services';
+import type ModuleContext from "../Modules/ModuleContext";
+import ContainerCompilationException from "./Exception/ContainerCompilationException";
+import {HollywoodModule} from "../HollywoodModule";
+import {BindListeners} from "./Items/Services/Type/ListenerType";
 
-export default async function Builder(
-    services: ServiceList,
+export async function BuildFromModuleContext(
     parameters: ParametersList,
+    moduleContext: ModuleContext
 ): Promise<Container> {
-    const container: Container = new Container();
-
-    parametersBinder(container, new Map([...PARAMETERS, ...parameters]));
-    await serviceBinder(container, new Map([...SERVICES, ...services]));
-
-    return container;
+    try {
+        const container: Container = new Container();
+        parametersBinder(container, new Map([...PARAMETERS, ...parameters]));
+        await HollywoodModule().load(container);
+        await moduleContext.load(container);
+        // Initialize listeners
+        BindListeners(container);
+        return container;
+    } catch (error) {
+        throw new ContainerCompilationException(error.message);
+    }
 }

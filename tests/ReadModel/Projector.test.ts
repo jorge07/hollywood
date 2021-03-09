@@ -1,7 +1,8 @@
 import EventBus from '../../src/EventStore/EventBus/EventBus';
 import DomainMessage from '../../src/Domain/Event/DomainMessage';
 import {SayWolf} from '../Domain/AggregateRoot.test';
-import {InMemoryReadModelRepository, Projector} from '../../src/ReadModel';
+import InMemoryReadModelRepository from "../../src/ReadModel/InMemoryReadModelRepository";
+import Projector from "../../src/ReadModel/Projector";
 
 class DogReadModelProjector extends Projector {
     constructor(private readonly repository: InMemoryReadModelRepository) {
@@ -21,7 +22,7 @@ describe("Projector", () => {
 
         eventBus.attach(SayWolf, new DogReadModelProjector(readModel));
 
-        eventBus.publish(DomainMessage.create('demo', 0, new SayWolf('demo')));
+        await eventBus.publish(DomainMessage.create('demo', 0, new SayWolf('demo')));
 
         expect(readModel.oneOrFail('demo')).toBe('Wolf')
     });

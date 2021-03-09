@@ -7,7 +7,6 @@ export const SERVICES_ALIAS = {
     DEFAULT_EVENT_STORE_DBAL: "hollywood.infrastructure.eventStore.dbal.default",
     DEFAULT_EVENT_STORE_SNAPSHOT: "hollywood.infrastructure.eventStore.snapshot.default",
     DEFAULT_EVENT_STORE_SNAPSHOT_DBAL: "hollywood.infrastructure.eventStore.snapshot.dbal.default",
-    APP_BRIDGE: "hollywood.app.bridge",
 };
 
 export const PARAMETERS_ALIAS = {

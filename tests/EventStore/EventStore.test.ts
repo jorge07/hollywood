@@ -1,14 +1,14 @@
 import "reflect-metadata";
-import {DomainMessage, DomainEventStream} from "../../src/Domain";
-import {
-    EventBus,
-    EventListener,
-    EventStore,
-    EventSubscriber,
-    InMemoryEventStore,
-    IEventStoreDBAL
-} from "../../src/EventStore";
+
 import {Dog, SayWolf, SayGrr} from '../Domain/AggregateRoot.test';
+import EventSubscriber from "../../src/EventStore/EventBus/EventSubscriber";
+import EventListener from "../../src/EventStore/EventBus/EventListener";
+import DomainMessage from "../../src/Domain/Event/DomainMessage";
+import IEventStoreDBAL from "../../src/EventStore/IEventStoreDBAL";
+import DomainEventStream from "../../src/Domain/Event/DomainEventStream";
+import EventBus from "../../src/EventStore/EventBus/EventBus";
+import EventStore from "../../src/EventStore/EventStore";
+import InMemoryEventStore from "../../src/EventStore/InMemoryEventStore";
 
 class OnWolfEventSubscriber extends EventSubscriber {
     public wolf: any;
@@ -23,18 +23,19 @@ class OnWolfEventSubscriber extends EventSubscriber {
     }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 class GlobalListener extends EventListener {
     public lastEvent: any;
     public events: DomainMessage[] = [];
 
     constructor(
-        private readonly doAsynnc: boolean = false
+        private readonly doAsync: boolean = false
     ) {
         super();
     }
 
     public on(event: DomainMessage): Promise<any> | any {
-        if (!this.doAsynnc) {
+        if (!this.doAsync) {
             this.lastEvent = event.event;
             this.events.push(event);
             return;
@@ -47,6 +48,7 @@ class GlobalListener extends EventListener {
     }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 export default class InMemoryErrorEventStore implements IEventStoreDBAL {
 
     public async load(aggregateId: string, from: number = 0): Promise<DomainEventStream> {
@@ -93,7 +95,7 @@ describe("EventStore", () => {
         expect(globalListener.lastEvent).toBeInstanceOf(SayGrr);
     });
 
-    it("Async Event Listeners should not stop the execution but get executed", async (done) => {
+    it("AsyncType Event Listeners should not stop the execution but get executed", async (done) => {
         const onWolfEventSubscriber = new OnWolfEventSubscriber();
         const globalListener = new GlobalListener(true);
         const eventBus = new EventBus();

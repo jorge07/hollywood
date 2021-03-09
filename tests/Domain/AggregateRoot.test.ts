@@ -1,4 +1,8 @@
-import {DomainEvent, DomainEventStream, DomainMessage, EventSourced, EventSourcedAggregateRoot} from "../../src/Domain";
+import EventSourcedAggregateRoot from "../../src/Domain/EventSourcedAggregateRoot";
+import EventSourced from "../../src/Domain/EventSourced";
+import DomainEvent from "../../src/Domain/Event/DomainEvent";
+import DomainMessage from "../../src/Domain/Event/DomainMessage";
+import DomainEventStream from "../../src/Domain/Event/DomainEventStream";
 
 export class Dog extends EventSourcedAggregateRoot {
     public wolfCount: number = 0;
@@ -107,15 +111,13 @@ describe("AggregateRoot", () => {
         expect(pluto.wolfCount).toBe(1);
     });
 
-    it("Aggregate Roots can have tree dependencies", () => {
+    it("Aggregate Roots can be created from an snapshot", () => {
         const dog = new Dog("31");
 
-        const stream = new DomainEventStream([DomainMessage.create(dog.getAggregateRootId(), 1, new SayWolf('asd'))]);
-
-        const pluto = dog.fromHistory(stream) as Dog;
-
-        expect(pluto.getUncommittedEvents().events.length).toBe(0);
-
-        expect(pluto.wolfCount).toBe(1);
+        const snapshot: EventSourced = { version: 2, wolfCount: 2} as any
+        dog.fromSnapshot(snapshot);
+        expect(dog.wolfCount).toBe(2);
+        expect(dog.version).toBe(2);
+        expect(dog.getUncommittedEvents().events.length).toBe(0);
     });
 });

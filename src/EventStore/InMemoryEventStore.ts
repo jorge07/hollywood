@@ -1,5 +1,7 @@
-import { AggregateRootNotFoundException, IEventStoreDBAL } from ".";
-import { DomainEventStream, DomainMessage } from "../Domain";
+import IEventStoreDBAL from "./IEventStoreDBAL";
+import DomainMessage from "../Domain/Event/DomainMessage";
+import DomainEventStream from "../Domain/Event/DomainEventStream";
+import AggregateRootNotFoundException from "./Exception/AggregateRootNotFoundException";
 
 export default class InMemoryEventStore implements IEventStoreDBAL {
     private readonly events: { [key: string]: DomainMessage[] } = {};

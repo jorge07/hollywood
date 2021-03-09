@@ -7,16 +7,18 @@ export default abstract class MessageBus {
     protected constructor(
         ...middlewares: IMiddleware[]
     ) {
-        this.middlewareChain = this.createChain(middlewares);
+        this.middlewareChain = this.createChain(middlewares.filter(Boolean));
     }
 
     private createChain(middlewares: IMiddleware[]): (command: ICommand) => Promise<any> {
         const chain: {[key: string]: (command: ICommand) => any} = {};
 
         MessageBus.reverse(middlewares).forEach((middleware: IMiddleware, key: number) => {
-            chain[key] = async (command: any): Promise<any> =>  {
-                return await middleware.execute(command, chain[key - 1]);
-            };
+            if (middleware) {
+                chain[key] = async (command: any): Promise<any> =>  {
+                    return await middleware.execute(command, chain[key - 1]);
+                };
+            }
         });
 
         return chain[middlewares.length - 1];

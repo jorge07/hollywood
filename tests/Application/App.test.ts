@@ -1,7 +1,7 @@
 import App from '../../src/Application/App';
 import {DemoHandler, DemoCommand, DemoQuery, DemoQueryHandler} from './Bus/DemoHandlers';
-import {IAppResponse, IAppError} from '../../src/Application';
 import IMiddleware from '../../src/Application/Bus/Middelware';
+import {IAppError, IAppResponse} from "../../src/Application/Bus/CallbackArg";
 
 class CustomMiddleware implements IMiddleware {
     calls: number = 0
@@ -18,16 +18,10 @@ describe("App", () => {
 
         const app: App = new App(
             new Map([
-                [
-                    DemoCommand,
-                    demoHandler
-                ]
+                [ DemoCommand, demoHandler ]
             ]),
             new Map([
-                [
-                    DemoQuery,
-                    new DemoQueryHandler()
-                ]
+                [ DemoQuery, new DemoQueryHandler() ]
             ])
         );
 
@@ -46,16 +40,10 @@ describe("App", () => {
 
         const app: App = new App(
             new Map([
-                [
-                    DemoCommand,
-                    demoHandler
-                ]
+                [ DemoCommand, demoHandler ]
             ]),
             new Map([
-                [
-                    DemoQuery,
-                    new DemoQueryHandler()
-                ]
+                [ DemoQuery, new DemoQueryHandler() ]
             ]),
             [Middleware],
             [Middleware]
