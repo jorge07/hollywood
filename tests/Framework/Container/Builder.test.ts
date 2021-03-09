@@ -57,6 +57,18 @@ describe("Framework:Container", () => {
                     UserWasCreated
                 ]
             }],
+            ["generic.subscriber.2", {
+                instance: EchoListener,
+                bus: SERVICES_ALIAS.DEFAULT_EVENT_BUS,
+                subscriber: [
+                    UserWasCreated
+                ]
+            }],
+            ["global.listener", {
+                instance: EchoListener,
+                bus: SERVICES_ALIAS.DEFAULT_EVENT_BUS,
+                listeners: true
+            }],
         ]);
 
         const testModule = new ModuleContext({services, commands: [CreateUserHandler], queries: [DemoQueryHandler]});
@@ -64,11 +76,13 @@ describe("Framework:Container", () => {
         const container = await BuildFromModuleContext(new Map(), testModule);
 
         const listener = container.get<EchoListener>('generic.subscriber');
+        const listener2 = container.get<EchoListener>('generic.subscriber.2');
 
         const app = new AppBuilder(container);
         await app.handle(new CreateUser("1", "demo@example.org"));
 
         expect(listener.counter).toBe(1);
+        expect(listener2.counter).toBe(1);
     });
     it("ListenersTypes with invalid Bus should fail", async () => {
         expect.assertions(1);
@@ -139,7 +153,7 @@ describe("Framework:Container", () => {
 
         expect(listener.counter).toBe(0);
     });
-    it("Container Builder should create an CustomType", async () => {
+    it("Container Builder throw an error for invalid services", async () => {
         expect.assertions(1);
 
         const services = new Map<string, IService>([

@@ -23,7 +23,7 @@ export default function ListenerType(bind: interfaces.Bind) {
 }
 export function BindListeners(container: interfaces.Container) {
     if (container.isBound(LISTENERS_SELECTOR)) {
-        container.get(LISTENERS_SELECTOR);
+        container.getAll(LISTENERS_SELECTOR);
     }
 }
 

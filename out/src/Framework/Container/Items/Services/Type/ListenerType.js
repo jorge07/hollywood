@@ -23,7 +23,7 @@ function ListenerType(bind) {
 exports.default = ListenerType;
 function BindListeners(container) {
     if (container.isBound(LISTENERS_SELECTOR)) {
-        container.get(LISTENERS_SELECTOR);
+        container.getAll(LISTENERS_SELECTOR);
     }
 }
 exports.BindListeners = BindListeners;

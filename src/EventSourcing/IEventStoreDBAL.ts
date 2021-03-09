@@ -1,5 +1,4 @@
-import type DomainEventStream from "../Domain/Event/DomainEventStream";
-import type { AggregateRootId } from "../Domain/AggregateRoot";
+import {AggregateRootId, DomainEventStream} from "../Domain";
 
 export default interface IEventStoreDBAL {
 
