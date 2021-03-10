@@ -11,7 +11,7 @@ import type {QueryBusResponse} from '../../src/Application/Bus/CallbackArg';
 import ModuleContext from "../../src/Framework/Modules/ModuleContext";
 import MissingAutowiringAnnotationException
     from "../../src/Application/Bus/Exception/MissingAutowiringAnnotationException";
-import {SERVICES_ALIAS} from "../../src/Framework/Container/Bridge/Alias";
+import {SERVICES_ALIAS} from "../../src/Framework";
 import {ServiceList} from "../../src/Framework/Container/Items/Service";
 
 const services: ServiceList = new Map([

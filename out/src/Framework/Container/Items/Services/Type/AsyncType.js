@@ -14,10 +14,13 @@ function IsAsyncType(serviceDefinition) {
     return !!serviceDefinition.async;
 }
 exports.IsAsyncType = IsAsyncType;
-function AsyncType(bind) {
+function AsyncType(rebind, isBound, bind) {
     return (key, serviceDefinition) => __awaiter(this, void 0, void 0, function* () {
         if (serviceDefinition.async) {
             const service = yield serviceDefinition.async();
+            if (isBound(key)) {
+                return rebind(key).toConstantValue(service);
+            }
             bind(key).toConstantValue(service);
         }
     });

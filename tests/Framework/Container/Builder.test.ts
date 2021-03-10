@@ -170,4 +170,23 @@ describe("Framework:Container", () => {
             expect(error).toBeInstanceOf(ContainerCompilationException)
         }
     });
+    it("Container Builder should allow overwrite services", async () => {
+        expect.assertions(1);
+
+        // tslint:disable-next-line:max-classes-per-file
+        class Noop {}
+        const services = new Map<string, IService>([
+            [SERVICES_ALIAS.DEFAULT_EVENT_STORE_DBAL, {
+                instance: Noop
+            }],
+        ]);
+
+        const testModule = new ModuleContext({services});
+
+        const container = await BuildFromModuleContext(new Map(), testModule);
+
+        const noopInstance = container.get<Noop>(SERVICES_ALIAS.DEFAULT_EVENT_STORE_DBAL);
+
+        expect(noopInstance).toBeInstanceOf(Noop);
+    });
 });

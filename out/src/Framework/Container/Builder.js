@@ -24,7 +24,7 @@ function BuildFromModuleContext(parameters, moduleContext) {
         try {
             const container = new inversify_1.Container();
             ParameterBinder_1.default(container, new Map([...Parameters_1.PARAMETERS, ...parameters]));
-            yield HollywoodModule_1.HollywoodModule().load(container);
+            moduleContext.addFirstModuleContext(HollywoodModule_1.HollywoodModule());
             yield moduleContext.load(container);
             // Initialize listeners
             ListenerType_1.BindListeners(container);

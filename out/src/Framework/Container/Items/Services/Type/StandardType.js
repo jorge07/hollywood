@@ -1,7 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function StandardType(bind) {
-    return (key, serviceDefinition) => bind(key).to(serviceDefinition.instance).inSingletonScope();
+function StandardType(rebind, isBound, bind) {
+    return (key, serviceDefinition) => {
+        if (isBound(key)) {
+            rebind(key).to(serviceDefinition.instance).inSingletonScope();
+        }
+        bind(key).to(serviceDefinition.instance).inSingletonScope();
+    };
 }
 exports.default = StandardType;
 //# sourceMappingURL=StandardType.js.map

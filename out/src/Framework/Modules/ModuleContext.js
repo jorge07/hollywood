@@ -20,14 +20,27 @@ class ModuleContext {
         if (config.queries) {
             config.services.set(Alias_1.SERVICES_ALIAS.QUERY_HANDLERS, ModuleContext.bindCommands(config.queries));
         }
-        this.containerModule = AddModules_1.createContainerModule(config.services);
+        this.config = config;
         this.modules = (_a = config.modules) !== null && _a !== void 0 ? _a : [];
     }
     load(container) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield container.loadAsync(...this.modules.map(moduleContext => moduleContext.containerModule));
-            yield container.loadAsync(this.containerModule);
+            yield container.loadAsync(AddModules_1.createContainerModule(this.getServices()));
         });
+    }
+    addFirstModuleContext(module) {
+        this.modules.unshift(module);
+    }
+    mergeModuleDependenciesConfig() {
+        let config = new Map();
+        for (const moduleDependency of this.modules) {
+            config = new Map([...config, ...moduleDependency.getServices()]);
+        }
+        return config;
+    }
+    getServices() {
+        const dependencies = this.mergeModuleDependenciesConfig();
+        return new Map([...dependencies, ...this.config.services]);
     }
     static bindCommands(commands) {
         return {

@@ -1,12 +1,12 @@
 import type ISnapshotStoreDBAL from "./SnapshotStoreDBAL";
 import { inject } from 'inversify';
 import type EventSourcedAggregateRoot from "../../Domain/EventSourcedAggregateRoot";
-import {SERVICES_ALIAS} from "../../Framework/Container/Bridge/Alias";
-import type {AggregateRootId} from "../../Domain/AggregateRoot";
+import  * as Aliases from "../../Framework";
+import type {AggregateRootId} from "../../Domain";
 
 export default class SnapshotStore<T extends EventSourcedAggregateRoot> {
     constructor(
-        @inject(SERVICES_ALIAS.DEFAULT_EVENT_STORE_SNAPSHOT_DBAL) private readonly store: ISnapshotStoreDBAL
+        @inject(Aliases.SERVICES_ALIAS.DEFAULT_EVENT_STORE_SNAPSHOT_DBAL) private readonly store: ISnapshotStoreDBAL
     ) {}
 
     public async retrieve(aggregateRootId: AggregateRootId): Promise<any> {

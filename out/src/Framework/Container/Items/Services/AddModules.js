@@ -48,19 +48,19 @@ function createContainerModule(serviceList) {
                     CollectionType_1.default(bind)(key, serviceDefinition);
                     break;
                 case AsyncType_1.IsAsyncType(serviceDefinition):
-                    yield AsyncType_1.default(bind)(key, serviceDefinition);
+                    yield AsyncType_1.default(rebind, isBound, bind)(key, serviceDefinition);
                     break;
                 case CustomType_1.IsCustomType(serviceDefinition):
-                    CustomType_1.default(bind)(key, serviceDefinition);
+                    CustomType_1.default(rebind, isBound, bind)(key, serviceDefinition);
                     break;
                 case EventStoreType_1.IsEventStoreType(serviceDefinition):
-                    EventStoreType_1.default(bind)(key, serviceDefinition);
+                    EventStoreType_1.default(rebind, isBound, bind)(key, serviceDefinition);
                     break;
                 case ListenerType_1.IsListenerType(serviceDefinition):
                     ListenerType_1.default(bind)(key, serviceDefinition);
                     break;
                 default:
-                    StandardType_1.default(bind)(key, serviceDefinition);
+                    StandardType_1.default(rebind, isBound, bind)(key, serviceDefinition);
             }
         }
     }));

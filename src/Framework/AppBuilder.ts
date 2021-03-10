@@ -5,7 +5,7 @@ import type IMiddleware from "../Application/Bus/Middelware";
 import type IQuery from "../Application/Bus/Query/Query";
 import type IQueryHandler from "../Application/Bus/Query/QueryHandler";
 import type { QueryBusResponse } from '../Application/Bus/CallbackArg';
-import { SERVICES_ALIAS } from './Container/Bridge/Alias';
+import * as Aliases from './Container/Bridge/Alias';
 import type { IAnnotatedHandler } from "../Application/Bus/autowiring";
 import MissingAutowiringAnnotationException from "../Application/Bus/Exception/MissingAutowiringAnnotationException";
 import type IHandler from "../Application/Bus/IHandler";
@@ -18,10 +18,10 @@ export default class AppBuilder {
         const commands = new Map<{ name: string }, ICommandHandler>();
         const queries = new Map<{ name: string }, IQueryHandler>();
 
-        const commandHandlers = container.getAll<ICommandHandler>(SERVICES_ALIAS.COMMAND_HANDLERS)
-        const queryHandlers = container.getAll<IQueryHandler>(SERVICES_ALIAS.QUERY_HANDLERS)
-        const commandMiddlewares = container.getAll<IMiddleware>(SERVICES_ALIAS.COMMAND_MIDDLEWARE)
-        const queryMiddlewares = container.getAll<IMiddleware>(SERVICES_ALIAS.QUERY_MIDDLEWARE)
+        const commandHandlers = container.getAll<ICommandHandler>(Aliases.SERVICES_ALIAS.COMMAND_HANDLERS)
+        const queryHandlers = container.getAll<IQueryHandler>(Aliases.SERVICES_ALIAS.QUERY_HANDLERS)
+        const commandMiddlewares = container.getAll<IMiddleware>(Aliases.SERVICES_ALIAS.COMMAND_MIDDLEWARE)
+        const queryMiddlewares = container.getAll<IMiddleware>(Aliases.SERVICES_ALIAS.QUERY_MIDDLEWARE)
 
 
         AppBuilder.mapHandler<ICommandHandler>(commandHandlers, commands);
@@ -38,7 +38,7 @@ export default class AppBuilder {
             return target.command;
         };
 
-        if (handlers.length > 1) {
+        if (handlers.length > 0) {
             for (const handler of handlers) {
                 if (!handler) {
                     continue;

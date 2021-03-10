@@ -10,14 +10,20 @@ function IsEventStoreType(serviceDefinition) {
     return !!serviceDefinition.eventStore;
 }
 exports.IsEventStoreType = IsEventStoreType;
-function EventStoreType(bind) {
+function EventStoreType(rebind, isBound, bind) {
     return (key, serviceDefinition) => {
         if (serviceDefinition.eventStore !== undefined) {
-            bind(key).toDynamicValue(({ container }) => {
-                return new EventStore_1.default(serviceDefinition.eventStore, container.get(Alias_1.SERVICES_ALIAS.DEFAULT_EVENT_STORE_DBAL), container.get(Alias_1.SERVICES_ALIAS.DEFAULT_EVENT_BUS), container.get(Alias_1.SERVICES_ALIAS.DEFAULT_EVENT_STORE_SNAPSHOT_DBAL), container.get(Alias_1.PARAMETERS_ALIAS.DEFAULT_EVENT_STORE_MARGIN));
-            }).inSingletonScope();
+            if (isBound(key)) {
+                return rebind(key).toDynamicValue(eventStoreFactory(serviceDefinition)).inSingletonScope();
+            }
+            bind(key).toDynamicValue(eventStoreFactory(serviceDefinition)).inSingletonScope();
         }
     };
 }
 exports.default = EventStoreType;
+function eventStoreFactory(serviceDefinition) {
+    return ({ container }) => {
+        return new EventStore_1.default(serviceDefinition.eventStore, container.get(Alias_1.SERVICES_ALIAS.DEFAULT_EVENT_STORE_DBAL), container.get(Alias_1.SERVICES_ALIAS.DEFAULT_EVENT_BUS), container.get(Alias_1.SERVICES_ALIAS.DEFAULT_EVENT_STORE_SNAPSHOT_DBAL), container.get(Alias_1.PARAMETERS_ALIAS.DEFAULT_EVENT_STORE_MARGIN));
+    };
+}
 //# sourceMappingURL=EventStoreType.js.map

@@ -14,7 +14,7 @@ export async function BuildFromModuleContext(
     try {
         const container: Container = new Container();
         parametersBinder(container, new Map([...PARAMETERS, ...parameters]));
-        await HollywoodModule().load(container);
+        moduleContext.addFirstModuleContext(HollywoodModule());
         await moduleContext.load(container);
         // Initialize listeners
         BindListeners(container);

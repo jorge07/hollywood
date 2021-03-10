@@ -21,19 +21,19 @@ export function createContainerModule(serviceList: ServiceList): AsyncContainerM
                     CollectionType(bind)(key, serviceDefinition)
                     break;
                 case IsAsyncType(serviceDefinition):
-                    await AsyncType(bind)(key, serviceDefinition)
+                    await AsyncType(rebind, isBound, bind)(key, serviceDefinition)
                     break;
                 case IsCustomType(serviceDefinition):
-                    CustomType(bind)(key, serviceDefinition)
+                    CustomType(rebind, isBound, bind)(key, serviceDefinition)
                     break;
                 case IsEventStoreType(serviceDefinition):
-                    EventStoreType(bind)(key, serviceDefinition)
+                    EventStoreType(rebind, isBound, bind)(key, serviceDefinition)
                     break;
                 case IsListenerType(serviceDefinition):
                     ListenerType(bind)(key, serviceDefinition)
                     break;
                 default:
-                    StandardType(bind)(key, serviceDefinition);
+                    StandardType(rebind, isBound, bind)(key, serviceDefinition);
             }
         }
     });

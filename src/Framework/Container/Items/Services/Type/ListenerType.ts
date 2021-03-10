@@ -5,7 +5,6 @@ import type EventBus from "../../../../../EventSourcing/EventBus/EventBus";
 import EventListener from "../../../../../EventSourcing/EventBus/EventListener";
 import EventSubscriber from "../../../../../EventSourcing/EventBus/EventSubscriber";
 
-
 decorate(injectable(), EventListener);
 decorate(injectable(), EventSubscriber);
 

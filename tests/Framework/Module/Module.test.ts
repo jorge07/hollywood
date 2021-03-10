@@ -1,5 +1,5 @@
 import type { IService } from "../../../src/Framework/Container/Items/Service";
-import {AsyncContainerModule, Container} from "inversify";
+import { Container} from "inversify";
 import { DemoHandler } from "../../Application/Bus/DemoHandlers";
 import ModuleContext from "../../../src/Framework/Modules/ModuleContext";
 
@@ -9,7 +9,7 @@ describe("Framework:Module", () => {
             [ 'test', { instance: DemoHandler } ],
         ]);
         const module = new ModuleContext({services})
-        expect(module.containerModule).toBeInstanceOf(AsyncContainerModule)
+        expect(module.config).toBeInstanceOf(Object);
     });
     it("Module register service into ContainerModule", async () => {
         const services = new Map<string,IService>([
@@ -17,7 +17,7 @@ describe("Framework:Module", () => {
         ]);
         const module = new ModuleContext({services})
         const container = new Container();
-        await container.loadAsync(module.containerModule);
+        await module.load(container);
         expect(container.get('test')).toBeInstanceOf(DemoHandler)
     });
     it("ModuleContext dependencies should be initialised only when required", async () => {
