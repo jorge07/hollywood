@@ -5,9 +5,12 @@ function IsCollectionType(serviceDefinition) {
     return !!serviceDefinition.collection;
 }
 exports.IsCollectionType = IsCollectionType;
-function CollectionType(bind) {
+function CollectionType(bind, unbind, isBound) {
     return (key, serviceDefinition) => {
         var _a;
+        if (serviceDefinition.overwrite && isBound(key)) {
+            unbind(key);
+        }
         if (((_a = serviceDefinition.collection) === null || _a === void 0 ? void 0 : _a.length) === 0) {
             // Empty null as marker of no content
             bind(key).toDynamicValue(() => null).inSingletonScope();

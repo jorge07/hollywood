@@ -45,7 +45,7 @@ function createContainerModule(serviceList) {
             decorateService(serviceDefinition);
             switch (true) {
                 case CollectionType_1.IsCollectionType(serviceDefinition):
-                    CollectionType_1.default(bind)(key, serviceDefinition);
+                    CollectionType_1.default(bind, unbind, isBound)(key, serviceDefinition);
                     break;
                 case AsyncType_1.IsAsyncType(serviceDefinition):
                     yield AsyncType_1.default(rebind, isBound, bind)(key, serviceDefinition);
@@ -57,7 +57,7 @@ function createContainerModule(serviceList) {
                     EventStoreType_1.default(rebind, isBound, bind)(key, serviceDefinition);
                     break;
                 case ListenerType_1.IsListenerType(serviceDefinition):
-                    ListenerType_1.default(bind)(key, serviceDefinition);
+                    ListenerType_1.default(bind, rebind, isBound)(key, serviceDefinition);
                     break;
                 default:
                     StandardType_1.default(rebind, isBound, bind)(key, serviceDefinition);

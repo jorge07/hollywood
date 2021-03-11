@@ -14,8 +14,11 @@ function IsListenerType(serviceDefinition) {
     return !!(serviceDefinition.listener || serviceDefinition.subscriber);
 }
 exports.IsListenerType = IsListenerType;
-function ListenerType(bind) {
+function ListenerType(bind, unbind, isBound) {
     return (key, serviceDefinition) => {
+        if (serviceDefinition.overwrite && isBound(key)) {
+            unbind(key);
+        }
         bind(key).to(serviceDefinition.instance).inSingletonScope();
         bind(LISTENERS_SELECTOR).toDynamicValue(listenerBinder(serviceDefinition, key));
     };
@@ -34,6 +37,9 @@ function listenerBinder(serviceDefinition, key) {
         }
         if (!container.isBound(serviceDefinition.bus)) {
             throw new Error(`Bus doesn't exists for ${key}. Bus name: ${serviceDefinition.bus}`);
+        }
+        if (!container.isBound(key)) {
+            return;
         }
         if (serviceDefinition.listener) {
             container.get(serviceDefinition.bus).addListener(container.get(key));

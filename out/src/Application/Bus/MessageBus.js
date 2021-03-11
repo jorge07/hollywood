@@ -15,12 +15,8 @@ class MessageBus {
     }
     createChain(middlewares) {
         const chain = {};
-        MessageBus.reverse(middlewares).forEach((middleware, key) => {
-            if (middleware) {
-                chain[key] = (command) => __awaiter(this, void 0, void 0, function* () {
-                    return middleware.execute(command, chain[key - 1]);
-                });
-            }
+        MessageBus.reverse(middlewares).filter(Boolean).forEach((middleware, key) => {
+            chain[key] = (command) => __awaiter(this, void 0, void 0, function* () { return (middleware.execute(command, chain[key - 1])); });
         });
         return chain[middlewares.length - 1];
     }

@@ -27,7 +27,10 @@ class EventSourcedAggregateRoot extends AggregateRoot_1.default {
         return this;
     }
     fromSnapshot(snapshot) {
+        const children = snapshot.children;
+        delete snapshot.children;
         Object.assign(this, snapshot);
+        this.children.forEach((child, key) => child.fromSnapshot(children[key]));
         return this;
     }
     recursiveHandling(event, method) {

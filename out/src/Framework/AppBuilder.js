@@ -54,10 +54,7 @@ class AppBuilder {
             return target.command;
         };
         if (handlers.length > 0) {
-            for (const handler of handlers) {
-                if (!handler) {
-                    continue;
-                }
+            for (const handler of handlers.filter(Boolean)) {
                 collection.set(commandName(handler), handler);
             }
         }
