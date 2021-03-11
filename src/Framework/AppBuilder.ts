@@ -39,10 +39,7 @@ export default class AppBuilder {
         };
 
         if (handlers.length > 0) {
-            for (const handler of handlers) {
-                if (!handler) {
-                    continue;
-                }
+            for (const handler of handlers.filter(Boolean)) {
                 collection.set(commandName(handler as any), handler);
             }
         }

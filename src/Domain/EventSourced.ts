@@ -4,9 +4,7 @@ import DomainEvent from "./Event/DomainEvent";
 export default abstract class EventSourced implements IEventSourced {
     private children: EventSourced[] = [];
     public fromSnapshot(snapshot: EventSourced): EventSourced {
-
         Object.assign(this, snapshot);
-
         return this;
     }
 

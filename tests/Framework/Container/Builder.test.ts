@@ -12,6 +12,8 @@ import EventListener from "../../../src/EventSourcing/EventBus/EventListener";
 import {SERVICES_ALIAS} from "../../../src/Framework/Container/Bridge/Alias";
 import AppBuilder from "../../../src/Framework/AppBuilder";
 import {DemoQueryHandler} from "../../Application/Bus/DemoHandlers";
+import {injectable} from "inversify";
+import {EventBus} from "../../../src/EventSourcing";
 
 class EchoListener extends EventListener {
     public counter = 0;
@@ -20,6 +22,7 @@ class EchoListener extends EventListener {
     }
 }
 
+// tslint:disable-next-line:no-big-function
 describe("Framework:Container", () => {
     it("Builder should be able to register a StandardType and bind ListenersTypes", async () => {
         const services = new Map([
@@ -188,5 +191,99 @@ describe("Framework:Container", () => {
         const noopInstance = container.get<Noop>(SERVICES_ALIAS.DEFAULT_EVENT_STORE_DBAL);
 
         expect(noopInstance).toBeInstanceOf(Noop);
+    });
+    it("Container Builder should allow overwrite services definition", async () => {
+        expect.assertions(14);
+
+        // tslint:disable-next-line:max-classes-per-file
+        @injectable()
+        class Yep {}
+        // tslint:disable-next-line:max-classes-per-file
+        @injectable()
+        class Noop {}
+        const testServices = new Map<string, IService>([
+            ['test.collection', {
+                collection: [Noop],
+            }],
+            ['test.instance', {
+                instance: Noop,
+            }],
+            [SERVICES_ALIAS.DEFAULT_EVENT_BUS, {
+                instance: EventBus,
+            }],
+            ['test.async', {
+                async: () => (new Noop()),
+            }],
+            ['test.custom', {
+                custom: () => (new Noop()),
+            }],
+            ['test.listener', {
+                instance: Noop,
+                bus: SERVICES_ALIAS.DEFAULT_EVENT_BUS,
+                overwrite: true,
+                listener: true,
+            }],
+            ['test.subscriber', {
+                instance: Noop,
+                bus: SERVICES_ALIAS.DEFAULT_EVENT_BUS,
+                overwrite: true,
+                subscriber: [Yep],
+            }],
+        ]);
+        const mainServices = new Map<string, IService>([
+            ['test.collection', {
+                collection: [Yep],
+                overwrite: true
+            }],
+            ['test.instance', {
+                instance: Yep,
+                overwrite: true
+            }],
+            [SERVICES_ALIAS.DEFAULT_EVENT_BUS, {
+                instance: EventBus,
+                overwrite: true
+            }],
+            ['test.async', {
+                async: () => (new Yep()),
+                overwrite: true
+            }],
+            ['test.custom', {
+                custom: () => (new Yep()),
+                overwrite: true
+            }],
+            ['test.listener', {
+                instance: Yep,
+                bus: SERVICES_ALIAS.DEFAULT_EVENT_BUS,
+                overwrite: true,
+                listener: true,
+            }],
+            ['test.subscriber', {
+                instance: Yep,
+                bus: SERVICES_ALIAS.DEFAULT_EVENT_BUS,
+                overwrite: true,
+                subscriber: [],
+            }],
+        ]);
+
+        const mainModule = new ModuleContext({ services: mainServices});
+        const testModule = new ModuleContext({ services: testServices, modules: [ mainModule ] });
+
+        const containerMain = await BuildFromModuleContext(new Map(), mainModule);
+        const containerTest = await BuildFromModuleContext(new Map(), testModule);
+
+        expect(containerMain.get('test.collection')).toBeInstanceOf(Yep);
+        expect(containerTest.get('test.collection')).toBeInstanceOf(Noop);
+        expect(containerMain.get('test.instance')).toBeInstanceOf(Yep);
+        expect(containerTest.get('test.instance')).toBeInstanceOf(Noop);
+        expect(containerMain.get('test.async')).toBeInstanceOf(Yep);
+        expect(containerTest.get('test.async')).toBeInstanceOf(Noop);
+        expect(containerMain.get('test.custom')).toBeInstanceOf(Yep);
+        expect(containerTest.get('test.custom')).toBeInstanceOf(Noop);
+        expect(containerMain.get('test.listener')).toBeInstanceOf(Yep);
+        expect(containerTest.get('test.listener')).toBeInstanceOf(Noop);
+        expect(containerMain.get('test.subscriber')).toBeInstanceOf(Yep);
+        expect(containerTest.get('test.subscriber')).toBeInstanceOf(Noop);
+        expect(containerMain.get(SERVICES_ALIAS.DEFAULT_EVENT_BUS)).toBeInstanceOf(EventBus);
+        expect(containerTest.get(SERVICES_ALIAS.DEFAULT_EVENT_BUS)).toBeInstanceOf(EventBus);
     });
 });

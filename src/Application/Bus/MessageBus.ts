@@ -13,12 +13,8 @@ export default abstract class MessageBus {
     private createChain(middlewares: IMiddleware[]): (command: ICommand) => Promise<any> {
         const chain: {[key: string]: (command: ICommand) => any} = {};
 
-        MessageBus.reverse(middlewares).forEach((middleware: IMiddleware, key: number) => {
-            if (middleware) {
-                chain[key] = async (command: any): Promise<any> =>  {
-                    return middleware.execute(command, chain[key - 1]);
-                };
-            }
+        MessageBus.reverse(middlewares).filter(Boolean).forEach((middleware: IMiddleware, key: number) => {
+            chain[key] = async (command: any): Promise<any> =>  (middleware.execute(command, chain[key - 1]));
         });
 
         return chain[middlewares.length - 1];

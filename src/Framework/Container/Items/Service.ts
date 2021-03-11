@@ -19,6 +19,9 @@ export interface IService extends Partial<Subscriber> {
     eventStore?: AggregateFactory<any>;
     async?: () => any;
     constant?: boolean;
+    // Will replace any other existing service
+    // (Useful on test environments)
+    overwrite?: boolean;
 }
 
 export type ServiceList = Map<UniqueServiceIdentifier, IService>;

@@ -5,8 +5,11 @@ export function IsCollectionType(serviceDefinition: IService): boolean {
     return !!serviceDefinition.collection;
 }
 
-export default function CollectionType(bind: interfaces.Bind) {
+export default function CollectionType(bind: interfaces.Bind, unbind: interfaces.Unbind, isBound: interfaces.IsBound) {
     return (key: string, serviceDefinition: IService): void => {
+        if (serviceDefinition.overwrite && isBound(key)) {
+            unbind(key);
+        }
         if (serviceDefinition.collection?.length === 0) {
             // Empty null as marker of no content
             bind(key).toDynamicValue(() => null).inSingletonScope();

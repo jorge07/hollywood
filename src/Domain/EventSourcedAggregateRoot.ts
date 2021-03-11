@@ -34,8 +34,11 @@ export default abstract class EventSourcedAggregateRoot extends AggregateRoot im
         return this;
     }
 
-    public fromSnapshot(snapshot: IEventSourced): EventSourcedAggregateRoot {
+    public fromSnapshot(snapshot: any): EventSourcedAggregateRoot {
+        const children = snapshot.children;
+        delete snapshot.children;
         Object.assign(this, snapshot);
+        this.children.map((child: EventSourced, key: number) => child.fromSnapshot(children[key]));
         return this;
     }
 

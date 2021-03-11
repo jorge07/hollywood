@@ -87,7 +87,7 @@ describe("AggregateRoot", () => {
         expect(stream.events.length).toBe(1);
     });
 
-    it("Aggregate Roots must be able to reconstruct from stringified events", () => {
+    it("Aggregate Roots must be able to reconstruct from stringify events", () => {
 
         const dog = new Dog("31");
         const domainMessage: string = JSON.stringify(DomainMessage.create(dog.getAggregateRootId(), 1, new SayWolf('asd')));
@@ -114,10 +114,12 @@ describe("AggregateRoot", () => {
     it("Aggregate Roots can be created from an snapshot", () => {
         const dog = new Dog("31");
 
-        const snapshot: EventSourced = { version: 2, wolfCount: 2} as any
+        const snapshot: EventSourced = { version: 2, wolfCount: 2, children:[{recorded:["wolf"]}]} as any
         dog.fromSnapshot(snapshot);
         expect(dog.wolfCount).toBe(2);
         expect(dog.version).toBe(2);
+        expect(dog.version).toBe(2);
+        expect(dog.records().length).toBe(1);
         expect(dog.getUncommittedEvents().events.length).toBe(0);
     });
 });

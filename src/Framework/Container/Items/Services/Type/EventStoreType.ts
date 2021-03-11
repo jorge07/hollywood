@@ -10,7 +10,7 @@ export function IsEventStoreType(serviceDefinition: IService): boolean {
 export default function EventStoreType(
     rebind: interfaces.Rebind,
     isBound: interfaces.IsBound,
-    bind: interfaces.Bind,
+    bind: interfaces.Bind
 ) {
     return (key: string, serviceDefinition: IService) => {
         if (serviceDefinition.eventStore !== undefined) {

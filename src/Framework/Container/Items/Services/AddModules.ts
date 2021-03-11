@@ -18,7 +18,7 @@ export function createContainerModule(serviceList: ServiceList): AsyncContainerM
             decorateService(serviceDefinition);
             switch(true) {
                 case IsCollectionType(serviceDefinition):
-                    CollectionType(bind)(key, serviceDefinition)
+                    CollectionType(bind, unbind, isBound)(key, serviceDefinition)
                     break;
                 case IsAsyncType(serviceDefinition):
                     await AsyncType(rebind, isBound, bind)(key, serviceDefinition)
@@ -30,7 +30,7 @@ export function createContainerModule(serviceList: ServiceList): AsyncContainerM
                     EventStoreType(rebind, isBound, bind)(key, serviceDefinition)
                     break;
                 case IsListenerType(serviceDefinition):
-                    ListenerType(bind)(key, serviceDefinition)
+                    ListenerType(bind, rebind, isBound)(key, serviceDefinition)
                     break;
                 default:
                     StandardType(rebind, isBound, bind)(key, serviceDefinition);
