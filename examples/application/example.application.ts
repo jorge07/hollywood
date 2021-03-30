@@ -18,9 +18,6 @@ const eventStore = new EventStore<User>(
 
 export const handler = new CreateUserHandler(eventStore);
 
-(async () => {
-    await handler.handle(new CreateUser("1", "demo@example.org"));
+await handler.handle(new CreateUser("1", "demo@example.org"));
 
-    console.log(await eventStore.load("1"));
-})()
-
+console.log(await eventStore.load("1"));
