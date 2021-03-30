@@ -6,7 +6,7 @@
   "url": "https://github.com/jorge07/hollywood",
   "license": "MIT",
   "type": "module",
-  "main": "out/index.js",
+  "main": "index.ts",
   "repository": {
     "type": "git",
     "url": "http://github.com/jorge07/hollywood.git"
