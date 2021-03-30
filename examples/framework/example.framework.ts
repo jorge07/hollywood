@@ -38,21 +38,18 @@ const services = new Map([
     }],
 ]);
 
-(async () => {
+const appModule = new ModuleContext({ services });
 
-    const appModule = new ModuleContext({ services });
+const kernel = await Kernel.createFromModuleContext("dev", parameters, appModule);
 
-    const kernel = await Kernel.createFromModuleContext("dev", parameters, appModule);
+await kernel.app.handle(new CreateUser("1", "demo@example.org"));
 
-    await kernel.app.handle(new CreateUser("1", "demo@example.org"));
+const recreatedUser = await kernel.container.get<EventStore<User>>("user.eventStore").load("1"); // Recreate User from events
+const listener = await kernel.container.get<EchoListener>("generic.subscriber");
+console.log('Listeners', listener.counter);
 
-    const recreatedUser = await kernel.container.get<EventStore<User>>("user.eventStore").load("1"); // Recreate User from events
-    const listener = await kernel.container.get<EchoListener>("generic.subscriber");
-    console.log('Listeners', listener.counter);
+console.log(recreatedUser); // Display the created user
 
-    console.log(recreatedUser); // Display the created user
-
-    console.log(
-        kernel.container.get("user.eventStore") // Conform overwrited default parameters (snapshotMargin 10 -> 40)
-    );
-})()
+console.log(
+    kernel.container.get("user.eventStore") // Conform overwrited default parameters (snapshotMargin 10 -> 40)
+);

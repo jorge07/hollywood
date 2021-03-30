@@ -5,6 +5,7 @@
   "author": "jorge.arcoma@gmail.com",
   "url": "https://github.com/jorge07/hollywood",
   "license": "MIT",
+  "type": "module",
   "main": "out/index.js",
   "repository": {
     "type": "git",
