@@ -1,0 +1,16 @@
+{
+  "name": "rest-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "fastify": "^3.14.1",
+    "hollywood-js": "file:./../../",
+    "reflect-metadata": "^0.1.13",
+    "typescript": "^4.2.3"
+  },
+  "scripts": {
+    "up" : "yarn build; node out/main",
+    "build" : "tsc -p tsconfig.json"
+  }
+}

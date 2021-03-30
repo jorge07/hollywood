@@ -1,12 +1,12 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es6",
+        "target": "es2017",
         "outDir": "out",
-        "lib": [ "es2015" ],
+        "lib": [ "es2017" ],
         "sourceMap": true,
         "rootDir": ".",
-        "types": [ 
+        "types": [
             "node",
             "reflect-metadata",
             "jest"
@@ -23,7 +23,6 @@
     "compileOnSave": true,
     "include": [
         "src/**/*.ts",
-        "examples/**/*.ts",
         "index.ts"
     ],
     "exclude": [

@@ -42,9 +42,9 @@ const services = new Map([
 
     const appModule = new ModuleContext({ services });
 
-    const kernel = await Kernel.createFromModuleContext("dev", true, parameters, appModule);
+    const kernel = await Kernel.createFromModuleContext("dev", parameters, appModule);
 
-    await kernel.handle(new CreateUser("1", "demo@example.org"));
+    await kernel.app.handle(new CreateUser("1", "demo@example.org"));
 
     const recreatedUser = await kernel.container.get<EventStore<User>>("user.eventStore").load("1"); // Recreate User from events
     const listener = await kernel.container.get<EchoListener>("generic.subscriber");

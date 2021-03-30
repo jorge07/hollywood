@@ -44,7 +44,6 @@ describe("Kernel", () => {
 
         const kernel = await Kernel.createFromModuleContext(
             'test',
-            true,
             parameters,
             testModule
         );
@@ -60,7 +59,6 @@ describe("Kernel", () => {
 
         const kernelAny = await Kernel.createFromModuleContext(
             'any',
-            true,
             parameters,
             testModule,
             parametersTest
@@ -69,7 +67,6 @@ describe("Kernel", () => {
         const demoAny: number = kernelAny.container.get<number>('demo');
         const kernelTest = await Kernel.createFromModuleContext(
             'test',
-            false,
             parameters,
             testModule,
             parametersTest
@@ -78,7 +75,6 @@ describe("Kernel", () => {
         const demoTest: number = kernelTest.container.get<number>('demo');
         const kernelProd = await Kernel.createFromModuleContext(
             'prod',
-            false,
             parameters,
             testModule,
             parametersTest

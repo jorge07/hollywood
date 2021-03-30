@@ -21,10 +21,8 @@ const services: ServiceList = new Map([
 
 const DemoModules = new ModuleContext({services});
 
-
 const servicesTestAnnotations: ServiceList = new Map([
-    [SERVICES_ALIAS.QUERY_HANDLERS, {instance: MissingAnnotationDemoQueryHandler
-}],
+    [SERVICES_ALIAS.QUERY_HANDLERS, {instance: MissingAnnotationDemoQueryHandler}],
 ]);
 
 const DemoModulesTestAnnotations = new ModuleContext({services: servicesTestAnnotations});
@@ -35,12 +33,11 @@ describe("Framework:AppBridge", () => {
 
         const kernel = await Kernel.createFromModuleContext(
             'test',
-            true,
             new Map(),
             DemoModules
         );
 
-        const response: QueryBusResponse = await kernel.ask(new DemoQuery(false));
+        const response: QueryBusResponse = await kernel.app.ask(new DemoQuery(false));
         expect({"data": "Hello!"}).toEqual(response);
     });
     it("Should be able to compose and perform a command", async () => {
@@ -48,13 +45,12 @@ describe("Framework:AppBridge", () => {
 
         const kernel = await Kernel.createFromModuleContext(
             'test',
-            true,
             new Map(),
             DemoModules
         );
 
         try {
-            await kernel.handle(new DemoCommand(true));
+            await kernel.app.handle(new DemoCommand(true));
         } catch (err) {
             expect(err).toEqual({"code": 1, "message": "Fail"});
         }
@@ -65,7 +61,6 @@ describe("Framework:AppBridge", () => {
         try {
             await Kernel.createFromModuleContext(
                 'test',
-                true,
                 new Map(),
                 DemoModulesTestAnnotations
             );
