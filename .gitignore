@@ -1,3 +1,5 @@
 node_modules/
 coverage/
 yarn-error.log
+examples/**/out
+examples/**/node_modules/

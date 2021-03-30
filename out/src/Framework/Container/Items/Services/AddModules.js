@@ -18,15 +18,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -40,7 +31,7 @@ const CustomType_1 = __importStar(require("./Type/CustomType"));
 const EventStoreType_1 = __importStar(require("./Type/EventStoreType"));
 const ListenerType_1 = __importStar(require("./Type/ListenerType"));
 function createContainerModule(serviceList) {
-    return new inversify_1.AsyncContainerModule((bind, unbind, isBound, rebind) => __awaiter(this, void 0, void 0, function* () {
+    return new inversify_1.AsyncContainerModule(async (bind, unbind, isBound, rebind) => {
         for (const [key, serviceDefinition] of serviceList) {
             decorateService(serviceDefinition);
             switch (true) {
@@ -48,7 +39,7 @@ function createContainerModule(serviceList) {
                     CollectionType_1.default(bind, unbind, isBound)(key, serviceDefinition);
                     break;
                 case AsyncType_1.IsAsyncType(serviceDefinition):
-                    yield AsyncType_1.default(rebind, isBound, bind)(key, serviceDefinition);
+                    await AsyncType_1.default(rebind, isBound, bind)(key, serviceDefinition);
                     break;
                 case CustomType_1.IsCustomType(serviceDefinition):
                     CustomType_1.default(rebind, isBound, bind)(key, serviceDefinition);
@@ -63,7 +54,7 @@ function createContainerModule(serviceList) {
                     StandardType_1.default(rebind, isBound, bind)(key, serviceDefinition);
             }
         }
-    }));
+    });
 }
 exports.createContainerModule = createContainerModule;
 function decorateService(serviceDefinition) {

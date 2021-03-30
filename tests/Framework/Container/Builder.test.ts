@@ -43,7 +43,7 @@ describe("Framework:Container", () => {
 
         const listener = container.get<EchoListener>('generic.subscriber');
 
-        const app = new AppBuilder(container);
+        const app = AppBuilder(container);
         await app.handle(new CreateUser("1", "demo@example.org"));
 
         expect(listener.counter).toBe(1);
@@ -81,7 +81,7 @@ describe("Framework:Container", () => {
         const listener = container.get<EchoListener>('generic.subscriber');
         const listener2 = container.get<EchoListener>('generic.subscriber.2');
 
-        const app = new AppBuilder(container);
+        const app = AppBuilder(container);
         await app.handle(new CreateUser("1", "demo@example.org"));
 
         expect(listener.counter).toBe(1);
@@ -102,7 +102,7 @@ describe("Framework:Container", () => {
         try {
             const container = await BuildFromModuleContext(new Map(), testModule);
             // tslint:disable-next-line:no-unused-expression
-            new AppBuilder(container);
+            AppBuilder(container);
         } catch (error) {
             expect(error.message).toContain('Bus doesn\'t exists ')
         }
@@ -120,8 +120,7 @@ describe("Framework:Container", () => {
 
         try {
             const container = await BuildFromModuleContext(new Map(), testModule);
-            // tslint:disable-next-line:no-unused-expression
-            new AppBuilder(container);
+            AppBuilder(container);
         } catch (error) {
             expect(error.message).toContain('Missing bus parameter in ServiceDefinition ')
         }
