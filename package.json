@@ -1,12 +1,13 @@
 {
   "name": "hollywood-js",
-  "version": "5.0.0",
+  "version": "5.0.2",
   "description": "Event Sourcing DDD CQRS tool kit",
   "author": "jorge.arcoma@gmail.com",
   "url": "https://github.com/jorge07/hollywood",
   "license": "MIT",
-  "type": "module",
-  "main": "index.ts",
+  "main": "./dist/index.js",
+  "exports": "./dist/index.js",
+  "types": "./index.d.ts",
   "repository": {
     "type": "git",
     "url": "http://github.com/jorge07/hollywood.git"
@@ -29,6 +30,8 @@
     "typescript": "4.0.2"
   },
   "scripts": {
+    "prepublishOnly" : "npm run test && npm run lint && npm run build",
+    "postpublishOnly" : "rm -rf dist/",
     "test": "jest",
     "test:server": "node ./out/examples/Server.js",
     "dev": "./node_modules/typescript/bin/tsc -p tsconfig.json -w",

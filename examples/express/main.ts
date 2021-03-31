@@ -12,8 +12,11 @@ const MainModule =  new Framework.ModuleContext({
     queries: [
         FindUserHandler
     ]
-})
-const kernel = await Framework.Kernel.createFromModuleContext('dev', new Map(), MainModule);
-await kernel.app.handle(new CreateUser('uuid-fake', 'fake'));
-const api = new HTTP(kernel);
-await api.up();
+});
+
+(async() => {
+    const kernel = await Framework.Kernel.createFromModuleContext('dev', new Map(), MainModule);
+    await kernel.app.handle(new CreateUser('uuid-fake', 'fake'));
+    const api = new HTTP(kernel);
+    await api.up();
+})();
