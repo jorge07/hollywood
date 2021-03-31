@@ -1,5 +1,5 @@
 import {Application, Framework} from 'hollywood-js';
-import {FastifyInstance} from "fastify/types/instance";
+import type {FastifyInstance} from "fastify/types/instance";
 import {CreateUser, FindUser} from "./app";
 
 export class HTTP {
@@ -50,7 +50,7 @@ export class HTTP {
         this.bindRouter(this.kernel.app);
         this.fastify.listen(3000, (err: Error, address: string) => {
             if (err) throw err
-            this.fastify.log.info(`server listening on ${address}`)
+            console.log(`server listening on ${address}`)
         })
     }
 }

@@ -1,0 +1,1 @@
+{"version":3,"file":"QueryBus.js","sourceRoot":"","sources":["../../../../../src/Application/Bus/Query/QueryBus.ts"],"names":[],"mappings":";;;;;AACA,+DAAuC;AAIvC,MAAqB,QAAS,SAAQ,oBAAU;IAC5C,YACI,GAAG,WAA0B;QAE7B,KAAK,CAAC,GAAG,WAAW,CAAC,CAAC;IAC1B,CAAC;IACM,KAAK,CAAC,GAAG,CAAC,OAAe;QAC5B,OAAO,MAAM,IAAI,CAAC,eAAe,CAAC,OAAO,CAAC,CAAC;IAC/C,CAAC;CACJ;AATD,2BASC"}
