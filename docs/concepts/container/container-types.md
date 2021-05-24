@@ -3,7 +3,9 @@
 Hollywood uses Inversify for DI. This allows flexibility and extensibility. 
 We provide several abstractions to simplify the service definitions:
 
-- AsyncType: Allows asynchronous initialization of a service.
+# AsyncType
+
+Allows asynchronous initialization of a service.
 
 ```typescript
 async function ReadModelConnectionFactory() {
@@ -25,7 +27,9 @@ const services = new Map<string, IService>([
 const mainModule = new ModuleContext({ services });
 ```
 
-- CollectionType: Collection of services under the same name.
+# CollectionType
+
+Collection of services under the same name.
 
 ```typescript
 const services = new Map<string, IService>([
@@ -40,7 +44,9 @@ const services = new Map<string, IService>([
 const mainModule = new ModuleContext({ services });
 ```  
 
-- CustomType: Allows any function.
+# CustomType
+
+Allows any function.
 
 ```typescript
 const services = new Map<string, IService>([
@@ -53,7 +59,9 @@ const services = new Map<string, IService>([
 const mainModule = new ModuleContext({ services });
 ```
 
-- EventStoreType: Special service that allows you to define an `EventStore` service for you `AggregateRoot`
+# EventStoreType
+
+Special service that allows you to define an `EventStore` service for you `AggregateRoot`
 
 ```typescript
 const services = new Map([
@@ -66,7 +74,9 @@ const module = new ModuleContext({ services });
 
 ```
 
-- ListenerType: Allows you to listen for one or more events send into a defined EventBus.
+# ListenerType
+
+Allows you to listen for one or more events send into a defined EventBus.
 
 ```typescript
 const services = new Map([
@@ -81,10 +91,11 @@ const services = new Map([
 ]);
 
 const module = new ModuleContext({services, commands: [CreateUserHandler]});
-
 ```
 
-- StandardType: Any instance class that's not too complex.
+# StandardType
+
+Any instance class that's not too complex.
 
 ```typescript
 const services = new Map<string, IService>([
@@ -95,7 +106,7 @@ const services = new Map<string, IService>([
 const mainModule = new ModuleContext({ services });
 ```
 
-### Hollywood predefined services:
+# Hollywood predefined services:
 
 - "hollywood.application.command.handlers": Will be used internally to register your handlers
 - "hollywood.application.query.handlers": Will be used internally to register your handlers

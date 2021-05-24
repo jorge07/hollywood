@@ -1,6 +1,6 @@
 // ts-node examples/framework/Framework.ts
 import "reflect-metadata";
-import { PARAMETERS_ALIAS, SERVICES_ALIAS } from '../../src/Framework/Container/Bridge/Alias';
+import { PARAMETERS_ALIAS, SERVICES_ALIAS } from '../../src/Framework';
 import CreateUserHandler from '../application/CreateUserHandler';
 import EventStore from '../../src/EventSourcing/EventStore';
 import User from '../domain/User';
