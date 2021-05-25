@@ -1,5 +1,7 @@
 # First Business Module
 
+> The following example can be found on the examples folder in the repository: Chapter 3.
+
 Now that we've created our first [Module](concepts/module-context.md) it's time to create the first one with some business logic inside.
 We're going to work on to of our previous SharedModule and structure will look like this:
 
@@ -337,6 +339,8 @@ export default async function KernelFactory(): Promise<Framework.Kernel> {
 
 ```
 
+# Run the example
+
 Let's run this:
 
 ```typescript
@@ -357,8 +361,6 @@ import CreateCommand from "./src/modules/customer/application/command/create/com
 })()
 
 ```
-
-# Run the example
 
 ```bash
 $ ./node_modules/.bin/tsc

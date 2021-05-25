@@ -1,17 +1,72 @@
 # ModuleContext
 
-A ModuleContext stand for a Bounded Context in DDD terms.
+## What's a Module
 
-The reason behind is to define boundaries in the scope of a particular problem.
+A **Module** (*module* is a reserved word in NodeJS) represents, in DDD terms, an space for related concepts inside a **Bounded Context**.
+
+
+Let's see the example below:
+
+```mermaid
+graph TD
+
+    subgraph Casino
+    P[Player]
+    G[Games]
+    T[Transactions]
+    B[Balance]
+    end
+
+    subgraph BackOffice
+    C[Customers]
+    T[Transactions]
+    Bon[Bonus]
+    Camp[Campaigns]
+    Games[Games]
+    end
+
+    subgraph Affiliates
+    Aff[Affiliates]
+    Players[Players]
+    end
+```
+
+In a Gambling company we've 3 different Bounded Contexts:
+
+- **Casino**. Where the business occurs. Core Business.
+- **BackOffice**. Where the business gets administrated. Core Business.
+- **Affiliate**. Were we take users from. It's an important part of the business, but we're not experts, we may buy a solution instead build our own.
+
+This Bounded Contexts has different **Modules** inside:
+
+- Affiliate Player, Affiliates, Customer, BackOffice Player, Casino Games... etc
+
+#### Why do we prefix each with the **Bounded Context**?
+
+A **Module** with the same *name* can be totally different on different **Bounded Contexts**.
+
+See as example:
+
+**Affiliate Player** VS **Casino Player**
+
+For an **Affiliate** system, a **Player** as *Entity* is different from a **Player** in the **Casino** Bounded Context.
+
+- In the *Affiliate Bounded Context*: a Player can't play, can't withdraw, can't contact support...
+- In the *Casino Bounded Context*: a Player we don't care about *referer links* or related.
+
+> The reason behind aModule is to define boundaries in the scope of a particular aggregate. General rule: 1 Aggregate - 1 Module.
+
+## A Module in Hollywood-js 
+
+**ModuleContext** can be used as DDD Modules and also as an isolation form for features that may promote or not in the future to his own Module.
 
 A Module Context in Hollywood context defines:
 
-- Commands available in that Bounded Context. (A.K.A. Mutations)
-- Queries available in that Bounded Context.
-- Services, the bounded context services list for the container.
-- Modules you depend on. An example of this is a SharedModule with Logger, metrics, db connections and other horizontal dependencies.
+- **Commands**: Available mutations on the state managed by the Module.
+- **Queries**: To retrieve available information owned by the Module.
+- **Services**: The services list that compose the Module. Available later in the container.
+- **Modules**: Modules it depends on. An example of this is a `SharedModule` with `Logger`, `Metrics`, `db connections` and other horizontal dependencies.
 
-See:
 ```typescript
 // src/Framework/Modules/ModuleContext.ts
 export interface ModuleConfig {
@@ -100,6 +155,8 @@ In the above example, some modules contain more than one dependency and there's 
 
 By doing this we enforce isolation and simplify our unit tests suites a lot.
 We can even instantiate the entire Kernel just with the module we want to test, ensuring no side-effects caused by third-party (We'll catch this in other later, not in our unit tests).
+
+Another benefit of isolation is reutilization. A Module can be exposed as npm package and distributed across different projects.
 
 ### A Module Dependency Example
 

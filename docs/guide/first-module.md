@@ -1,6 +1,6 @@
 # First Module
 
-> If you're not familiar with [ModuleContext concept](/#/concepts/module-context) I recommend you to read about it before.
+> The following example can be found on the examples folder in the repository: Chapter 2. If you're not familiar with [ModuleContext concept](concepts/module-context) I recommend you to read about it before.
 
 One of the first things you set up use to be a logger, so let's drive by example:
 

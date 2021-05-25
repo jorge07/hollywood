@@ -11,5 +11,5 @@
 [![NPM Downloads](https://img.shields.io/npm/dm/hollywood-js.svg?style=flat)](https://npmcharts.com/compare/hollywood-js?minimal=true)
 [![Install Size](https://packagephobia.now.sh/badge?p=hollywood-js)](https://packagephobia.now.sh/result?p=hollywood-js)
 
-[GitHub](https://github.com/jorge07/hollywood-js/)
+[GitHub](https://github.com/jorge07/hollywood/)
 [Getting Started](/#hollywood)

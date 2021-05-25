@@ -7,7 +7,7 @@
 
 Hollywood-js is a Framework for building very modular and high scalable server side applications following CQRS (Command Query Responsibility Segregation) and enforcing IoC.
 
-It provides a Bounded Context oriented architecture, enforcing isolation and event driven communication between them.
+It provides a Modular, Bounded Context oriented architecture, enforcing isolation and event driven communication between them.
 Hollywood-js it's strongly CQRS structured, allowing you to define or not a DDD / Clean Architecture project.
 
 Includes advanced Event Sourcing capabilities like Event Store abstractions, Event Store Snapshots, Projections and Event Bus (Listeners and Subscribers).
@@ -28,7 +28,7 @@ Yarn:
 Features:
 
 - Dependency Injection (Built around Inversify).
-  - Module hierarchy for Bounded Context isolation.
+  - Module hierarchy for isolation.
 - DDD toolbox
   - Event Driven
     - Support for different event streams

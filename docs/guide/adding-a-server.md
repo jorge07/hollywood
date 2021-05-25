@@ -1,11 +1,11 @@
 # Adding a Server to your app.
 
-Some examples about how to add a server are in the examples guide folder:
+Some examples about how to add a Server to consumer your App are in the examples guide folder:
 
 - [Express](https://github.com/jorge07/hollywood/tree/master/examples/guide/chapter-4/express)
 - [Fastify](https://github.com/jorge07/hollywood/tree/master/examples/guide/chapter-4/fastify)
 
-I plan to add other examples like gRPC and others.
+I plan to add other examples like gRPC.
 
 # Express Example
 

@@ -1,7 +1,7 @@
 # Features
 
 - Dependency Injection (Built around Inversify).
-    - Module hierarchy for Bounded Context isolation.
+    - Module hierarchy for better isolation.
 - DDD toolbox
     - Event Driven
         - Support for different event streams

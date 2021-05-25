@@ -1,7 +1,7 @@
 # Firing and Listening events
 
 Hollywood provides **ModuleContext** as a way to define Boundaries. Those may have different levels of nested dependencies. 
-**Events** are the best way to keep things isolated and share a contract between different Bounded Contexts.
+**Events** are the best way to keep things isolated and share a contract between different Modules or Bounded Contexts.
 
 Hollywood provides an **EventBus** with **Listeners** and **Subscribers** to attach some services to 1:N events.
 
