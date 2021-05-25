@@ -7,3 +7,5 @@ Dependency Injection it's the main miss in the nodejs for me and I've tried to n
 I'm not a big fan of annotations, but it's the price to pay.
 
 If you want to learn about the tool or DI in general, the documentation is good enough.
+
+Hollywood provides few abstractions to map certain services with a particular behavior, those are called [Container Types](concepts/container/container-types.md)

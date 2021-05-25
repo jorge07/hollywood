@@ -1,11 +1,11 @@
 {
-  "name": "shared-module",
+  "name": "chapter-3",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "buid": "tsc",
-    "log": "node log.js"
+    "build": "tsc",
+    "create-customer": "yarn build && node createCustomer.js"
   },
   "author": "",
   "license": "ISC",

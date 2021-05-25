@@ -1,4 +1,4 @@
-import {Application, Framework} from 'hollywood-js';
+import type {Application, Framework} from 'hollywood-js';
 import type {FastifyInstance} from "fastify/types/instance";
 import {CreateUser, FindUser} from "./app";
 

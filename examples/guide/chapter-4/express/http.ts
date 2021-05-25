@@ -1,4 +1,4 @@
-import {Application, Framework} from 'hollywood-js';
+import type {Application, Framework} from 'hollywood-js';
 import express from "express";
 import {CreateUser, FindUser} from "./app";
 import bodyParser from 'body-parser';

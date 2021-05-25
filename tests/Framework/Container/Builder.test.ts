@@ -30,7 +30,7 @@ describe("Framework:Container", () => {
                 eventStore: User
             }],
             // tslint:disable-next-line:no-duplicate-string
-            ["generic.subscriber", {
+            ["generic.listener", {
                 instance: EchoListener,
                 bus: SERVICES_ALIAS.DEFAULT_EVENT_BUS,
                 listener: true

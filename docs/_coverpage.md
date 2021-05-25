@@ -1,4 +1,4 @@
-# HOLLYWOOD-JS <small>5.0.2</small>
+# HOLLYWOOD <small>5.0.2</small>
 
 > Modular Framework for Javascript and Typescript Backends
 

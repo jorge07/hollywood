@@ -108,11 +108,11 @@ const mainModule = new ModuleContext({ services });
 
 # Hollywood predefined services:
 
-- "hollywood.application.command.handlers": Will be used internally to register your handlers
-- "hollywood.application.query.handlers": Will be used internally to register your handlers
-- "hollywood.application.command.middleware": Will be used internally to register your middlewares
-- "hollywood.application.query.middleware": Will be used internally to register your middlewares
-- "hollywood.infrastructure.eventBus.default": Predefined default event bus
-- "hollywood.infrastructure.eventStore.dbal.default": Will be used internally to register the default event store DBAL
-- "hollywood.infrastructure.eventStore.snapshot.default": Will be used internally to register the default snapshot service
-- "hollywood.infrastructure.eventStore.snapshot.dbal.default": :Will be used internally to register the default snapshot DBAL
+- **hollywood.application.command.handlers**: Will be used internally to register your handlers
+- **hollywood.application.query.handlers**: Will be used internally to register your handlers
+- **hollywood.application.command.middleware**: Will be used internally to register your middlewares
+- **hollywood.application.query.middleware**: Will be used internally to register your middlewares
+- **hollywood.infrastructure.eventBus.default**: Predefined default event bus
+- **hollywood.infrastructure.eventStore.dbal.default**: Will be used internally to register the default event store DBAL
+- **hollywood.infrastructure.eventStore.snapshot.default**: Will be used internally to register the default snapshot service
+- **hollywood.infrastructure.eventStore.snapshot.dbal.default**: :Will be used internally to register the default snapshot DBAL

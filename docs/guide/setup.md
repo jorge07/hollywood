@@ -1,23 +1,28 @@
 # Technical Requirements
 
 Before install Hollywood-js you must:
-- Run Node ^14.11
-- Typescript ^4.0.2
-  - Min target: "es6" is your tsconfig.json
-  - Experimental Decorators needs to be enabled. Add to your tsconfig.json compilerOptions: `"experimentalDecorators": true`
-
+- **Nodejs** `^14.11`
+- **Typescript** `^4.0.2`
+  - Min **target**: `es6` in your tsconfig.json
+  - **Experimental Decorators** needs to be **enabled**. Add to your tsconfig.json compilerOptions: `"experimentalDecorators": true`
+  - **Emit Decorator Metadata** needs to be **enabled**. Add to your tsconfig.json compilerOptions: `"emitDecoratorMetadata": true`
 
 # Installation
 
 NPM:
 
-`npm install -S hollywood-js`
-
+```bash
+npm install -S hollywood-js
+```
 Yarn:
 
-`yarn add hollywood-js`
+```bash
+yarn add hollywood-js
+```
 
 # Setup Typescript
+
+> Optional
 
 NPM
 ```bash 
@@ -35,6 +40,6 @@ Init your typescript config.
 ./node_modules/.bin/tsc --init
 ```
 
-> Remember: Change target to es6 and enable experimentalDecorators in your tsconfig.json.
+> Remember: Change `target` to `es6` and enable `experimentalDecorators` and `emitDecoratorMetadata` in your tsconfig.json.
 
 This example can be found in the [examples](https://github.com/jorge07/hollywood/tree/master/examples/guide/shared=module)

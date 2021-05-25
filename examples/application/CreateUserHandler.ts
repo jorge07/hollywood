@@ -9,9 +9,7 @@ import type {IAppError} from "../../src/Application/Bus/CallbackArg";
 @injectable()
 export default class CreateUserHandler implements ICommandHandler {
 
-    constructor(
-        @inject("user.eventStore") private readonly eventStore: EventStore<User>
-    ) {}
+    constructor(@inject("user.eventStore") private readonly eventStore: EventStore<User>) {}
 
     @autowiring
     async handle(command: CreateUser): Promise<void|IAppError> {

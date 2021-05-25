@@ -4,6 +4,26 @@
 
 One of the first things you set up use to be a logger, so let's drive by example:
 
+# Structure
+
+```bash
+chapter-2
+├── config
+│   └── index.ts
+├── log.ts
+├── package.json
+├── src
+│   ├── kernel.ts
+│   └── modules
+│       └── shared
+│           └── infrastructure
+│               ├── audit
+│               │   └── logger.ts
+│               └── shared-module.ts
+├── tsconfig.json
+└── yarn.lock
+```
+
 # Configuration
 
 Logger will require levels of verbosity, so let's add a parameter to configure it, no dependencies to add just a ts file:
@@ -20,7 +40,7 @@ export const parameters = new Map<UniqueParameterIdentifier, Parameter>([
 ]);
 ```
 
-> **Alias** can grow a lot so feel free to move it to a constants file, namespace it or manage it the way you feel more comfortable with. Hollywood doesn't force you to a predefined way.
+> **Aliases** can grow a lot so feel free to move it to a constants file, namespace it or manage it the way you feel more comfortable with. Hollywood doesn't force you to a predefined way.
 
 # Our Logger
 
