@@ -3,7 +3,6 @@
 > The following example can be found on the examples folder in the repository: Chapter 3.
 
 Now that we've created our first [Module](concepts/module-context.md) it's time to create the first one with some business logic inside.
-We're going to work on to of our previous SharedModule and structure will look like this:
 
 # Business Logic
 
@@ -214,41 +213,12 @@ At this point our **Domain** Layer knows about:
 - Customer creation rules
 - Some Storage, doesn't case about which one.
 
-# Infrastructure
-
-It's time now to implement this storage layer. We're going to use InMemory but feel free to use whatever you need (Postgresql, MongoDB, etc.)
-
-Hollywood provides an **InMemoryReadModelRepository** for testing and prototyping purposes, so let's use it and implement our CustomerRepository **interface**
-
-```typescript
-// src/modules/customer/infrastructure/read-model/in-memory-repository.ts
-
-import { ReadModel } from "hollywood-js";
-import type { CustomerRepository } from "../../domain/repository";
-import type {Customer} from "../../domain/customer";
-
-export class InMemoryRepository implements CustomerRepository {
-  private readonly dbal: ReadModel.InMemoryReadModelRepository;
-
-  constructor() {
-    this.dbal = new ReadModel.InMemoryReadModelRepository();
-  }
-
-  async getOneOfFail(userId: string): Promise<Customer> {
-    return await this.dbal.oneOrFail(userId);
-  }
-
-  async save(customer: Customer): Promise<void> {
-    await this.dbal.save(customer.userId, customer);
-  }
-}
-```
 
 # Application Layer
 
 We're back to the **Application** layer we're we're going to finish the Use Case.
 
-Let's start with the **CreateCommand** and hydrate the primitive with a **Username** object, so we ensure integrity and return earlier is fails as Command isn't valid then. 
+Let's start with the **CreateCommand** and hydrate the primitive with a **Username** object, so we ensure integrity and return earlier is fails as Command isn't valid then.
 
 ```typescript
 // src/modules/customer/application/command/create/command.ts
@@ -292,7 +262,39 @@ export default class CreateHandler implements Application.ICommandHandler {
 
 ```
 
-# Customer Module
+As last step, it's time to implement our Database.
+
+# Infrastructure
+
+It's time now to implement this storage layer. We're going to use InMemory but feel free to use whatever you need (Postgresql, MongoDB, etc.)
+
+Hollywood provides an **InMemoryReadModelRepository** for testing and prototyping purposes, so let's use it and implement our CustomerRepository **interface**
+
+```typescript
+// src/modules/customer/infrastructure/read-model/in-memory-repository.ts
+
+import { ReadModel } from "hollywood-js";
+import type { CustomerRepository } from "../../domain/repository";
+import type {Customer} from "../../domain/customer";
+
+export class InMemoryRepository implements CustomerRepository {
+  private readonly dbal: ReadModel.InMemoryReadModelRepository;
+
+  constructor() {
+    this.dbal = new ReadModel.InMemoryReadModelRepository();
+  }
+
+  async getOneOfFail(userId: string): Promise<Customer> {
+    return await this.dbal.oneOrFail(userId);
+  }
+
+  async save(customer: Customer): Promise<void> {
+    await this.dbal.save(customer.userId, customer);
+  }
+}
+```
+
+## Customer Module
 
 Here we define our Module and dependency tree
 
@@ -375,7 +377,7 @@ $ node createCustomer.js
 
 # Structure
 
-This is the final structure you can find in examples folder in the repository for guide/chapter-3
+This is the final structure you can find in the examples folder in the repository for guide/chapter-3
 
 ```bash
 chapter-3

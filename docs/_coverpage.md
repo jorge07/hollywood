@@ -2,7 +2,6 @@
 
 > Modular Framework for Javascript and Typescript Backends
 
-- Simple and lightweight
 - Built on top of Inversify
 - CQRS and ES capabilities
 

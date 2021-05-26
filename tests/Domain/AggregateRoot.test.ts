@@ -6,19 +6,20 @@ import DomainEventStream from "../../src/Domain/Event/DomainEventStream";
 
 export class Dog extends EventSourcedAggregateRoot {
     public wolfCount: number = 0;
+    private readonly voiceRecorder: VoiceRecorder;
     constructor(id = '41') {
         super(id);
-        this.registerChildren(new VoiceRecorder())
+        this.registerChildren(this.voiceRecorder = new VoiceRecorder())
     }
 
     public sayWolf(): string {
-        super.raise(new SayWolf(this.getAggregateRootId() || Math.random().toString()));
+        super.raise(new SayWolf(this.getAggregateRootId()));
 
         return "Wolf!";
     }
 
     public sayGrr(): string {
-        super.raise(new SayGrr(this.getAggregateRootId() || Math.random().toString()));
+        super.raise(new SayGrr(this.getAggregateRootId()));
 
         return "Grr!";
     }
@@ -32,27 +33,39 @@ export class Dog extends EventSourcedAggregateRoot {
 
         return recorder.recorded;
     }
+
+    public translations(): string[] {
+        return this.voiceRecorder.getTranslations();
+    }
 }
 
 // tslint:disable-next-line:max-classes-per-file
 class VoiceRecorder extends EventSourced {
     public recorded: string[] = [];
+    private readonly translator: Translator;
     constructor() {
         super();
-        this.registerChildren(new VoiceModifier())
+        this.registerChildren(this.translator = new Translator())
     }
 
     public applySayWolf(event: SayWolf) {
         this.recorded.push('Wolf');
+    }
+
+    public getTranslations(): string[] {
+        return this.translator.translations;
     }
 }
 
 // tslint:disable-next-line:max-classes-per-file
-class VoiceModifier extends EventSourced {
-    public recorded: string[] = [];
+class Translator extends EventSourced {
+    public translations: string[] = [];
 
     public applySayWolf(event: SayWolf) {
-        this.recorded.push('Wolf');
+        this.translations.push('Hey dude!');
+    }
+    public applySayGrr(event: SayGrr) {
+        this.translations.push('I. Don\'t. Like. That... RUN!');
     }
 }
 
@@ -82,6 +95,7 @@ describe("AggregateRoot", () => {
         expect(dog.sayWolf()).toBe("Wolf!");
         expect(dog.wolfCount).toBe(1);
         expect(dog.records().length).toBe(1);
+        expect(dog.translations().length).toBe(1);
 
         stream = dog.getUncommittedEvents();
         expect(stream.events.length).toBe(1);

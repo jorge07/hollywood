@@ -221,3 +221,4 @@ const kernel = new Kernel('dev', true, parameters, PersonModule);
 
 kernel.container.get<Person>('person').sayHello() // 'key'
 ```
+> Next: [**Value Objects**](concepts/value-objects.md)

@@ -183,7 +183,7 @@ program
         const asyncEventBus = kernel.container.get<EventBud>(
             'shared.infrastructure.eventBus.async.highPriority.consumer'
         );
-        await bus.consume();
+        await asyncEventBus.consume();
     })
 ;
 ```

@@ -131,6 +131,8 @@ export default async function KernelFactory(): Promise<Framework.Kernel> {
 }
 ```
 
+# Run the example
+
 Let's run this:
 
 ```typescript
@@ -145,8 +147,6 @@ import KernelFactory from "./src/kernel";
     logger.warn('Look, this is my frist warning!');
 })()
 ```
-
-# Run the example
 
 ```bash
 $ ./node_modules/.bin/tsc

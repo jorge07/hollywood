@@ -49,7 +49,7 @@ class GlobalListener extends EventListener {
 }
 
 // tslint:disable-next-line:max-classes-per-file
-export default class InMemoryErrorEventStore implements IEventStoreDBAL {
+class InMemoryErrorEventStore implements IEventStoreDBAL {
 
     public async load(aggregateId: string, from: number = 0): Promise<DomainEventStream> {
         throw new Error('Fail Read');
@@ -89,6 +89,7 @@ describe("EventStore", () => {
         const dog: Dog = await store.load(pluto.getAggregateRootId());
         expect(dog.wolfCount).toBe(1);
         expect(dog.version()).toBe(1);
+        expect(dog.translations().pop()).toBe('I. Don\'t. Like. That... RUN!');
 
         expect(onWolfEventSubscriber.wolf).toBeInstanceOf(SayWolf);
         expect(onWolfEventSubscriber.grr).toBeInstanceOf(SayGrr);
