@@ -13,7 +13,12 @@ Hollywood-js it's strongly CQRS structured, allowing you to define or not a DDD 
 
 Includes advanced Event Sourcing capabilities like Event Store abstractions, Event Store Snapshots, Projections and Event Bus (Listeners and Subscribers).
 
-### Installation
+## Documentation 
+
+Documentation about Hollywood, DDD and EventSourcing available [here] (https://jorge07.github.io/hollywood/) 
+> Documentation still a wip
+
+## Installation
 
 NPM:
 
@@ -122,50 +127,4 @@ const kernel = new Kernel('dev', true, parameters, MainModule);
 kernel.container.get<Person>('person').sayHello() // 'key'
 ```
 
-### Overwrite during testing
 
-```typescript
-import ModuleContext from "./ModuleContext";
-import Kernel from "./Kernel";
-import {inject} from "inversify";
-
-const parameters = new Map([
-  ['hello.style', 'hey']
-]);
-
-const TestingParameters = new Map([
-  ['hello.style', 'HELLOOOOOOO!']
-]);
-
-class Hey {
-  constructor(@inject('hello.style') private readonly style: string) {}
-
-  hello(): string {
-    return this.style
-  }
-}
-
-const HeyModule = new ModuleContext({
-  services: [
-    ['hey', {instance: Hey}]
-  ]
-})
-
-class Person {
-    constructor(@inject('hey') private readonly hey: Hey) {}
-
-    sayHello(): string {
-        return this.key.hello()
-    }
-}
-
-const PersonModule = new ModuleContext({
-  services: [
-    ['person', {instance: Person}]
-  ],
-  modules: [HeyModule]
-})
-const kernel = new Kernel('dev', true, parameters, MainModule, TestingParameters);
-
-kernel.container.get<Person>('person').sayHello() // 'HELLOOOOOOO!'
-```
