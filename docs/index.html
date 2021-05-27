@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hollywood-js</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Hollywood-js Documentation">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+</head>
+<body>
+  <div id="app">Loading...</div>
+  <!-- Docsify v4 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script src="//unpkg.com/docsify-copy-code@2"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-typescript.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-gherkin.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>
+    var num = 0;
+    mermaid.initialize({
+      startOnLoad: false,
+      flowchart:{
+        useMaxWidth:true,
+      },
+    });
+
+    window.$docsify = {
+      name: 'Hollywood',
+      repo: 'jorge07/hollywood',
+      auto2top: true,
+      onlyCover: false,
+      coverpage: true,
+      executeScript: true,
+      loadSidebar: true,
+      mergeNavbar: false,
+      maxLevel: 4,
+      subMaxLevel: 2,
+      search: {
+        maxAge: 86400000, // Expiration time, the default one day
+        paths: 'auto',
+        placeholder: {
+          '/es/': 'Buscar',
+          '/de-de/': 'Suche',
+          '/ru-ru/': 'Поиск',
+          '/zh-cn/': '搜索',
+          '/': 'Search',
+        },
+        noData: {
+          '/es/': '¡No hay resultados!',
+          '/de-de/': 'Keine Ergebnisse!',
+          '/ru-ru/': 'Никаких результатов!',
+          '/zh-cn/': '没有结果!',
+          '/': 'No results!',
+        },
+        depth: 4,
+        namespace: 'hollywood',
+      },
+      markdown: {
+        renderer: {
+          code: function(code, lang) {
+            if (lang === "mermaid") {
+              return ('<div class="mermaid">' + mermaid.render('mermaid-svg-' + num++, code) + "</div>");
+            }
+            return this.origin.code.apply(this, arguments);
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html>

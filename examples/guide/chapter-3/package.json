@@ -1,0 +1,19 @@
+{
+  "name": "chapter-3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "create-customer": "yarn build && node createCustomer.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "hollywood-js": "^5.0.2",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "typescript": "^4.2.4"
+  }
+}

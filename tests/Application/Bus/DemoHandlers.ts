@@ -20,8 +20,7 @@ export class DemoHandler implements ICommandHandler {
     public async handle(command: DemoCommand): Promise<void | IAppError> {
         this.received = true;
         if (command.exception) {
-
-            throw {code: 1, message: "Fail"} as IAppError;
+            throw {code: 1, message: "Fail"};
         }
     }
 }

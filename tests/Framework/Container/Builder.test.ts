@@ -1,19 +1,18 @@
 import "reflect-metadata";
 import DomainMessage from "../../../src/Domain/Event/DomainMessage";
-import CreateUserHandler from "../../../examples/application/CreateUserHandler";
-import User from "../../../examples/domain/User";
 import ModuleContext from "../../../src/Framework/Modules/ModuleContext";
-import CreateUser from "../../../examples/application/CreateUser";
 import {BuildFromModuleContext} from "../../../src/Framework/Container/Builder";
 import type {IService} from "../../../src/Framework/Container/Items/Service";
 import ContainerCompilationException from "../../../src/Framework/Container/Exception/ContainerCompilationException";
-import {UserWasCreated} from "../../../examples/domain/UserWasCreated";
 import EventListener from "../../../src/EventSourcing/EventBus/EventListener";
 import {SERVICES_ALIAS} from "../../../src/Framework/Container/Bridge/Alias";
 import AppBuilder from "../../../src/Framework/AppBuilder";
 import {DemoQueryHandler} from "../../Application/Bus/DemoHandlers";
-import {injectable} from "inversify";
-import {EventBus} from "../../../src/EventSourcing";
+import {inject, injectable} from "inversify";
+import {EventBus, EventStore} from "../../../src/EventSourcing";
+import {Dog, SayWolf} from '../../Domain/AggregateRoot.test';
+import {autowiring, ICommand, ICommandHandler} from "../../../src/Application";
+import {IAppError} from "../../../src/Application/Bus/CallbackArg";
 
 class EchoListener extends EventListener {
     public counter = 0;
@@ -22,49 +21,67 @@ class EchoListener extends EventListener {
     }
 }
 
+// tslint:disable-next-line:max-classes-per-file
+class SayWolfCommand implements ICommand {}
+
+// tslint:disable-next-line:max-classes-per-file
+@injectable()
+class SayWolfHandler implements ICommandHandler {
+    constructor(
+        @inject('dog.eventStore')
+        private readonly store: EventStore<Dog>) {
+    }
+    @autowiring
+    async handle(command: SayWolfCommand): Promise<void | IAppError> {
+        const dog = new Dog('1');
+        dog.sayWolf();
+         await this.store.save(dog);
+    }
+}
+
 // tslint:disable-next-line:no-big-function
 describe("Framework:Container", () => {
     it("Builder should be able to register a StandardType and bind ListenersTypes", async () => {
         const services = new Map([
-            ["user.eventStore", {
-                eventStore: User
+            ["dog.eventStore", {
+                eventStore: Dog
             }],
             // tslint:disable-next-line:no-duplicate-string
-            ["generic.subscriber", {
+            ["generic.listener", {
                 instance: EchoListener,
                 bus: SERVICES_ALIAS.DEFAULT_EVENT_BUS,
                 listener: true
             }],
         ]);
 
-        const testModule = new ModuleContext({services, commands: [CreateUserHandler]});
+        const testModule = new ModuleContext({services, commands: [SayWolfHandler]});
 
         const container = await BuildFromModuleContext(new Map(), testModule);
 
-        const listener = container.get<EchoListener>('generic.subscriber');
+        const listener = container.get<EchoListener>('generic.listener');
 
         const app = AppBuilder(container);
-        await app.handle(new CreateUser("1", "demo@example.org"));
+        await app.handle(new SayWolfCommand());
 
         expect(listener.counter).toBe(1);
     });
     it("Builder should be able to register a ListenersTypes as Subscriber", async () => {
         const services = new Map([
-            ["user.eventStore", {
-                eventStore: User
+            ["dog.eventStore", {
+                eventStore: Dog
             }],
             ["generic.subscriber", {
                 instance: EchoListener,
                 bus: SERVICES_ALIAS.DEFAULT_EVENT_BUS,
                 subscriber: [
-                    UserWasCreated
+                    SayWolf
                 ]
             }],
             ["generic.subscriber.2", {
                 instance: EchoListener,
                 bus: SERVICES_ALIAS.DEFAULT_EVENT_BUS,
                 subscriber: [
-                    UserWasCreated
+                    SayWolf
                 ]
             }],
             ["global.listener", {
@@ -74,7 +91,7 @@ describe("Framework:Container", () => {
             }],
         ]);
 
-        const testModule = new ModuleContext({services, commands: [CreateUserHandler], queries: [DemoQueryHandler]});
+        const testModule = new ModuleContext({services, commands: [SayWolfHandler], queries: [DemoQueryHandler]});
 
         const container = await BuildFromModuleContext(new Map(), testModule);
 
@@ -82,7 +99,7 @@ describe("Framework:Container", () => {
         const listener2 = container.get<EchoListener>('generic.subscriber.2');
 
         const app = AppBuilder(container);
-        await app.handle(new CreateUser("1", "demo@example.org"));
+        await app.handle(new SayWolfCommand());
 
         expect(listener.counter).toBe(1);
         expect(listener2.counter).toBe(1);
