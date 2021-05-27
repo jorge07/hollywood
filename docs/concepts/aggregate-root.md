@@ -87,4 +87,4 @@ Following the same example as in the [**Aggregate**](concepts/aggregates.md) the
 
 From the outside, only **Glasses** entity can change the *Reviews*, give you the total score, etc... While other bits of logic are encapsulated in different entities and value objects in the aggregate.
 
-> Next: [**AggregateRoot**](concepts/aggregate-root.md)
+> Next: [**Events**](concepts/events.md)

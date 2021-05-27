@@ -1,6 +1,213 @@
-# Hollywood-js Architecture
+<style>
+.cluster rect {
+    fill: #fff !important;
+    stroke: #000 !important;
+}
+</style>
+# Hollywood Architecture
 
-Here is my attempt to explain the Hollywood-js boot and instantiation process.
+Here an attempt to explain with graphs the Hollywood-js Components dependencies, boot and instantiation process.
+
+# Components
+
+## Application
+
+
+```mermaid
+graph LR
+    subgraph Application
+    
+        App --> |has| CommandBus
+        App --> |has| QueryBus
+
+        MessageBus --> |Contains 1:N| Middlewares
+
+        CommandBus --> |extends| MessageBus
+        QueryBus --> |extends| MessageBus
+        
+        QueryBus --> QueryHandlerResolver
+        CommandBus --> CommandHandlerResolver
+        
+        CommandHandlerResolver --> |Map| Command --> |With| CommandHandler
+        QueryHandlerResolver --> |Map| Query --> |With| QueryHandler
+        
+        QueryBus --> |Returns| QueryBusResponse --> QBResponse[IAppResponse/ IAppError]
+        CommandBus --> |Returns| CBResponse[Void/IAppError]
+    end
+```
+
+## Domain
+
+```mermaid
+graph TD
+
+    subgraph dom[Domain]
+        DomainEvent
+        DomainMessage -->|Envelops| DomainEvent
+        DomainEventStream --> |Contains 0:N| DomainMessage
+    
+        AggregateRoot
+        ValueObjects
+        Entity
+        
+        Entity -.-> |Contains 0:N| Entity
+        Entity -.-> |Contains 0:N| ValueObjects
+        ValueObjects -.-> |Contains 0:N| ValueObjects
+
+        Aggregates --> |Contains 1:N| Entity
+        AggregateRoot --> |Unique Entrypoint For| Aggregates
+        AggregateRoot --> |Is| Entity
+        AggregateRoot --> |Raise 0:N| DomainEvent
+    
+    
+        Entity --> |Can be| EventSourced
+        EventSourced --> |Contructed from N| DomainEventStream
+        AggregateRoot --> |Can be| EventSourcedAggregateRoot --> |Output| DomainEventStream
+        AggregateRoot -.-> |Persisted by| Repository
+    end
+    Repository -.-> |Uses| ES[(Event Store)]
+    subgraph EventSourcing
+
+        ES
+    end
+```
+
+## EventSourcing
+
+```mermaid
+graph LR
+    subgraph EventSourcing
+
+        ES[(EventStore)] --> |Store / Retrieve| EventSourcedAggregateRoot
+        ES --> |Require| esdbal[(EventStore DBAL)]
+        ES -.-> |May Require| SnapshotStore
+        SnapshotStore[(Snapshot Store)] --> |Uses| sedbal[(SnapshotStore DBAL)]
+        ES --> |Throws| AggregateRootNotFoundException>AggregateRootNotFoundException]
+        ES --> publish{publish DomainMessage} --> |Into| EventBus[EventBus] 
+        publish(publish DomainMessage) --> DomainMessage 
+        EventBus --> broadcast>Broadcast DomainMessage]
+        broadcast --> EventListeners
+        broadcast --> EventSubscribers
+    end
+```
+
+## Framework
+
+
+```mermaid
+graph LR
+
+    subgraph Application
+    
+        App
+        CommandHandler
+        QueryHandler
+    end
+    subgraph Framework
+        Kernel
+        ParametersList --> Parameters
+        ServicesList --> Services
+        Contaner
+        Module
+        
+        Module --> |Defines| ServicesList
+        Module -.-> |Define N| CommandHandler
+        Module -.-> |Define N| QueryHandler
+        Module --> |Define N| Middlewares
+        Module -.-> |Define N dependencies| Modules
+        
+        Kernel --> |From| ParametersList --> |And| Module
+        Kernel --> |Mounts| HollywoodModule
+        Kernel --> |Builds| Container
+        Kernel --> |Builds| App
+    end
+```
+
+## All together
+
+
+```mermaid
+graph LR
+    subgraph dom[Domain]
+        DomainEvent
+        DomainMessage -->|Envelops| DomainEvent
+        DomainEventStream --> |Contains 0:N| DomainMessage
+    
+        AggregateRoot
+        ValueObjects
+        Entity
+        
+        Entity -.-> |Contains 0:N| Entity
+        Entity -.-> |Contains 0:N| ValueObjects
+        ValueObjects -.-> |Contains 0:N| ValueObjects
+
+        Aggregates --> |Contains 1:N| Entity
+        AggregateRoot --> |Unique Entrypoint For| Aggregates
+        AggregateRoot --> |Is| Entity
+        AggregateRoot --> |Raise 0:N| DomainEvent
+    
+    
+        Entity --> |Can be| EventSourced
+        EventSourced --> |Contructed from N| DomainEventStream
+        AggregateRoot --> |Can be| EventSourcedAggregateRoot --> |Output| DomainEventStream
+        Repository
+    end
+    
+    Repository --> |Uses| ES
+    subgraph EventSourcing
+
+        ES[(EventStore)] --> |Store / Retrieve| EventSourcedAggregateRoot
+        ES --> |Require| esdbal[(EventStore DBAL)]
+        ES -.-> |May Require| SnapshotStore
+        SnapshotStore[(Snapshot Store)] --> |Uses| sedbal[(SnapshotStore DBAL)]
+        ES --> |Throws| AggregateRootNotFoundException>AggregateRootNotFoundException]
+        ES --> publish{publish DomainMessage} --> |Into| EventBus[EventBus] 
+        publish(publish DomainMessage) --> DomainMessage 
+        EventBus --> broadcast>Broadcast DomainMessage]
+        broadcast --> EventListeners
+        broadcast --> EventSubscribers
+    end
+    
+    subgraph Application
+    
+        App --> |has| CommandBus
+        App --> |has| QueryBus
+
+        MessageBus --> |Contains 1:N| Middlewares
+
+        CommandBus --> |extends| MessageBus
+        QueryBus --> |extends| MessageBus
+        
+        QueryHandlerResolver --> QueryBus
+        CommandHandlerResolver --> CommandBus
+        
+        CommandHandlerResolver --> |Map| Command --> |With| CommandHandler
+        QueryHandlerResolver --> |Map| Query --> |With| QueryHandler
+        
+        QueryBus --> |Returns| QueryBusResponse --> QBResponse[IAppResponse/ IAppError]
+        CommandBus --> |Returns| CBResponse[Void/IAppError]
+    end
+    subgraph Framework
+        Kernel
+        ParametersList --> Parameters
+        ServicesList --> Services
+        Contaner
+        Module
+        
+        Module --> |Defines| ServicesList
+        Module -.-> |Define N| CommandHandler
+        Module -.-> |Define N| QueryHandler
+        Module --> |Define N| Middlewares
+        Module -.-> |Define N dependencies| Modules
+        
+        Kernel --> |From| ParametersList --> |And| Module
+        Kernel --> |Mounts| HollywoodModule
+        Kernel --> |Builds| Container
+        Kernel --> |Builds| App
+    end
+```
+
+## Instantiation process 
 
 ```mermaid
 graph TD
