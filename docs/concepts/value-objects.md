@@ -27,14 +27,14 @@ class Password {
     public readonly hashedPassword: string;
     constructor(plainPassword: string) {
         Password.atLeast6Characters(plainPassword);
-        Password.atLeast6Characters(plainPassword);
-        Password.atLeast6Characters(plainPassword);
-        Password.atLeast6Characters(plainPassword);
+        Password.atLeast1Number(plainPassword);
+        Password.noConsecutiveNumbers(plainPassword);
+        Password.noMoreThan120Characters(plainPassword);
         this.hashedPassword = hash(plainPassword)
     }
     private atLeast6Characters(plainPassword: string): void {...}
     private atLeast1Number(plainPassword: string): void {...}
-    private noConsecutiveCumbers(plainPassword: string): void {...}
+    private noConsecutiveNumbers(plainPassword: string): void {...}
     private noMoreThan120Characters(plainPassword: string): void {...}
 }
 ```
