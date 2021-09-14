@@ -2,8 +2,9 @@
 
 ## What's a Module
 
-A **Module** (*module* is a reserved word in NodeJS) represents, in DDD terms, an space for related concepts inside a **Bounded Context**.
+A **Module** (*module* is a reserved word in NodeJS) represents, in DDD terms, a space for related concepts inside a **Bounded Context**.
 
+> The reason behind a Module is to define boundaries in the scope of a particular aggregate. General rule: 1 Aggregate - 1 Module.
 
 Let's see the example below:
 
@@ -35,7 +36,7 @@ In a Gambling company we've 3 different Bounded Contexts:
 
 - **Casino**. Where the business occurs. Core Business.
 - **BackOffice**. Where the business gets administrated. Core Business.
-- **Affiliate**. Were we take users from. It's an important part of the business, but we're not experts, we may buy a solution instead build our own.
+- **Affiliate**. Where we take users from. It's an important part of the business, but we're not experts, we may buy a solution and not build our own.
 
 This Bounded Contexts has different **Modules** inside:
 
@@ -54,11 +55,10 @@ For an **Affiliate** system, a **Player** as *Entity* is different from a **Play
 - In the *Affiliate Bounded Context*: a Player can't play, can't withdraw, can't contact support...
 - In the *Casino Bounded Context*: a Player we don't care about *referer links* or related.
 
-> The reason behind aModule is to define boundaries in the scope of a particular aggregate. General rule: 1 Aggregate - 1 Module.
-
 ## A Module in Hollywood-js 
 
 **ModuleContext** can be used as DDD Modules and also as an isolation form for features that may promote or not in the future to his own Module.
+The scope of your module depends on your business and rules.
 
 A Module Context in Hollywood context defines:
 
@@ -79,7 +79,7 @@ export interface ModuleConfig {
 
 ### Module Hierarchy
 
-Modules can have depend on other modules. There're some kind of dependencies
+Modules can depend on other modules. It supports dependencies.
 
 **Single level dependency**
 
@@ -122,7 +122,7 @@ const mainModule = new ModuleContext({service, commands, queries, modules: [Modu
 
 ### Drive by example
 
-Following the Guide, the next step will be create your first Domain Bounded Context module.
+Following the Guide, the next step will be to create your first Bounded Context module.
 Let's say it's `CustomerModule`, your structure will look like:
 
 ```mermaid
@@ -154,9 +154,9 @@ In the above example, some modules contain more than one dependency and there's 
 ### Why do this?
 
 By doing this we enforce isolation and simplify our unit tests suites a lot.
-We can even instantiate the entire Kernel just with the module we want to test, ensuring no side-effects caused by third-party (We'll catch this in other later, not in our unit tests).
+We can even instantiate the entire Kernel just with the module we want to test, ensuring no side effects caused by third-party (We'll catch this in other later, not in our unit tests).
 
-Another benefit of isolation is reutilization. A Module can be exposed as npm package and distributed across different projects.
+Another benefit of isolation is re-utilization. A Module can be exposed as npm package and distributed across different projects.
 
 ### A Module Dependency Example
 
@@ -178,7 +178,6 @@ graph LR
     H -->|DependesOnParameter| param
     
 ```
-
 
 ```typescript
 import ModuleContext from "./ModuleContext";
@@ -221,4 +220,5 @@ const kernel = new Kernel('dev', true, parameters, PersonModule);
 
 kernel.container.get<Person>('person').sayHello() // 'key'
 ```
+
 > Next: [**Value Objects**](concepts/value-objects.md)

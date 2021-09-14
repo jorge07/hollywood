@@ -162,7 +162,7 @@ export const CustomerModule = new Framework.ModuleContext({
 });
 ```
 
-It will be then accesible in the kernel
+It will be then accessible in the kernel
 
 ```typescript
 const kernel = await KernelFactory();
