@@ -1057,14 +1057,6 @@ cli-boxes@^2.2.0:
   version "2.2.1"
   resolved "https://registry.npmjs.org/cli-boxes/-/cli-boxes-2.2.1.tgz"
 
-clipboard@^2.0.0:
-  version "2.0.8"
-  resolved "https://registry.npmjs.org/clipboard/-/clipboard-2.0.8.tgz"
-  dependencies:
-    good-listener "^1.2.2"
-    select "^1.1.2"
-    tiny-emitter "^2.0.0"
-
 cliui@^5.0.0:
   version "5.0.0"
   resolved "https://registry.npmjs.org/cliui/-/cliui-5.0.0.tgz"
@@ -1345,10 +1337,6 @@ define-property@^2.0.2:
 delayed-stream@~1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/delayed-stream/-/delayed-stream-1.0.0.tgz"
-
-delegate@^3.1.2:
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/delegate/-/delegate-3.2.0.tgz"
 
 depd@~1.1.2:
   version "1.1.2"
@@ -1824,12 +1812,6 @@ global-dirs@^2.0.1:
 globals@^11.1.0:
   version "11.12.0"
   resolved "https://registry.npmjs.org/globals/-/globals-11.12.0.tgz"
-
-good-listener@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.npmjs.org/good-listener/-/good-listener-1.2.2.tgz"
-  dependencies:
-    delegate "^3.1.2"
 
 got@^9.6.0:
   version "9.6.0"
@@ -3277,10 +3259,8 @@ pretty-format@^26.4.2:
     react-is "^16.12.0"
 
 prismjs@^1.23.0:
-  version "1.23.0"
-  resolved "https://registry.npmjs.org/prismjs/-/prismjs-1.23.0.tgz"
-  optionalDependencies:
-    clipboard "^2.0.0"
+  version "1.26.0"
+  resolved "https://registry.yarnpkg.com/prismjs/-/prismjs-1.26.0.tgz#16881b594828bb6b45296083a8cbab46b0accd47"
 
 prompts@^2.0.1:
   version "2.3.2"
@@ -3543,10 +3523,6 @@ saxes@^5.0.0:
   resolved "https://registry.npmjs.org/saxes/-/saxes-5.0.1.tgz"
   dependencies:
     xmlchars "^2.2.0"
-
-select@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.npmjs.org/select/-/select-1.1.2.tgz"
 
 semver-diff@^3.1.1:
   version "3.1.1"
@@ -3887,10 +3863,6 @@ test-exclude@^6.0.0:
 throat@^5.0.0:
   version "5.0.0"
   resolved "https://registry.npmjs.org/throat/-/throat-5.0.0.tgz"
-
-tiny-emitter@^2.0.0:
-  version "2.1.0"
-  resolved "https://registry.npmjs.org/tiny-emitter/-/tiny-emitter-2.1.0.tgz"
 
 tinydate@^1.3.0:
   version "1.3.0"
