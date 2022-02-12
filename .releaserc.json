@@ -19,12 +19,17 @@
                 }
             }
         ],
+        [
+            "@semantic-release/npm", {
+              "npmPublish": true
+            }
+          ],
         "@semantic-release/github",
         "@semantic-release/changelog",
         [
             "@semantic-release/git",
             {
-                "assets": ["CHANGELOG.md", "package.json"],
+                "assets": ["CHANGELOG.md", "package.json", "package-lock.json"],
                 "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}"
             }
         ]
