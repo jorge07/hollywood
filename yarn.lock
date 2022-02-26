@@ -3259,8 +3259,8 @@ pretty-format@^26.4.2:
     react-is "^16.12.0"
 
 prismjs@^1.23.0:
-  version "1.26.0"
-  resolved "https://registry.yarnpkg.com/prismjs/-/prismjs-1.26.0.tgz#16881b594828bb6b45296083a8cbab46b0accd47"
+  version "1.27.0"
+  resolved "https://registry.yarnpkg.com/prismjs/-/prismjs-1.27.0.tgz#bb6ee3138a0b438a3653dd4d6ce0cc6510a45057"
 
 prompts@^2.0.1:
   version "2.3.2"
