@@ -15,4 +15,5 @@ jobs:
       - name: Release new version
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx -p semantic-release@19 -p @semantic-release/changelog@6 -p @semantic-release/git@10 -c semantic-release
