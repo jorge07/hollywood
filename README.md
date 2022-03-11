@@ -5,6 +5,7 @@
 [![NPM Version](http://img.shields.io/npm/v/hollywood-js.svg?style=flat)](https://www.npmjs.org/package/hollywood-js)
 [![NPM Downloads](https://img.shields.io/npm/dm/hollywood-js.svg?style=flat)](https://npmcharts.com/compare/hollywood-js?minimal=true)
 [![Install Size](https://packagephobia.now.sh/badge?p=hollywood-js)](https://packagephobia.now.sh/result?p=hollywood-js)
+[![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 
 Hollywood-js is a Framework for building very modular and high scalable server side applications following CQRS (Command Query Responsibility Segregation) and enforcing IoC.
 
