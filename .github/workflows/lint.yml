@@ -1,5 +1,8 @@
 name: Lint
-on: [push]
+on:
+  push:
+    branches-ignore:
+      - master # Done in prepublishOnly script
 jobs:
   test:
     runs-on: ubuntu-latest

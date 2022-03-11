@@ -32,7 +32,7 @@
   },
   "scripts": {
     "docs": "docsify serve docs",
-    "prepublishOnly": "npm run test && npm run lint && npm run build",
+    "prepublishOnly": "yarn test && yarn lint && yarn build",
     "postpublishOnly": "rm -rf dist/",
     "test": "jest",
     "test:server": "node ./out/examples/Server.js",
