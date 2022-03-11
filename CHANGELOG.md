@@ -1,3 +1,10 @@
+## [5.0.4](http://github.com/jorge07/hollywood/compare/v5.0.3...v5.0.4) (2022-03-11)
+
+
+### Bug Fixes
+
+* **ci:** install modules before release ([9707ccd](http://github.com/jorge07/hollywood/commit/9707ccde25ef952dcd9f89b483e2d44e5b990e43))
+
 ## [5.0.3](http://github.com/jorge07/hollywood/compare/v5.0.2...v5.0.3) (2022-03-10)
 
 
