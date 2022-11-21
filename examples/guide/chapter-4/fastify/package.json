@@ -5,7 +5,7 @@
   "exports": "./out/index.js",
   "license": "MIT",
   "dependencies": {
-    "fastify": "^3.14.1",
+    "fastify": "^3.29.4",
     "hollywood-js": "file:./../../",
     "reflect-metadata": "^0.1.13",
     "typescript": "^4.2.3"
