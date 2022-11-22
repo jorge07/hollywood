@@ -24,6 +24,6 @@ jobs:
           yarn install
       - name: Release new version
         env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx -p semantic-release@19 -p @semantic-release/changelog@6 -p @semantic-release/git@10 -c semantic-release
