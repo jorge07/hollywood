@@ -3,9 +3,12 @@ import AggregateRootNotFoundException from "./Exception/AggregateRootNotFoundExc
 import type IEventStoreDBAL from "./IEventStoreDBAL";
 import SnapshotStore from "./Snapshot/SnapshotStore";
 import type ISnapshotStoreDBAL from "./Snapshot/SnapshotStoreDBAL";
+import type { UpcasterChain } from "./Upcasting/UpcasterChain";
 import EventSourcedAggregateRoot from "../Domain/EventSourcedAggregateRoot";
 import {AggregateRootId} from "../Domain/AggregateRoot";
+import DomainEvent from "../Domain/Event/DomainEvent";
 import DomainEventStream from "../Domain/Event/DomainEventStream";
+import DomainMessage from "../Domain/Event/DomainMessage";
 
 export type AggregateFactory<T extends EventSourcedAggregateRoot> = new (aggregateRootID: AggregateRootId) => T;
 
@@ -17,6 +20,7 @@ export default class EventStore<T extends EventSourcedAggregateRoot> {
     private readonly snapshotStore?: SnapshotStore<T>;
     private readonly modelConstructor: AggregateFactory<T>;
     private readonly snapshotMargin: number;
+    private readonly upcasterChain?: UpcasterChain;
 
     constructor(
         modelConstructor: AggregateFactory<T>,
@@ -24,11 +28,13 @@ export default class EventStore<T extends EventSourcedAggregateRoot> {
         eventBus: EventBus,
         snapshotStoreDbal?: ISnapshotStoreDBAL,
         snapshotMargin?: number,
+        upcasterChain?: UpcasterChain,
     ) {
         this.modelConstructor = modelConstructor;
         this.dbal = dbal;
         this.eventBus = eventBus;
         this.snapshotMargin = snapshotMargin || MIN_SNAPSHOT_MARGIN;
+        this.upcasterChain = upcasterChain;
 
         if (snapshotStoreDbal) {
             this.snapshotStore = new SnapshotStore(snapshotStoreDbal);
@@ -41,7 +47,7 @@ export default class EventStore<T extends EventSourcedAggregateRoot> {
 
         aggregateRoot = await this.fromSnapshot(aggregateRootId);
 
-        const stream: DomainEventStream = await this.dbal.load(
+        let stream: DomainEventStream = await this.dbal.load(
             aggregateRootId,
             aggregateRoot ? aggregateRoot.version() : 0,
         );
@@ -49,6 +55,9 @@ export default class EventStore<T extends EventSourcedAggregateRoot> {
         if (stream.isEmpty() && !aggregateRoot) {
             throw new AggregateRootNotFoundException();
         }
+
+        // Apply upcasting to migrate events to their latest versions
+        stream = this.applyUpcasting(stream);
 
         aggregateRoot = aggregateRoot || this.aggregateFactory(aggregateRootId);
 
@@ -119,5 +128,41 @@ export default class EventStore<T extends EventSourcedAggregateRoot> {
     private aggregateFactory(aggregateRootId: AggregateRootId): T {
 
         return new this.modelConstructor(aggregateRootId);
+    }
+
+    /**
+     * Applies upcasting to all events in the stream.
+     * Events are migrated through the upcaster chain to their latest versions.
+     *
+     * @param stream - The original event stream
+     * @returns A new stream with upcasted events
+     */
+    private applyUpcasting(stream: DomainEventStream): DomainEventStream {
+        if (!this.upcasterChain) {
+            return stream;
+        }
+
+        const upcastedEvents = stream.events.map((message) => {
+            const event = message.event;
+
+            // Only upcast if the event has version property (for upcasting support)
+            if (typeof event === 'object' && 'version' in event) {
+                const upcastedEvent = this.upcasterChain!.upcast(event as DomainEvent);
+
+                // If event was upcasted, create a new message with the upcasted event
+                if (upcastedEvent !== event) {
+                    return DomainMessage.create(
+                        message.uuid,
+                        message.playhead,
+                        upcastedEvent,
+                        message.metadata,
+                    );
+                }
+            }
+
+            return message;
+        });
+
+        return new DomainEventStream(upcastedEvents, stream.name);
     }
 }
