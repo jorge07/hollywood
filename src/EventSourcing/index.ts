@@ -21,6 +21,15 @@ import {
     RetryDecision,
     DeadLetterAwareEventBus,
 } from "./DeadLetter";
+import {
+    IIdempotencyStore,
+    InMemoryIdempotencyStore,
+    IdempotentHandler,
+    IdempotentHandlerOptions,
+    makeIdempotent,
+    IdempotentEventBus,
+    IdempotentEventBusOptions,
+} from "./Idempotency";
 
 export {
     AggregateRootNotFoundException,
@@ -45,4 +54,12 @@ export {
     RetryPolicyConfig,
     RetryDecision,
     DeadLetterAwareEventBus,
+    // Idempotency exports
+    IIdempotencyStore,
+    InMemoryIdempotencyStore,
+    IdempotentHandler,
+    IdempotentHandlerOptions,
+    makeIdempotent,
+    IdempotentEventBus,
+    IdempotentEventBusOptions,
 };
