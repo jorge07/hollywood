@@ -9,9 +9,12 @@
  * 2. Events should be plain data objects without inherited behavior
  * 3. Allows events to extend other classes if needed
  *
+ * For event versioning and upcasting support, add an optional `version` property:
+ *
  * @example
  * ```typescript
  * class UserCreated implements DomainEvent {
+ *     readonly version = 1;
  *     constructor(
  *         public readonly userId: string,
  *         public readonly email: string
@@ -21,4 +24,5 @@
  */
 export default interface DomainEvent {
     // Marker interface - implementations should be immutable data classes
+    // For upcasting support, add: readonly version?: number;
 }

@@ -9,6 +9,8 @@ import SnapshotStore from "./Snapshot/SnapshotStore";
 import ISnapshotStoreDBAL from "./Snapshot/SnapshotStoreDBAL";
 import InMemorySnapshotStoreDBAL from "./Snapshot/InMemorySnapshotStoreDBAL";
 import IEventStoreDBAL from "./IEventStoreDBAL";
+import EventUpcaster from "./Upcasting/EventUpcaster";
+import UpcasterChain from "./Upcasting/UpcasterChain";
 
 export {
     AggregateRootNotFoundException,
@@ -22,4 +24,6 @@ export {
     IEventListener,
     ISnapshotStoreDBAL,
     InMemorySnapshotStoreDBAL,
+    EventUpcaster,
+    UpcasterChain,
 };

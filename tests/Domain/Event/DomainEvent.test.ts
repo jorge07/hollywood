@@ -1,5 +1,14 @@
+import DomainEvent from '../../../src/Domain/Event/DomainEvent';
 import DemoEvent from './DemoEvent';
 import type DomainEvent from '../../../src/Domain/Event/DomainEvent';
+
+class VersionedEvent extends DomainEvent {
+    public readonly version: number = 2;
+
+    constructor(public readonly data: string) {
+        super();
+    }
+}
 
 describe("DomainEvent", () => {
 
@@ -16,5 +25,18 @@ describe("DomainEvent", () => {
 
         // The event should be assignable to DomainEvent type
         expect(event).toBeDefined();
+    });
+
+    it("DomainEvent should have a default version of 1", () => {
+        const event = new DemoEvent();
+
+        expect(event.version).toBe(1);
+    });
+
+    it("DomainEvent version can be overridden in subclasses", () => {
+        const event = new VersionedEvent("test data");
+
+        expect(event.version).toBe(2);
+        expect(event.data).toBe("test data");
     });
 });
