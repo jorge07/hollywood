@@ -6,6 +6,7 @@ import ConcurrencyException from "./Exception/ConcurrencyException";
 
 export default class InMemoryEventStore implements IEventStoreDBAL {
     private readonly events: { [key: string]: DomainMessage[] } = {};
+    private globalEventLog: DomainMessage[] = [];
 
     public load(aggregateId: string, from: number = 0): Promise<DomainEventStream> {
         if (this.events[aggregateId]) {
@@ -43,6 +44,7 @@ export default class InMemoryEventStore implements IEventStoreDBAL {
 
         stream.events.forEach((message: DomainMessage) => {
             this.events[aggregateId].push(message);
+            this.globalEventLog.push(message);
         });
     }
 
@@ -52,5 +54,11 @@ export default class InMemoryEventStore implements IEventStoreDBAL {
             return -1;
         }
         return events.length - 1;
+    }
+
+    public async *loadAll(fromPosition: number = 0): AsyncIterable<DomainMessage> {
+        for (let i = fromPosition; i < this.globalEventLog.length; i++) {
+            yield this.globalEventLog[i];
+        }
     }
 }

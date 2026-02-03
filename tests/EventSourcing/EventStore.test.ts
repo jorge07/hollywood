@@ -64,6 +64,10 @@ class InMemoryErrorEventStore implements IEventStoreDBAL {
     public async append(aggregateId: string, stream: DomainEventStream): Promise<void> {
         throw new Error('Fail Write');
     }
+
+    public async *loadAll(fromPosition: number = 0): AsyncIterable<DomainMessage> {
+        throw new Error('Fail Read All');
+    }
 }
 
 
