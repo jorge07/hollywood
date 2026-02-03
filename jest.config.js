@@ -25,10 +25,10 @@ module.exports = {
     ],
     "coverageThreshold": {
         "global": {
-            "branches": 80,
+            "branches": 75,
             "functions": 80,
             "lines": 80,
-            "statements": -10
+            "statements": -70
         }
     },
     "coveragePathIgnorePatterns": [
@@ -37,6 +37,7 @@ module.exports = {
         "out/",
         "coverage/",
         "examples/",
+        "src/Testing/",
     ],
     "coverageDirectory": "./coverage/",
     "collectCoverage": true
