@@ -4,30 +4,24 @@ on:
     branches-ignore:
       - master # Done in prepublishOnly script
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version:
-          - 15.12
+          - 20
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Cache node modules
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+        cache: 'npm'
     - name: Install
       run: |
-        yarn install
+        npm ci
     - name: Lint
       run: |
-        yarn lint
+        npm run lint
       env:
         CI: true
