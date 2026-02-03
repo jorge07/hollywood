@@ -1,5 +1,5 @@
 import { AggregateRootId } from "../AggregateRoot";
-import DomainEvent from "./DomainEvent";
+import type DomainEvent from "./DomainEvent";
 
 /**
  * @internal
@@ -10,16 +10,17 @@ export default class DomainMessage {
         playhead: number,
         event: object|DomainEvent,
         metadata: any[] = [],
+        occurred?: Date,
     ): DomainMessage {
         return new DomainMessage(
             uuid,
             playhead,
             event,
             metadata,
+            occurred ?? new Date(),
         );
     }
 
-    public readonly occurred: Date;
     public readonly eventType: string;
 
     private constructor(
@@ -27,9 +28,9 @@ export default class DomainMessage {
         public readonly playhead: number,
         public readonly event: object|DomainEvent,
         public readonly metadata: any[],
+        public readonly occurred: Date = new Date(),
     ) {
         this.eventType = DomainMessage.extractEventType(event);
-        this.occurred = new Date();
     }
 
     private static extractEventType(event: object) {

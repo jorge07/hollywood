@@ -7,39 +7,41 @@
   "license": "MIT",
   "main": "./dist/index.js",
   "exports": "./dist/index.js",
-  "types": "./index.d.ts",
+  "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "http://github.com/jorge07/hollywood.git"
   },
   "dependencies": {
     "config": "^3.3.1",
-    "inversify": "^5.0.1",
+    "inversify": "^5.1.1",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@types/express": "^4.17.3",
-    "@types/jest": "^26.x",
+    "@types/jest": "^30.0.0",
     "@types/node": "^14.11",
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
     "coveralls": "^3.x",
     "docsify-cli": "^4.4.3",
+    "eslint": "^9.39.2",
     "express": "^4.17.1",
-    "jest": "^26.x",
-    "ts-jest": "^26.x",
-    "tslint": "^6.1.3",
-    "tslint-sonarts": "^1.9.0",
-    "typescript": "4.0.2"
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.54.0"
   },
   "scripts": {
     "docs": "docsify serve docs",
-    "prepublishOnly": "yarn test && yarn lint && yarn build",
-    "postpublishOnly": "rm -rf dist/",
-    "test": "jest",
-    "test:server": "node ./out/examples/Server.js",
-    "dev": "./node_modules/typescript/bin/tsc -p tsconfig.json -w",
+    "clean": "rm -rf dist/",
+    "prebuild": "npm run clean",
     "build": "./node_modules/typescript/bin/tsc -p tsconfig.json",
-    "lint": "./node_modules/tslint/bin/tslint --project tsconfig.json -c tslint.json 'src/**/*.ts'",
-    "lint:fix": "yarn lint --fix"
+    "prepublishOnly": "npm test && npm run lint && npm run build",
+    "test": "jest",
+    "dev": "./node_modules/typescript/bin/tsc -p tsconfig.json -w",
+    "lint": "eslint src/**/*.ts index.ts",
+    "lint:fix": "eslint src/**/*.ts index.ts --fix"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",

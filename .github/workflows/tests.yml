@@ -9,26 +9,23 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - 15.12
+          - 20
+          - 22
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Cache node modules
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+        cache: 'npm'
     - name: Install
       run: |
-        yarn install
+        npm ci
+    - name: Lint
+      run: |
+        npm run lint
     - name: Test
       run: |
-        yarn test --coverage
-        cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+        npm test
       env:
         CI: true

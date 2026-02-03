@@ -1,5 +1,5 @@
 import AggregateRoot, {AggregateRootId } from "./AggregateRoot";
-import DomainEvent from "./Event/DomainEvent";
+import type DomainEvent from "./Event/DomainEvent";
 import DomainEventStream from "./Event/DomainEventStream";
 import DomainMessage from "./Event/DomainMessage";
 import EventListener from "../EventSourcing/EventBus/EventListener";
@@ -11,7 +11,6 @@ import Repository from "./Repository/Repository";
 export {
     AggregateRootId,
     AggregateRoot,
-    DomainEvent,
     DomainEventStream,
     DomainMessage,
     EventListener,
@@ -20,3 +19,5 @@ export {
     IEventSourced,
     Repository,
 }
+
+export type { DomainEvent }

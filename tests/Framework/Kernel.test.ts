@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import {inject} from 'inversify';
+import {decorate, inject, injectable} from 'inversify';
 import Kernel from '../../src/Framework/Kernel';
 import {ParametersList, UniqueParameterIdentifier, Parameter} from '../../src/Framework/Container/Items/Parameter';
 import ModuleContext from "../../src/Framework/Modules/ModuleContext";
@@ -16,12 +16,16 @@ class Child {
 // tslint:disable-next-line:max-classes-per-file
 class Parent {
     constructor(
-        @inject('child') public readonly child: Child,
-        @inject('demo') public readonly demo: number,
+        public readonly child: Child,
+        public readonly demo: number,
     ) {
     }
 
 }
+
+decorate(injectable(), Parent);
+decorate(inject('child') as ParameterDecorator, Parent, 0);
+decorate(inject('demo') as ParameterDecorator, Parent, 1);
 
 const parametersTest: ParametersList = new Map<UniqueParameterIdentifier, Parameter>([
     ['demo', 2]

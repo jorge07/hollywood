@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "esnext",
+        "target": "ES2022",
         "outDir": "dist",
-        "lib": [ "ES2020" ],
+        "lib": ["ES2022"],
         "sourceMap": true,
         "rootDir": ".",
         "types": [
@@ -11,15 +11,16 @@
             "reflect-metadata",
             "jest"
         ],
-        "strictFunctionTypes": true,
-        "strictNullChecks": true,
+        "strict": true,
         "declaration": true,
-        "strict": true,                           /* Enable all strict type-checking options. */
-        "esModuleInterop": true,                  /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
+        "esModuleInterop": true,
         "moduleResolution": "node",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "noUnusedLocals": true
+        "noUnusedLocals": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true
     },
     "compileOnSave": true,
     "include": [

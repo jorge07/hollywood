@@ -16,6 +16,9 @@ export function IsListenerType(serviceDefinition: IService): boolean {
 
 export default function ListenerType(bind: interfaces.Bind, unbind: interfaces.Rebind, isBound: interfaces.IsBound) {
     return (key: string, serviceDefinition: IService) => {
+        if (!serviceDefinition.instance) {
+            throw new Error(`ListenerType service '${key}' requires an instance property`);
+        }
         if (serviceDefinition.overwrite && isBound(key)) {
             unbind(key);
         }

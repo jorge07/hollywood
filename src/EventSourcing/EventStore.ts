@@ -46,7 +46,9 @@ export default class EventStore<T extends EventSourcedAggregateRoot> {
             aggregateRoot ? aggregateRoot.version() : 0,
         );
 
-        EventStore.emptyStream(stream);
+        if (stream.isEmpty() && !aggregateRoot) {
+            throw new AggregateRootNotFoundException();
+        }
 
         aggregateRoot = aggregateRoot || this.aggregateFactory(aggregateRootId);
 
@@ -117,12 +119,5 @@ export default class EventStore<T extends EventSourcedAggregateRoot> {
     private aggregateFactory(aggregateRootId: AggregateRootId): T {
 
         return new this.modelConstructor(aggregateRootId);
-    }
-
-    private static emptyStream(stream: DomainEventStream): void {
-        if (stream.isEmpty()) {
-
-            throw new AggregateRootNotFoundException();
-        }
     }
 }

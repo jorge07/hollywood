@@ -1,6 +1,6 @@
 import App from '../../src/Application/App';
 import {DemoHandler, DemoCommand, DemoQuery, DemoQueryHandler} from './Bus/DemoHandlers';
-import IMiddleware from '../../src/Application/Bus/Middelware';
+import IMiddleware from '../../src/Application/Bus/Middleware';
 import {IAppError, IAppResponse} from "../../src/Application/Bus/CallbackArg";
 
 class CustomMiddleware implements IMiddleware {

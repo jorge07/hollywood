@@ -3,12 +3,13 @@ import type IEventSourced from "./IEventSourced";
 import DomainMessage from "./Event/DomainMessage";
 import DomainEventStream from "./Event/DomainEventStream";
 import EventSourced from "./EventSourced";
-import DomainEvent from "./Event/DomainEvent";
+import type DomainEvent from "./Event/DomainEvent";
 import AggregateRoot from "./AggregateRoot";
 
 export default abstract class EventSourcedAggregateRoot extends AggregateRoot implements IEventSourced {
 
     protected readonly methodPrefix: string = "apply";
+    protected readonly eventHandlers = new Map<string, (event: DomainEvent) => void>();
     private playhead: number = -1;
     private events: DomainMessage[] = [];
     private children: EventSourced[] = [];
@@ -64,6 +65,17 @@ export default abstract class EventSourcedAggregateRoot extends AggregateRoot im
         this.children.push(child)
     }
 
+    /**
+     * Register an explicit event handler for a specific event type.
+     * This is the preferred approach over the legacy apply* method pattern.
+     */
+    protected registerHandler<T extends DomainEvent>(
+        eventType: new (...args: any[]) => T,
+        handler: (event: T) => void
+    ): void {
+        this.eventHandlers.set(eventType.name, handler as (event: DomainEvent) => void);
+    }
+
     protected raise(event: object|DomainEvent): void {
         const domainMessage: DomainMessage = DomainMessage.create(
             this.getAggregateRootId(),
@@ -80,6 +92,22 @@ export default abstract class EventSourcedAggregateRoot extends AggregateRoot im
     }
 
     private handle(event: object|DomainEvent, method: string): void {
+        const eventName = event.constructor.name;
+        const handler = this.eventHandlers.get(eventName);
+
+        if (handler) {
+            handler(event as DomainEvent);
+            return;
+        }
+
+        // If handlers are registered, we're in strict mode - throw if no handler found
+        // This prevents silent failures when using the explicit registration pattern
+        if (this.eventHandlers.size > 0) {
+            throw new Error(`No handler registered for ${eventName}`);
+        }
+
+        // Fallback to legacy apply* method pattern for backwards compatibility
+        // Only used when NO handlers are registered at all
         if ((this as any)[method]) {
             (this as any)[method](event);
         }

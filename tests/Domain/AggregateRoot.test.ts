@@ -1,6 +1,6 @@
 import EventSourcedAggregateRoot from "../../src/Domain/EventSourcedAggregateRoot";
 import EventSourced from "../../src/Domain/EventSourced";
-import DomainEvent from "../../src/Domain/Event/DomainEvent";
+import type DomainEvent from "../../src/Domain/Event/DomainEvent";
 import DomainMessage from "../../src/Domain/Event/DomainMessage";
 import DomainEventStream from "../../src/Domain/Event/DomainEventStream";
 
@@ -70,17 +70,13 @@ class Translator extends EventSourced {
 }
 
 // tslint:disable-next-line:max-classes-per-file
-export class SayWolf extends DomainEvent {
-    constructor(public readonly uuid: string) {
-        super();
-    }
+export class SayWolf implements DomainEvent {
+    constructor(public readonly uuid: string) {}
 }
 
 // tslint:disable-next-line:max-classes-per-file
-export class SayGrr extends DomainEvent {
-    constructor(public readonly uuid: string) {
-        super();
-    }
+export class SayGrr implements DomainEvent {
+    constructor(public readonly uuid: string) {}
 }
 
 describe("AggregateRoot", () => {
