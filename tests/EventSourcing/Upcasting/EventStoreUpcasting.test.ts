@@ -1,6 +1,6 @@
 import "reflect-metadata";
 
-import DomainEvent from "../../../src/Domain/Event/DomainEvent";
+import type DomainEvent from "../../../src/Domain/Event/DomainEvent";
 import DomainMessage from "../../../src/Domain/Event/DomainMessage";
 import DomainEventStream from "../../../src/Domain/Event/DomainEventStream";
 import EventSourcedAggregateRoot from "../../../src/Domain/EventSourcedAggregateRoot";
@@ -13,7 +13,7 @@ import { EventUpcaster } from "../../../src/EventSourcing/Upcasting/EventUpcaste
 // Test event - single class that evolves over time
 // In real usage, you'd have one event class and the upcaster transforms
 // plain objects/older serialized versions into the current structure
-class UserCreated extends DomainEvent {
+class UserCreated implements DomainEvent {
     public readonly version: number;
 
     constructor(
@@ -22,7 +22,6 @@ class UserCreated extends DomainEvent {
         public readonly email: string = "",
         version: number = 2,
     ) {
-        super();
         this.version = version;
     }
 }
@@ -49,6 +48,7 @@ class User extends EventSourcedAggregateRoot {
 // In-memory event store for testing
 class TestInMemoryEventStore implements IEventStoreDBAL {
     private events: Map<string, DomainMessage[]> = new Map();
+    private globalEventLog: DomainMessage[] = [];
 
     public async load(aggregateId: string, from: number = 0): Promise<DomainEventStream> {
         const events = this.events.get(aggregateId) || [];
@@ -67,11 +67,19 @@ class TestInMemoryEventStore implements IEventStoreDBAL {
     public async append(aggregateId: string, stream: DomainEventStream): Promise<void> {
         const existing = this.events.get(aggregateId) || [];
         this.events.set(aggregateId, [...existing, ...stream.events]);
+        stream.events.forEach((event) => this.globalEventLog.push(event));
+    }
+
+    public async *loadAll(fromPosition: number = 0): AsyncIterable<DomainMessage> {
+        for (let i = fromPosition; i < this.globalEventLog.length; i++) {
+            yield this.globalEventLog[i];
+        }
     }
 
     // Helper method to directly store events (simulating old v1 events in storage)
     public storeRawEvents(aggregateId: string, events: DomainMessage[]): void {
         this.events.set(aggregateId, events);
+        events.forEach((event) => this.globalEventLog.push(event));
     }
 }
 

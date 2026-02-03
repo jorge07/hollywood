@@ -2,9 +2,17 @@
 
 This document describes the Framework Layer of the Hollywood-JS framework, which provides the application bootstrapping, dependency injection container, and module system.
 
+**Version**: 6.0.0-beta
+
 ## Overview
 
 The Framework Layer implements the composition root for Hollywood-JS applications. It provides a modular architecture built on Inversify for dependency injection, with support for service registration, parameter binding, and module composition.
+
+### v6-beta Changes
+- **TypeScript 5.9**: Updated to latest TypeScript with enhanced type inference
+- **ESLint 9**: Replaced TSLint with modern ESLint configuration
+- **Jest 30**: Updated testing framework
+- **Node.js 20/22 LTS**: Support for current LTS versions
 
 ## UML Class Diagram
 

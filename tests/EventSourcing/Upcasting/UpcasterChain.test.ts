@@ -1,38 +1,30 @@
 import "reflect-metadata";
 
-import DomainEvent from "../../../src/Domain/Event/DomainEvent";
+import type DomainEvent from "../../../src/Domain/Event/DomainEvent";
 import { EventUpcaster } from "../../../src/EventSourcing/Upcasting/EventUpcaster";
 import { UpcasterChain } from "../../../src/EventSourcing/Upcasting/UpcasterChain";
 
 // Test events with versions
-class UserCreatedEventV1 extends DomainEvent {
+class UserCreatedEventV1 implements DomainEvent {
     public readonly version: number = 1;
 
     constructor(
         public readonly userId: string,
         public readonly name: string,
-    ) {
-        super();
-    }
+    ) {}
 }
 
-class UserCreatedEventV2 extends DomainEvent {
+class UserCreatedEventV2 implements DomainEvent {
     public readonly version: number = 2;
 
     constructor(
         public readonly userId: string,
         public readonly name: string,
         public readonly email: string,
-    ) {
-        super();
-    }
-
-    public domainEventName(): string {
-        return "UserCreatedEventV1";
-    }
+    ) {}
 }
 
-class UserCreatedEventV3 extends DomainEvent {
+class UserCreatedEventV3 implements DomainEvent {
     public readonly version: number = 3;
 
     constructor(
@@ -40,19 +32,11 @@ class UserCreatedEventV3 extends DomainEvent {
         public readonly name: string,
         public readonly email: string,
         public readonly createdAt: Date,
-    ) {
-        super();
-    }
-
-    public domainEventName(): string {
-        return "UserCreatedEventV1";
-    }
+    ) {}
 }
 
-class UnversionedEvent extends DomainEvent {
-    constructor(public readonly data: string) {
-        super();
-    }
+class UnversionedEvent implements DomainEvent {
+    constructor(public readonly data: string) {}
 }
 
 describe("UpcasterChain", () => {
@@ -254,13 +238,14 @@ describe("UpcasterChain", () => {
 
             // The event should not be upcasted since its version (2) doesn't match fromVersion (1)
             expect(result).toBe(v2Event);
-            expect(result.version).toBe(2);
+            expect((result as { version: number }).version).toBe(2);
         });
 
         it("should upcast from intermediate version", () => {
             const chain = new UpcasterChain();
             const fixedDate = new Date("2024-01-01T00:00:00.000Z");
 
+            // Upcasters are registered by constructor name of the event they upcast FROM
             const upcasterV1ToV2: EventUpcaster<UserCreatedEventV1> = {
                 eventType: "UserCreatedEventV1",
                 fromVersion: 1,
@@ -271,7 +256,7 @@ describe("UpcasterChain", () => {
             };
 
             const upcasterV2ToV3: EventUpcaster<UserCreatedEventV2> = {
-                eventType: "UserCreatedEventV1",
+                eventType: "UserCreatedEventV2", // Registered by actual class name
                 fromVersion: 2,
                 toVersion: 3,
                 upcast: (event) => {
@@ -282,7 +267,7 @@ describe("UpcasterChain", () => {
             chain.register(upcasterV1ToV2);
             chain.register(upcasterV2ToV3);
 
-            // Start from v2 event
+            // Start from v2 event - upcaster lookup uses constructor.name (UserCreatedEventV2)
             const v2Event = new UserCreatedEventV2("user-123", "John Doe", "john@example.com");
             const upcastedEvent = chain.upcast(v2Event) as UserCreatedEventV3;
 
@@ -386,7 +371,7 @@ describe("UpcasterChain", () => {
                 },
             });
 
-            class TestEvent extends DomainEvent {
+            class TestEvent implements DomainEvent {
                 public readonly version = 1;
             }
 

@@ -73,8 +73,8 @@ describe("IdempotentHandler", () => {
         });
 
         it("should use idempotencyKey from message", async () => {
-            const message1 = DomainMessage.create("123", 0, new TestEvent("test"), [], "custom-key-1");
-            const message2 = DomainMessage.create("456", 0, new TestEvent("test"), [], "custom-key-1");
+            const message1 = DomainMessage.create("123", 0, new TestEvent("test"), [], undefined, "custom-key-1");
+            const message2 = DomainMessage.create("456", 0, new TestEvent("test"), [], undefined, "custom-key-1");
 
             await handler.on(message1);
             await handler.on(message2); // Same custom key

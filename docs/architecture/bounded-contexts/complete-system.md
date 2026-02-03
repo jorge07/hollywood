@@ -2,6 +2,8 @@
 
 This document provides comprehensive UML diagrams showing all Hollywood-JS framework components and their relationships across bounded contexts.
 
+**Version**: 6.0.0-beta
+
 ## Full System Class Diagram
 
 ```mermaid
@@ -34,7 +36,7 @@ classDiagram
     }
 
     %% =====================================================
-    %% APPLICATION LAYER - CQRS
+    %% APPLICATION LAYER - CQRS + Saga (v6)
     %% =====================================================
     namespace ApplicationLayer {
         class App {
@@ -58,9 +60,9 @@ classDiagram
             +Promise~QueryBusResponse~ ask(IQuery query)
         }
 
-        class IMiddleware {
+        class IMiddleware~TMessage,TResponse~ {
             <<interface>>
-            +any execute(command, next)
+            +Promise~TResponse~ execute(message, next)
         }
 
         class CommandHandlerResolver {
@@ -91,16 +93,45 @@ classDiagram
             +Promise~IAppResponse~ handle(IQuery)
         }
 
-        class IAppResponse {
+        class IAppResponse~TData,TMeta~ {
             <<ValueObject>>
-            +any data
-            +any[] meta
+            +TData data
+            +TMeta[] meta
         }
 
         class IAppError {
             <<ValueObject>>
             +string message
             +number code
+        }
+
+        class Saga~TState~ {
+            <<abstract>>
+            -string sagaId
+            #TState state
+            #SagaStatus status
+            +string sagaType
+            +Promise~void~ handleEvent(DomainMessage message)
+            +void complete()
+            +void fail(string reason)
+            #void dispatchCommand(ICommand command)
+        }
+
+        class SagaManager {
+            -Map~string,SagaRegistration~ registrations
+            -CommandBus commandBus
+            -ISagaRepository repository
+            +void register(sagaType, factory, startingEvents, correlationIdExtractor)
+            +Promise~void~ on(DomainMessage message)
+        }
+
+        class SagaStatus {
+            <<Enum>>
+            PENDING
+            RUNNING
+            COMPLETED
+            FAILED
+            COMPENSATING
         }
     }
 
@@ -116,12 +147,14 @@ classDiagram
 
         class EventSourcedAggregateRoot {
             <<AggregateRoot>>
+            #Map~string,Function~ eventHandlers
             -number playhead
             -DomainMessage[] events
             -EventSourced[] children
             +DomainEventStream getUncommittedEvents()
             +fromHistory(DomainEventStream stream)
             +fromSnapshot(snapshot)
+            #void registerHandler~T~(eventType, handler)
             #void raise(DomainEvent event)
         }
 
@@ -140,7 +173,7 @@ classDiagram
 
         class DomainEvent {
             <<interface>>
-            %% Marker interface - event type determined by constructor.name
+            %% Marker interface - optional version field
         }
 
         class DomainMessage {
@@ -150,6 +183,7 @@ classDiagram
             +DomainEvent event
             +Date occurred
             +string eventType
+            +string idempotencyKey
             +DomainMessage create(uuid, playhead, event)$
         }
 
@@ -171,6 +205,7 @@ classDiagram
             -EventStore~T~ eventStore
             +Promise~void~ save(T aggregateRoot)
             +Promise~T~ load(string id)
+            +Promise~void~ saveWithRetry(id, updateFn, maxRetries)
         }
 
         class AggregateRootId {
@@ -185,7 +220,7 @@ classDiagram
     }
 
     %% =====================================================
-    %% EVENT SOURCING LAYER - Infrastructure
+    %% EVENT SOURCING LAYER - Infrastructure (v6 enhanced)
     %% =====================================================
     namespace EventSourcingLayer {
         class EventStore~T~ {
@@ -193,6 +228,7 @@ classDiagram
             -IEventStoreDBAL dbal
             -EventBus eventBus
             -SnapshotStore~T~ snapshotStore
+            -UpcasterChain upcasterChain
             +Promise~T~ load(AggregateRootId id)
             +Promise~void~ save(T entity)
             +Promise~void~ replayFrom(uuid, from, to)
@@ -202,14 +238,16 @@ classDiagram
             <<interface>>
             +Promise~DomainEventStream~ load(id, from)
             +Promise~DomainEventStream~ loadFromTo(id, from, to)
-            +void append(id, stream)
+            +void append(id, stream, expectedVersion)
+            +AsyncIterator~DomainMessage~ loadAll(fromPosition)
         }
 
         class InMemoryEventStore {
             -Object events
             +load(aggregateId, from)
             +loadFromTo(aggregateId, from, to)
-            +append(aggregateId, stream)
+            +append(aggregateId, stream, expectedVersion)
+            +loadAll(fromPosition)
         }
 
         class EventBus {
@@ -218,6 +256,23 @@ classDiagram
             +Promise~void~ publish(DomainMessage message)
             +EventBus attach(event, EventSubscriber subscriber)
             +EventBus addListener(EventListener listener)
+        }
+
+        class DeadLetterAwareEventBus {
+            -IDeadLetterQueue deadLetterQueue
+            -RetryPolicy retryPolicy
+            +Promise~void~ publish(DomainMessage message)
+        }
+
+        class IdempotentEventBus {
+            -IIdempotencyStore idempotencyStore
+            +Promise~void~ publish(DomainMessage message)
+        }
+
+        class UpcasterChain {
+            -Map~string,EventUpcaster[]~ upcasters
+            +void register~T~(EventUpcaster~T~ upcaster)
+            +DomainEvent upcast(DomainEvent event)
         }
 
         class IEventListener {
@@ -232,7 +287,9 @@ classDiagram
 
         class EventSubscriber {
             <<abstract>>
+            #Map~string,Function~ handlers
             +Promise~void~ on(DomainMessage message)
+            #void registerHandler~T~(eventType, handler)
         }
 
         class SnapshotStore~T~ {
@@ -256,14 +313,33 @@ classDiagram
         class AggregateRootNotFoundException {
             <<Exception>>
         }
+
+        class ConcurrencyException {
+            <<Exception>>
+            +string aggregateId
+            +number expectedVersion
+            +number actualVersion
+        }
+
+        class RetryPolicy {
+            +RetryDecision evaluate(number retryCount)
+            +RetryPolicy default()$
+        }
     }
 
     %% =====================================================
-    %% READ MODEL LAYER - Projections
+    %% READ MODEL LAYER - Projections (v6 enhanced)
     %% =====================================================
     namespace ReadModelLayer {
         class Projector {
-            <<abstract>>
+            <<type alias>>
+        }
+
+        class ProjectionManager {
+            -IEventStoreDBAL eventStore
+            -IProjectionPositionStore positionStore
+            +Promise~void~ rebuild(Projector projector)
+            +Promise~void~ catchUp(Projector projector)
         }
 
         class InMemoryReadModelRepository {
@@ -291,6 +367,9 @@ classDiagram
     InMemorySnapshotStoreDBAL ..|> ISnapshotStoreDBAL
     EventListener ..|> IEventListener
     EventSubscriber ..|> IEventListener
+    DeadLetterAwareEventBus --|> EventBus
+    IdempotentEventBus --|> EventBus
+    SagaManager --|> EventListener
 
     Projector --|> EventSubscriber
 
@@ -310,7 +389,9 @@ classDiagram
     EventStore *-- IEventStoreDBAL
     EventStore *-- EventBus
     EventStore *-- SnapshotStore
+    EventStore *-- UpcasterChain
     SnapshotStore *-- ISnapshotStoreDBAL
+    SagaManager *-- CommandBus
 
     %% =====================================================
     %% DEPENDENCY RELATIONSHIPS
@@ -319,11 +400,14 @@ classDiagram
     Repository ..> EventStore : uses
     EventStore ..> DomainEventStream : processes
     EventStore ..> EventSourcedAggregateRoot : manages
+    EventStore ..> ConcurrencyException : throws
     EventBus ..> DomainMessage : publishes
     EventBus ..> Projector : notifies
     Projector ..> InMemoryReadModelRepository : updates
+    ProjectionManager ..> Projector : rebuilds
     IQueryHandler ..> InMemoryReadModelRepository : queries
     ICommandHandler ..> Repository : uses
+    SagaManager ..> Saga : manages
 ```
 
 ## Layer Dependency Flow
@@ -431,14 +515,20 @@ sequenceDiagram
 |-----------|---------|------|------------|
 | **Kernel** | App, Container | ModuleContext | Entry point |
 | **App** | CommandBus, QueryBus | Handlers | Client code |
-| **CommandBus** | - | Middleware chain | App |
+| **CommandBus** | - | Middleware chain | App, SagaManager |
 | **QueryBus** | - | Middleware chain | App |
 | **CommandHandler** | - | Repository | CommandBus |
 | **QueryHandler** | - | ReadModelRepository | QueryBus |
 | **Repository** | - | EventStore | Handlers |
-| **EventStore** | - | DBAL, EventBus, SnapshotStore | Repository |
+| **EventStore** | - | DBAL, EventBus, SnapshotStore, UpcasterChain | Repository |
 | **EventBus** | - | Subscribers, Listeners | EventStore |
+| **DeadLetterAwareEventBus** | DeadLetterMessage | DLQ, RetryPolicy | EventStore (v6) |
+| **IdempotentEventBus** | - | IdempotencyStore | EventStore (v6) |
+| **UpcasterChain** | - | EventUpcasters | EventStore (v6) |
 | **Projector** | - | ReadModelRepository | EventBus |
+| **ProjectionManager** | - | EventStoreDBAL, PositionStore | Admin operations (v6) |
+| **Saga** | Commands | State | SagaManager (v6) |
+| **SagaManager** | Saga instances | CommandBus, SagaRepository | EventBus (v6) |
 | **EventSourcedAggregateRoot** | DomainMessage | - | Repository, EventStore |
 
 ## Aggregate Boundaries
@@ -488,9 +578,15 @@ graph TB
 
 ## Extension Points
 
-1. **Custom Middleware**: Implement `IMiddleware` for command/query buses
+1. **Custom Middleware**: Implement `IMiddleware<TMessage, TResponse>` for command/query buses
 2. **Custom DBAL**: Implement `IEventStoreDBAL` for different databases
 3. **Custom Snapshot DBAL**: Implement `ISnapshotStoreDBAL` for snapshot storage
-4. **Custom Projectors**: Extend `Projector` for read model updates
+4. **Custom Projectors**: Extend `EventSubscriber` (Projector type alias) for read model updates
 5. **Custom Listeners**: Extend `EventListener` for global event handling
 6. **Custom Modules**: Create `ModuleContext` instances for feature modules
+7. **Custom Event Upcasters** (v6): Implement `EventUpcaster<T>` for schema migrations
+8. **Custom Dead Letter Queue** (v6): Implement `IDeadLetterQueue` for failed event storage
+9. **Custom Idempotency Store** (v6): Implement `IIdempotencyStore` for duplicate detection
+10. **Custom Saga Repository** (v6): Implement `ISagaRepository` for saga persistence
+11. **Custom Projection Position Store** (v6): Implement `IProjectionPositionStore` for rebuild tracking
+12. **Custom Sagas** (v6): Extend `Saga<TState>` for workflow orchestration
