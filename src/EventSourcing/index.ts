@@ -11,6 +11,16 @@ import InMemorySnapshotStoreDBAL from "./Snapshot/InMemorySnapshotStoreDBAL";
 import IEventStoreDBAL from "./IEventStoreDBAL";
 import EventUpcaster from "./Upcasting/EventUpcaster";
 import UpcasterChain from "./Upcasting/UpcasterChain";
+import {
+    DeadLetterMessage,
+    createDeadLetterMessage,
+    IDeadLetterQueue,
+    InMemoryDeadLetterQueue,
+    RetryPolicy,
+    RetryPolicyConfig,
+    RetryDecision,
+    DeadLetterAwareEventBus,
+} from "./DeadLetter";
 
 export {
     AggregateRootNotFoundException,
@@ -26,4 +36,13 @@ export {
     InMemorySnapshotStoreDBAL,
     EventUpcaster,
     UpcasterChain,
+    // Dead Letter Queue
+    DeadLetterMessage,
+    createDeadLetterMessage,
+    IDeadLetterQueue,
+    InMemoryDeadLetterQueue,
+    RetryPolicy,
+    RetryPolicyConfig,
+    RetryDecision,
+    DeadLetterAwareEventBus,
 };
