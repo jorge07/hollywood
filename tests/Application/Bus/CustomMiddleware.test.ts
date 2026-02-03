@@ -1,5 +1,5 @@
 import {DemoCommand, DemoHandler, DemoQuery, DemoQueryHandler} from "./DemoHandlers";
-import IMiddleware from '../../../src/Application/Bus/Middelware';
+import IMiddleware from '../../../src/Application/Bus/Middleware';
 import QueryHandlerResolver from "../../../src/Application/Bus/Query/QueryResolver";
 import CommandHandlerResolver from "../../../src/Application/Bus/Command/CommandHandlerResolver";
 import CommandBus from "../../../src/Application/Bus/Command/CommandBus";
@@ -48,7 +48,7 @@ describe("CustomType Middlewares", () => {
             // tslint:disable-next-line:no-duplicate-string
             expect("Query bus Exception").toBe("Not threw");
         } catch (err) {
-            expect(err.code).toBe(0);
+            expect((err as any).code).toBe(0);
         }
 
         expect(customQueryMiddleware.calls).toBe(2);
@@ -60,7 +60,7 @@ describe("CustomType Middlewares", () => {
             await queryBus.ask(new DemoQuery(true));
             expect("Exception Query").toBe("Not threw");
         } catch (err) {
-            expect(err.code).toBe(0);
+            expect((err as any).code).toBe(0);
         }
         expect(customQueryMiddleware.calls).toBe(3);
 
@@ -68,7 +68,7 @@ describe("CustomType Middlewares", () => {
             await commandBus.handle(new DemoCommand(true));
             expect("Exception Command").toBe("Not threw");
         } catch (err) {
-            expect(err.message).toBe("Fail");
+            expect((err as Error).message).toBe("Fail");
         }
         expect(customMiddleware.calls).toBe(2);
     });

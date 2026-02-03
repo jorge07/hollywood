@@ -1,4 +1,3 @@
-import DomainEvent from '../../../src/Domain/Event/DomainEvent';
+import type DomainEvent from '../../../src/Domain/Event/DomainEvent';
 
-export default class DemoEvent extends DomainEvent {
-}
+export default class DemoEvent implements DomainEvent {}

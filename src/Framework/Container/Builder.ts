@@ -20,6 +20,6 @@ export async function BuildFromModuleContext(
         BindListeners(container);
         return container;
     } catch (error) {
-        throw new ContainerCompilationException(error.message);
+        throw new ContainerCompilationException(error instanceof Error ? error.message : String(error));
     }
 }

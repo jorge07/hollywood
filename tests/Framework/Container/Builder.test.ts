@@ -2,13 +2,13 @@ import "reflect-metadata";
 import DomainMessage from "../../../src/Domain/Event/DomainMessage";
 import ModuleContext from "../../../src/Framework/Modules/ModuleContext";
 import {BuildFromModuleContext} from "../../../src/Framework/Container/Builder";
-import type {IService} from "../../../src/Framework/Container/Items/Service";
+import type {IService, Constructor} from "../../../src/Framework/Container/Items/Service";
 import ContainerCompilationException from "../../../src/Framework/Container/Exception/ContainerCompilationException";
 import EventListener from "../../../src/EventSourcing/EventBus/EventListener";
 import {SERVICES_ALIAS} from "../../../src/Framework/Container/Bridge/Alias";
 import AppBuilder from "../../../src/Framework/AppBuilder";
 import {DemoQueryHandler} from "../../Application/Bus/DemoHandlers";
-import {inject, injectable} from "inversify";
+import {decorate, inject, injectable} from "inversify";
 import {EventBus, EventStore} from "../../../src/EventSourcing";
 import {Dog, SayWolf} from '../../Domain/AggregateRoot.test';
 import {autowiring, ICommand, ICommandHandler} from "../../../src/Application";
@@ -25,10 +25,8 @@ class EchoListener extends EventListener {
 class SayWolfCommand implements ICommand {}
 
 // tslint:disable-next-line:max-classes-per-file
-@injectable()
 class SayWolfHandler implements ICommandHandler {
     constructor(
-        @inject('dog.eventStore')
         private readonly store: EventStore<Dog>) {
     }
     @autowiring
@@ -38,6 +36,9 @@ class SayWolfHandler implements ICommandHandler {
          await this.store.save(dog);
     }
 }
+
+decorate(injectable(), SayWolfHandler);
+decorate(inject('dog.eventStore') as ParameterDecorator, SayWolfHandler, 0);
 
 // tslint:disable-next-line:no-big-function
 describe("Framework:Container", () => {
@@ -121,7 +122,7 @@ describe("Framework:Container", () => {
             // tslint:disable-next-line:no-unused-expression
             AppBuilder(container);
         } catch (error) {
-            expect(error.message).toContain('Bus doesn\'t exists ')
+            expect((error as Error).message).toContain('Bus doesn\'t exists ')
         }
     });
     it("ListenersTypes with missing Bus should fail", async () => {
@@ -139,7 +140,7 @@ describe("Framework:Container", () => {
             const container = await BuildFromModuleContext(new Map(), testModule);
             AppBuilder(container);
         } catch (error) {
-            expect(error.message).toContain('Missing bus parameter in ServiceDefinition ')
+            expect((error as Error).message).toContain('Missing bus parameter in ServiceDefinition ')
         }
     });
     it("Container Builder should create an AsyncType", async () => {
@@ -175,9 +176,11 @@ describe("Framework:Container", () => {
     it("Container Builder throw an error for invalid services", async () => {
         expect.assertions(1);
 
+        // Intentionally pass invalid data to test error handling
+        // Use type assertion to bypass TypeScript check for this test case
         const services = new Map<string, IService>([
             [SERVICES_ALIAS.COMMAND_HANDLERS, {
-                instance: 1
+                instance: 1 as unknown as Constructor
             }],
         ]);
 
@@ -228,7 +231,7 @@ describe("Framework:Container", () => {
                 instance: EventBus,
             }],
             ['test.async', {
-                async: () => (new Noop()),
+                async: async () => (new Noop()),
             }],
             ['test.custom', {
                 custom: () => (new Noop()),
@@ -260,7 +263,7 @@ describe("Framework:Container", () => {
                 overwrite: true
             }],
             ['test.async', {
-                async: () => (new Yep()),
+                async: async () => (new Yep()),
                 overwrite: true
             }],
             ['test.custom', {

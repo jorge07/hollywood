@@ -1,14 +1,19 @@
-import type {IService, ServiceList} from "../Container/Items/Service";
+import type {IService, ServiceList, Constructor} from "../Container/Items/Service";
 import type { interfaces } from "inversify";
-import type ICommandHandler from "../../Application/Bus/Command/CommandHandler";
-import type IQueryHandler from "../../Application/Bus/Query/QueryHandler";
 import { createContainerModule } from "../Container/Items/Services/AddModules";
 import {SERVICES_ALIAS} from "../Container/Bridge/Alias";
 
+/**
+ * Module configuration interface.
+ */
 export interface ModuleConfig {
-    commands?: any[]
-    queries?: any[]
+    /** Command handler constructors */
+    commands?: Constructor[]
+    /** Query handler constructors */
+    queries?: Constructor[]
+    /** Service definitions */
     services: ServiceList
+    /** Nested module contexts */
     modules?: ModuleContext[]
 }
 
@@ -18,10 +23,10 @@ export default class ModuleContext {
 
     constructor(config: ModuleConfig) {
         if (config.commands) {
-            config.services.set(SERVICES_ALIAS.COMMAND_HANDLERS, ModuleContext.bindCommands(config.commands));
+            config.services.set(SERVICES_ALIAS.COMMAND_HANDLERS, ModuleContext.bindHandlers(config.commands));
         }
         if (config.queries) {
-            config.services.set(SERVICES_ALIAS.QUERY_HANDLERS, ModuleContext.bindCommands(config.queries));
+            config.services.set(SERVICES_ALIAS.QUERY_HANDLERS, ModuleContext.bindHandlers(config.queries));
         }
         this.config = config;
         this.modules = config.modules ?? [];
@@ -52,9 +57,9 @@ export default class ModuleContext {
         return new Map([...dependencies, ...this.config.services]);
     }
 
-    private static bindCommands(commands: ICommandHandler[]|IQueryHandler[]): IService {
+    private static bindHandlers(handlers: Constructor[]): IService {
         return {
-            collection: commands
+            collection: handlers
         };
     }
 }

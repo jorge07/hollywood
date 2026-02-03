@@ -7,9 +7,13 @@ export default function StandardType(
     bind: interfaces.Bind
 ) {
     return (key: string, serviceDefinition: IService) => {
+        if (!serviceDefinition.instance) {
+            throw new Error(`StandardType service '${key}' requires an instance property`);
+        }
         if (isBound(key)) {
             rebind(key).to(serviceDefinition.instance).inSingletonScope();
+        } else {
+            bind(key).to(serviceDefinition.instance).inSingletonScope();
         }
-        bind(key).to(serviceDefinition.instance).inSingletonScope();
     }
 }

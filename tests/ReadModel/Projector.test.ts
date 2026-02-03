@@ -2,9 +2,14 @@ import EventBus from '../../src/EventSourcing/EventBus/EventBus';
 import DomainMessage from '../../src/Domain/Event/DomainMessage';
 import {SayWolf} from '../Domain/AggregateRoot.test';
 import InMemoryReadModelRepository from "../../src/ReadModel/InMemoryReadModelRepository";
-import Projector from "../../src/ReadModel/Projector";
+import EventSubscriber from "../../src/EventSourcing/EventBus/EventSubscriber";
+import type Projector from "../../src/ReadModel/Projector";
 
-class DogReadModelProjector extends Projector {
+/**
+ * Example projector using EventSubscriber.
+ * The Projector type alias provides semantic clarity that this is a read model projector.
+ */
+class DogReadModelProjector extends EventSubscriber {
     constructor(private readonly repository: InMemoryReadModelRepository) {
         super();
     }
@@ -27,6 +32,16 @@ describe("Projector", () => {
         expect(readModel.oneOrFail('demo')).toBe('Wolf')
     });
 
+    it("Projector type alias is assignable from EventSubscriber", () => {
+        const readModel: InMemoryReadModelRepository = new InMemoryReadModelRepository();
+
+        // Projector is a type alias for EventSubscriber
+        // This verifies the type system works correctly
+        const projector: Projector = new DogReadModelProjector(readModel);
+
+        expect(projector).toBeInstanceOf(EventSubscriber);
+    });
+
     it("In Memory repository should fail of not exist", async () => {
         expect.assertions(1);
 
@@ -35,7 +50,7 @@ describe("Projector", () => {
         try {
             readModel.oneOrFail('demo');
         } catch (err) {
-            expect(err.message).toBe('Not Found');
+            expect((err as Error).message).toBe('Not Found');
         }
     });
 });

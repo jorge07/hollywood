@@ -1,7 +1,22 @@
 module.exports = {
     "testEnvironment": "node",
     "transform": {
-        "^.+\\.tsx?$": "ts-jest"
+        "^.+\\.tsx?$": ["ts-jest", {
+            "tsconfig": {
+                "module": "commonjs",
+                "target": "esnext",
+                "lib": ["ES2020"],
+                "strictFunctionTypes": true,
+                "strictNullChecks": true,
+                "strict": true,
+                "esModuleInterop": true,
+                "moduleResolution": "node",
+                "experimentalDecorators": true,
+                "emitDecoratorMetadata": true,
+                "noUnusedLocals": false,
+                "skipLibCheck": true
+            }
+        }]
     },
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [

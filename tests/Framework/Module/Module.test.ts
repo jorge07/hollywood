@@ -37,7 +37,7 @@ describe("Framework:Module", () => {
         await moduleB.load(containerB);
 
         expect(containerA.get('testA')).toBeInstanceOf(DemoHandler);
-        expect(() => containerA.get('testB')).toThrowError(new Error('No matching bindings found for serviceIdentifier: testB'));
+        expect(() => containerA.get('testB')).toThrow(new Error('No matching bindings found for serviceIdentifier: testB'));
 
         expect(containerB.get('testB')).toBeInstanceOf(DemoHandler);
         expect(containerB.get('testB')).toBeInstanceOf(DemoHandler);

@@ -24,7 +24,7 @@ describe("HandlerResolver test suite", () => {
             await queryBus.ask(new DemoQuery(true));
             expect("Query bus Exception").toBe("Not threw");
         } catch (err) {
-            expect(err.code).toBe(0);
+            expect((err as any).code).toBe(0);
         }
 
         await commandBus.handle(new DemoCommand(false));
@@ -34,21 +34,21 @@ describe("HandlerResolver test suite", () => {
             await queryBus.ask(new DemoQuery(true));
             expect("Exception Query").toBe("Not threw");
         } catch (err) {
-            expect(err.code).toBe(0);
+            expect((err as any).code).toBe(0);
         }
 
         try {
             await commandBus.handle(new DemoCommand(true));
             expect("Exception Command").toBe("Not threw");
         } catch (err) {
-            expect(err.message).toBe("Fail");
+            expect((err as Error).message).toBe("Fail");
         }
 
         try {
             await commandBus.handle(new DemoCommand(true));
             expect("Exception Command").toBe("Not threw");
         } catch (err) {
-            expect(err.message).toBe("Fail");
+            expect((err as Error).message).toBe("Fail");
         }
     });
 

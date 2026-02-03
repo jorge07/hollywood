@@ -1,4 +1,4 @@
-import DomainEvent from "./Event/DomainEvent";
+import type DomainEvent from "./Event/DomainEvent";
 
 export default interface IEventSourced {
     fromSnapshot(snapshot: IEventSourced): IEventSourced;
