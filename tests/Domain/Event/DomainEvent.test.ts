@@ -4,7 +4,11 @@ import DemoEvent from './DemoEvent';
 class VersionedEvent implements DomainEvent {
     public readonly version: number = 2;
 
-    constructor(public readonly data: string) {}
+    constructor(
+        public readonly aggregateId: string,
+        public readonly data: string,
+        public readonly occurredAt: Date = new Date()
+    ) {}
 }
 
 describe("DomainEvent", () => {
@@ -34,9 +38,10 @@ describe("DomainEvent", () => {
     });
 
     it("DomainEvent version can be set in implementations", () => {
-        const event = new VersionedEvent("test data");
+        const event = new VersionedEvent("agg-1", "test data");
 
         expect(event.version).toBe(2);
         expect(event.data).toBe("test data");
+        expect(event.aggregateId).toBe("agg-1");
     });
 });

@@ -1,5 +1,5 @@
 import { AsyncContainerModule, decorate, injectable, interfaces, METADATA_KEY } from "inversify";
-import type { IService, ServiceList } from "../Service";
+import type { IService } from "../Service";
 import StandardType from "./Type/StandardType";
 import CollectionType, {IsCollectionType} from "./Type/CollectionType";
 import AsyncType, {IsAsyncType} from "./Type/AsyncType";
@@ -7,7 +7,7 @@ import CustomType, {IsCustomType} from "./Type/CustomType";
 import EventStoreType, {IsEventStoreType} from "./Type/EventStoreType";
 import ListenerType, {IsListenerType} from "./Type/ListenerType";
 
-export function createContainerModule(serviceList: ServiceList): AsyncContainerModule {
+export function createContainerModule(serviceList: Map<string, IService>): AsyncContainerModule {
     return new AsyncContainerModule(async (
         bind: interfaces.Bind,
         unbind: interfaces.Unbind,

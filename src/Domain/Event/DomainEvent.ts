@@ -1,23 +1,41 @@
 /**
- * Marker interface for domain events.
+ * Domain events represent immutable facts that have occurred in the domain.
+ * They are named in past tense (e.g., UserCreated, OrderShipped).
  *
- * Domain events represent facts that have occurred in the domain.
- * They are immutable and named in past tense (e.g., UserCreated, OrderShipped).
+ * Required fields:
+ * - aggregateId: The ID of the aggregate that raised this event
+ * - occurredAt: When the event occurred (for ordering and audit trails)
  *
- * This is a marker interface rather than an abstract class because:
+ * Optional fields:
+ * - correlationId: Links events across distributed operations
+ * - causationId: The ID of the command or event that caused this event
+ * - version: Event schema version for upcasting support
+ *
+ * This is an interface rather than an abstract class because:
  * 1. Event type extraction uses constructor.name directly (see DomainMessage.extractEventType)
  * 2. Events should be plain data objects without inherited behavior
  * 3. Allows events to extend other classes if needed
  *
- * For event versioning and upcasting support, add an optional `version` property:
- *
  * @example
  * ```typescript
- * // Simple event without versioning
+ * // Simple event
  * class UserCreated implements DomainEvent {
  *     constructor(
+ *         public readonly aggregateId: string,
  *         public readonly userId: string,
- *         public readonly email: string
+ *         public readonly email: string,
+ *         public readonly occurredAt: Date = new Date()
+ *     ) {}
+ * }
+ *
+ * // Event with correlation tracking
+ * class OrderPlaced implements DomainEvent {
+ *     constructor(
+ *         public readonly aggregateId: string,
+ *         public readonly orderId: string,
+ *         public readonly occurredAt: Date = new Date(),
+ *         public readonly correlationId?: string,
+ *         public readonly causationId?: string
  *     ) {}
  * }
  *
@@ -25,15 +43,43 @@
  * class UserCreatedV2 implements DomainEvent {
  *     readonly version = 2;
  *     constructor(
+ *         public readonly aggregateId: string,
  *         public readonly userId: string,
  *         public readonly email: string,
- *         public readonly createdAt: Date
+ *         public readonly occurredAt: Date = new Date(),
+ *         public readonly correlationId?: string
  *     ) {}
  * }
  * ```
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export default interface DomainEvent {
-    // Marker interface - implementations should be immutable data classes
-    // For upcasting support, add: readonly version?: number;
+    /**
+     * The ID of the aggregate that raised this event.
+     * This links the event to its source aggregate.
+     */
+    readonly aggregateId: string;
+
+    /**
+     * When this event occurred.
+     * Used for event ordering, temporal queries, and audit trails.
+     */
+    readonly occurredAt: Date;
+
+    /**
+     * Optional correlation ID for distributed tracing.
+     * Links events across bounded contexts and services.
+     */
+    readonly correlationId?: string;
+
+    /**
+     * Optional causation ID.
+     * The ID of the command or event that caused this event.
+     */
+    readonly causationId?: string;
+
+    /**
+     * Optional event schema version for upcasting support.
+     * Use when you need to evolve event schemas over time.
+     */
+    readonly version?: number;
 }

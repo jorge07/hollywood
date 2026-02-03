@@ -16,30 +16,38 @@ import autowiring from "../../../src/Application/Bus/autowiring";
 // Test Events
 class OrderPlaced implements DomainEvent {
     constructor(
+        public readonly aggregateId: string,
         public readonly orderId: string,
         public readonly customerId: string,
         public readonly amount: number,
+        public readonly occurredAt: Date = new Date()
     ) {}
 }
 
 class PaymentReceived implements DomainEvent {
     constructor(
+        public readonly aggregateId: string,
         public readonly orderId: string,
         public readonly paymentId: string,
+        public readonly occurredAt: Date = new Date()
     ) {}
 }
 
 class ShipmentCreated implements DomainEvent {
     constructor(
+        public readonly aggregateId: string,
         public readonly orderId: string,
         public readonly shipmentId: string,
+        public readonly occurredAt: Date = new Date()
     ) {}
 }
 
 class PaymentFailed implements DomainEvent {
     constructor(
+        public readonly aggregateId: string,
         public readonly orderId: string,
         public readonly reason: string,
+        public readonly occurredAt: Date = new Date()
     ) {}
 }
 
@@ -198,7 +206,7 @@ describe("Saga", () => {
             // Set up command dispatcher
             saga.setCommandDispatcher(async () => {});
 
-            const event = new OrderPlaced('order-123', 'customer-1', 100);
+            const event = new OrderPlaced('order-123', 'order-123', 'customer-1', 100);
             const message = DomainMessage.create('order-123', 0, event);
 
             await saga.handle(message);
@@ -224,13 +232,13 @@ describe("Saga", () => {
             saga.setCommandDispatcher(async () => {});
 
             // Simulate that the saga has already processed earlier events
-            const orderPlacedMessage = DomainMessage.create('order-123', 0, new OrderPlaced('order-123', 'customer-1', 100));
+            const orderPlacedMessage = DomainMessage.create('order-123', 0, new OrderPlaced('order-123', 'order-123', 'customer-1', 100));
             await saga.handle(orderPlacedMessage);
 
-            const paymentMessage = DomainMessage.create('order-123', 1, new PaymentReceived('order-123', 'payment-1'));
+            const paymentMessage = DomainMessage.create('order-123', 1, new PaymentReceived('order-123', 'order-123', 'payment-1'));
             await saga.handle(paymentMessage);
 
-            const shipmentMessage = DomainMessage.create('order-123', 2, new ShipmentCreated('order-123', 'shipment-1'));
+            const shipmentMessage = DomainMessage.create('order-123', 2, new ShipmentCreated('order-123', 'order-123', 'shipment-1'));
             await saga.handle(shipmentMessage);
 
             expect(saga.getStatus()).toBe(SagaStatus.COMPLETED);
@@ -252,13 +260,13 @@ describe("Saga", () => {
             saga.setCommandDispatcher(async () => {});
 
             // Complete the saga
-            const shipmentMessage = DomainMessage.create('order-123', 0, new ShipmentCreated('order-123', 'shipment-1'));
+            const shipmentMessage = DomainMessage.create('order-123', 0, new ShipmentCreated('order-123', 'order-123', 'shipment-1'));
             await saga.handle(shipmentMessage);
 
             expect(saga.getStatus()).toBe(SagaStatus.COMPLETED);
 
             // Try to handle another event
-            const anotherMessage = DomainMessage.create('order-123', 1, new PaymentReceived('order-123', 'payment-2'));
+            const anotherMessage = DomainMessage.create('order-123', 1, new PaymentReceived('order-123', 'order-123', 'payment-2'));
 
             // Should not throw, just not process
             await saga.handle(anotherMessage);
@@ -286,14 +294,14 @@ describe("Saga", () => {
             saga.setCommandDispatcher(async (cmd) => { compensationCommands.push(cmd); });
 
             // Simulate earlier events being processed
-            const orderPlacedMessage = DomainMessage.create('order-123', 0, new OrderPlaced('order-123', 'customer-1', 100));
+            const orderPlacedMessage = DomainMessage.create('order-123', 0, new OrderPlaced('order-123', 'order-123', 'customer-1', 100));
             await saga.handle(orderPlacedMessage);
 
-            const paymentMessage = DomainMessage.create('order-123', 1, new PaymentReceived('order-123', 'payment-1'));
+            const paymentMessage = DomainMessage.create('order-123', 1, new PaymentReceived('order-123', 'order-123', 'payment-1'));
             await saga.handle(paymentMessage);
 
             // Now trigger failure
-            const failureMessage = DomainMessage.create('order-123', 2, new PaymentFailed('order-123', 'Insufficient funds'));
+            const failureMessage = DomainMessage.create('order-123', 2, new PaymentFailed('order-123', 'order-123', 'Insufficient funds'));
             await saga.handle(failureMessage);
 
             expect(saga.getStatus()).toBe(SagaStatus.FAILED);
@@ -319,17 +327,17 @@ describe("Saga", () => {
             });
 
             // Simulate earlier events being processed
-            const orderPlacedMessage = DomainMessage.create('order-123', 0, new OrderPlaced('order-123', 'customer-1', 100));
+            const orderPlacedMessage = DomainMessage.create('order-123', 0, new OrderPlaced('order-123', 'order-123', 'customer-1', 100));
             await saga.handle(orderPlacedMessage);
 
-            const paymentMessage = DomainMessage.create('order-123', 1, new PaymentReceived('order-123', 'payment-1'));
+            const paymentMessage = DomainMessage.create('order-123', 1, new PaymentReceived('order-123', 'order-123', 'payment-1'));
             await saga.handle(paymentMessage);
 
             // Clear commands from setup
             compensationCommands.length = 0;
 
             // Trigger failure
-            const failureMessage = DomainMessage.create('order-123', 2, new PaymentFailed('order-123', 'Insufficient funds'));
+            const failureMessage = DomainMessage.create('order-123', 2, new PaymentFailed('order-123', 'order-123', 'Insufficient funds'));
             await saga.handle(failureMessage);
 
             // Compensation should run in reverse: PaymentReceived first, then OrderPlaced
@@ -354,7 +362,7 @@ describe("Saga", () => {
             const dispatchedCommands: ICommand[] = [];
             saga.setCommandDispatcher(async (cmd) => { dispatchedCommands.push(cmd); });
 
-            const event = new OrderPlaced('order-123', 'customer-1', 100);
+            const event = new OrderPlaced('order-123', 'order-123', 'customer-1', 100);
             const message = DomainMessage.create('order-123', 0, event);
 
             await saga.handle(message);
@@ -378,7 +386,7 @@ describe("Saga", () => {
             let commandCount = 0;
             saga.setCommandDispatcher(async () => { commandCount++; });
 
-            const event = new OrderPlaced('order-123', 'customer-1', 100);
+            const event = new OrderPlaced('order-123', 'order-123', 'customer-1', 100);
             const message = DomainMessage.create('order-123', 0, event);
 
             await saga.handle(message);
@@ -398,7 +406,7 @@ describe("Saga", () => {
                 'order-123'
             );
 
-            const event = new OrderPlaced('order-123', 'customer-1', 100);
+            const event = new OrderPlaced('order-123', 'order-123', 'customer-1', 100);
             const message = DomainMessage.create('order-123', 0, event);
 
             await expect(saga.handle(message)).rejects.toThrow('Command dispatcher not set');
@@ -419,7 +427,7 @@ describe("Saga", () => {
 
             saga.setCommandDispatcher(async () => {});
 
-            const event = new OrderPlaced('order-123', 'customer-1', 100);
+            const event = new OrderPlaced('order-123', 'order-123', 'customer-1', 100);
             const message = DomainMessage.create('order-123', 0, event);
             await saga.handle(message);
 
@@ -529,7 +537,7 @@ describe("SagaManager", () => {
         });
 
         it("should start a new saga when starting event occurs", async () => {
-            const event = new OrderPlaced('order-123', 'customer-1', 100);
+            const event = new OrderPlaced('order-123', 'order-123', 'customer-1', 100);
             const message = DomainMessage.create('order-123', 0, event);
 
             await sagaManager.on(message);
@@ -540,7 +548,7 @@ describe("SagaManager", () => {
         });
 
         it("should not start duplicate saga for same correlation ID", async () => {
-            const event = new OrderPlaced('order-123', 'customer-1', 100);
+            const event = new OrderPlaced('order-123', 'order-123', 'customer-1', 100);
             const message = DomainMessage.create('order-123', 0, event);
 
             await sagaManager.on(message);
@@ -551,10 +559,10 @@ describe("SagaManager", () => {
         });
 
         it("should start separate sagas for different correlation IDs", async () => {
-            const event1 = new OrderPlaced('order-123', 'customer-1', 100);
+            const event1 = new OrderPlaced('order-123', 'order-123', 'customer-1', 100);
             const message1 = DomainMessage.create('order-123', 0, event1);
 
-            const event2 = new OrderPlaced('order-456', 'customer-2', 200);
+            const event2 = new OrderPlaced('order-456', 'order-456', 'customer-2', 200);
             const message2 = DomainMessage.create('order-456', 0, event2);
 
             await sagaManager.on(message1);
@@ -584,12 +592,12 @@ describe("SagaManager", () => {
 
         it("should route subsequent events to active saga", async () => {
             // Start saga
-            const orderPlaced = new OrderPlaced('order-123', 'customer-1', 100);
+            const orderPlaced = new OrderPlaced('order-123', 'order-123', 'customer-1', 100);
             const orderMessage = DomainMessage.create('order-123', 0, orderPlaced);
             await sagaManager.on(orderMessage);
 
             // Route payment event
-            const paymentReceived = new PaymentReceived('order-123', 'payment-1');
+            const paymentReceived = new PaymentReceived('order-123', 'order-123', 'payment-1');
             const paymentMessage = DomainMessage.create('order-123', 1, paymentReceived);
             await sagaManager.on(paymentMessage);
 
@@ -601,15 +609,15 @@ describe("SagaManager", () => {
 
         it("should complete saga when all steps are done", async () => {
             // Start saga
-            const orderPlaced = new OrderPlaced('order-123', 'customer-1', 100);
+            const orderPlaced = new OrderPlaced('order-123', 'order-123', 'customer-1', 100);
             await sagaManager.on(DomainMessage.create('order-123', 0, orderPlaced));
 
             // Payment received
-            const paymentReceived = new PaymentReceived('order-123', 'payment-1');
+            const paymentReceived = new PaymentReceived('order-123', 'order-123', 'payment-1');
             await sagaManager.on(DomainMessage.create('order-123', 1, paymentReceived));
 
             // Shipment created
-            const shipmentCreated = new ShipmentCreated('order-123', 'shipment-1');
+            const shipmentCreated = new ShipmentCreated('order-123', 'order-123', 'shipment-1');
             await sagaManager.on(DomainMessage.create('order-123', 2, shipmentCreated));
 
             const sagas = await repository.findByCorrelationId('order-123');
@@ -618,14 +626,14 @@ describe("SagaManager", () => {
 
         it("should not route events to completed saga", async () => {
             // Complete a saga
-            await sagaManager.on(DomainMessage.create('order-123', 0, new OrderPlaced('order-123', 'customer-1', 100)));
-            await sagaManager.on(DomainMessage.create('order-123', 1, new PaymentReceived('order-123', 'payment-1')));
-            await sagaManager.on(DomainMessage.create('order-123', 2, new ShipmentCreated('order-123', 'shipment-1')));
+            await sagaManager.on(DomainMessage.create('order-123', 0, new OrderPlaced('order-123', 'order-123', 'customer-1', 100)));
+            await sagaManager.on(DomainMessage.create('order-123', 1, new PaymentReceived('order-123', 'order-123', 'payment-1')));
+            await sagaManager.on(DomainMessage.create('order-123', 2, new ShipmentCreated('order-123', 'order-123', 'shipment-1')));
 
             const beforeCount = middleware.executedCommands.length;
 
             // Try to send another event
-            await sagaManager.on(DomainMessage.create('order-123', 3, new PaymentReceived('order-123', 'payment-2')));
+            await sagaManager.on(DomainMessage.create('order-123', 3, new PaymentReceived('order-123', 'order-123', 'payment-2')));
 
             const afterCount = middleware.executedCommands.length;
 
@@ -650,15 +658,15 @@ describe("SagaManager", () => {
 
         it("should handle saga failure and run compensation", async () => {
             // Start saga
-            await sagaManager.on(DomainMessage.create('order-123', 0, new OrderPlaced('order-123', 'customer-1', 100)));
+            await sagaManager.on(DomainMessage.create('order-123', 0, new OrderPlaced('order-123', 'order-123', 'customer-1', 100)));
 
             // Payment received (so we have something to compensate)
-            await sagaManager.on(DomainMessage.create('order-123', 1, new PaymentReceived('order-123', 'payment-1')));
+            await sagaManager.on(DomainMessage.create('order-123', 1, new PaymentReceived('order-123', 'order-123', 'payment-1')));
 
             const commandsBeforeFailure = middleware.executedCommands.length;
 
             // Payment fails - triggers compensation
-            await sagaManager.on(DomainMessage.create('order-123', 2, new PaymentFailed('order-123', 'Card declined')));
+            await sagaManager.on(DomainMessage.create('order-123', 2, new PaymentFailed('order-123', 'order-123', 'Card declined')));
 
             const sagas = await repository.findByCorrelationId('order-123');
             expect(sagas[0].status).toBe(SagaStatus.FAILED);
@@ -684,7 +692,7 @@ describe("SagaManager", () => {
         });
 
         it("should return saga status by ID", async () => {
-            await sagaManager.on(DomainMessage.create('order-123', 0, new OrderPlaced('order-123', 'customer-1', 100)));
+            await sagaManager.on(DomainMessage.create('order-123', 0, new OrderPlaced('order-123', 'order-123', 'customer-1', 100)));
 
             const sagas = await repository.findByCorrelationId('order-123');
             const status = await sagaManager.getSagaStatus(sagas[0].sagaId);
@@ -694,7 +702,7 @@ describe("SagaManager", () => {
         });
 
         it("should return active sagas for correlation ID", async () => {
-            await sagaManager.on(DomainMessage.create('order-123', 0, new OrderPlaced('order-123', 'customer-1', 100)));
+            await sagaManager.on(DomainMessage.create('order-123', 0, new OrderPlaced('order-123', 'order-123', 'customer-1', 100)));
 
             const activeSagas = await sagaManager.getActiveSagasForCorrelation('order-123');
 
@@ -704,9 +712,9 @@ describe("SagaManager", () => {
 
         it("should not return completed sagas as active", async () => {
             // Complete a saga
-            await sagaManager.on(DomainMessage.create('order-123', 0, new OrderPlaced('order-123', 'customer-1', 100)));
-            await sagaManager.on(DomainMessage.create('order-123', 1, new PaymentReceived('order-123', 'payment-1')));
-            await sagaManager.on(DomainMessage.create('order-123', 2, new ShipmentCreated('order-123', 'shipment-1')));
+            await sagaManager.on(DomainMessage.create('order-123', 0, new OrderPlaced('order-123', 'order-123', 'customer-1', 100)));
+            await sagaManager.on(DomainMessage.create('order-123', 1, new PaymentReceived('order-123', 'order-123', 'payment-1')));
+            await sagaManager.on(DomainMessage.create('order-123', 2, new ShipmentCreated('order-123', 'order-123', 'shipment-1')));
 
             const activeSagas = await sagaManager.getActiveSagasForCorrelation('order-123');
 

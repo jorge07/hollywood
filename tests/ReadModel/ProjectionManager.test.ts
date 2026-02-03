@@ -8,11 +8,21 @@ import ProjectionManager from '../../src/ReadModel/ProjectionManager';
 import EventSubscriber from '../../src/EventSourcing/EventBus/EventSubscriber';
 
 class UserCreated implements DomainEvent {
-    constructor(public readonly userId: string, public readonly name: string) {}
+    constructor(
+        public readonly aggregateId: string,
+        public readonly userId: string,
+        public readonly name: string,
+        public readonly occurredAt: Date = new Date()
+    ) {}
 }
 
 class UserNameChanged implements DomainEvent {
-    constructor(public readonly userId: string, public readonly newName: string) {}
+    constructor(
+        public readonly aggregateId: string,
+        public readonly userId: string,
+        public readonly newName: string,
+        public readonly occurredAt: Date = new Date()
+    ) {}
 }
 
 class UserReadModelProjector extends EventSubscriber {
@@ -72,11 +82,11 @@ describe("ProjectionManager", () => {
         it("should rebuild projection from position 0", async () => {
             // Arrange: Add events to the event store
             eventStore.append('user-1', new DomainEventStream([
-                DomainMessage.create('user-1', 0, new UserCreated('user-1', 'John')),
+                DomainMessage.create('user-1', 0, new UserCreated('user-1', 'user-1', 'John')),
             ]));
 
             eventStore.append('user-2', new DomainEventStream([
-                DomainMessage.create('user-2', 0, new UserCreated('user-2', 'Jane')),
+                DomainMessage.create('user-2', 0, new UserCreated('user-2', 'user-2', 'Jane')),
             ]));
 
             // Act: Rebuild projection
@@ -91,11 +101,11 @@ describe("ProjectionManager", () => {
         it("should process events in order", async () => {
             // Arrange: Add a create and an update event
             eventStore.append('user-1', new DomainEventStream([
-                DomainMessage.create('user-1', 0, new UserCreated('user-1', 'John')),
+                DomainMessage.create('user-1', 0, new UserCreated('user-1', 'user-1', 'John')),
             ]));
 
             eventStore.append('user-1', new DomainEventStream([
-                DomainMessage.create('user-1', 1, new UserNameChanged('user-1', 'Johnny')),
+                DomainMessage.create('user-1', 1, new UserNameChanged('user-1', 'user-1', 'Johnny')),
             ]));
 
             // Act
@@ -115,7 +125,7 @@ describe("ProjectionManager", () => {
             });
 
             eventStore.append('user-1', new DomainEventStream([
-                DomainMessage.create('user-1', 0, new UserCreated('user-1', 'John')),
+                DomainMessage.create('user-1', 0, new UserCreated('user-1', 'user-1', 'John')),
             ]));
 
             // Act
@@ -132,11 +142,11 @@ describe("ProjectionManager", () => {
         it("should catch up from last processed position", async () => {
             // Arrange: Add events
             eventStore.append('user-1', new DomainEventStream([
-                DomainMessage.create('user-1', 0, new UserCreated('user-1', 'John')),
+                DomainMessage.create('user-1', 0, new UserCreated('user-1', 'user-1', 'John')),
             ]));
 
             eventStore.append('user-2', new DomainEventStream([
-                DomainMessage.create('user-2', 0, new UserCreated('user-2', 'Jane')),
+                DomainMessage.create('user-2', 0, new UserCreated('user-2', 'user-2', 'Jane')),
             ]));
 
             // Simulate projector already processed first event
@@ -161,7 +171,7 @@ describe("ProjectionManager", () => {
         it("should start from 0 if no position exists", async () => {
             // Arrange
             eventStore.append('user-1', new DomainEventStream([
-                DomainMessage.create('user-1', 0, new UserCreated('user-1', 'John')),
+                DomainMessage.create('user-1', 0, new UserCreated('user-1', 'user-1', 'John')),
             ]));
 
             // Act
@@ -195,7 +205,7 @@ describe("ProjectionManager", () => {
         it("should allow rebuilding a projection after a bug fix", async () => {
             // Arrange: Add events
             eventStore.append('user-1', new DomainEventStream([
-                DomainMessage.create('user-1', 0, new UserCreated('user-1', 'john')),
+                DomainMessage.create('user-1', 0, new UserCreated('user-1', 'user-1', 'john')),
             ]));
 
             // First build with "buggy" projector
@@ -217,11 +227,11 @@ describe("ProjectionManager", () => {
         it("should update position after each event", async () => {
             // Arrange
             eventStore.append('user-1', new DomainEventStream([
-                DomainMessage.create('user-1', 0, new UserCreated('user-1', 'John')),
+                DomainMessage.create('user-1', 0, new UserCreated('user-1', 'user-1', 'John')),
             ]));
 
             eventStore.append('user-1', new DomainEventStream([
-                DomainMessage.create('user-1', 1, new UserNameChanged('user-1', 'Johnny')),
+                DomainMessage.create('user-1', 1, new UserNameChanged('user-1', 'user-1', 'Johnny')),
             ]));
 
             // Act

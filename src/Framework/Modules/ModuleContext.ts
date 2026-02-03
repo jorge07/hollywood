@@ -11,22 +11,42 @@ export interface ModuleConfig {
     commands?: Constructor[]
     /** Query handler constructors */
     queries?: Constructor[]
-    /** Service definitions */
+    /** Service definitions - can be Map or object literal */
     services: ServiceList
     /** Nested module contexts */
     modules?: ModuleContext[]
 }
 
+/**
+ * Normalizes service list to Map format.
+ * Accepts both Map and object literal for backward compatibility and better DX.
+ *
+ * @param services - Service list as Map or object literal
+ * @returns Normalized Map of services
+ */
+function normalizeServiceList(services: ServiceList): Map<string, IService> {
+    if (services instanceof Map) {
+        return services;
+    }
+
+    // Convert object literal to Map
+    return new Map(Object.entries(services));
+}
+
 export default class ModuleContext {
     public readonly modules: ModuleContext[]
     public readonly config: ModuleConfig
+    private readonly normalizedServices: Map<string, IService>
 
     constructor(config: ModuleConfig) {
+        // Normalize services to Map internally
+        this.normalizedServices = normalizeServiceList(config.services);
+
         if (config.commands) {
-            config.services.set(SERVICES_ALIAS.COMMAND_HANDLERS, ModuleContext.bindHandlers(config.commands));
+            this.normalizedServices.set(SERVICES_ALIAS.COMMAND_HANDLERS, ModuleContext.bindHandlers(config.commands));
         }
         if (config.queries) {
-            config.services.set(SERVICES_ALIAS.QUERY_HANDLERS, ModuleContext.bindHandlers(config.queries));
+            this.normalizedServices.set(SERVICES_ALIAS.QUERY_HANDLERS, ModuleContext.bindHandlers(config.queries));
         }
         this.config = config;
         this.modules = config.modules ?? [];
@@ -44,7 +64,7 @@ export default class ModuleContext {
         this.modules.unshift(module);
     }
 
-    private mergeModuleDependenciesConfig(): ServiceList {
+    private mergeModuleDependenciesConfig(): Map<string, IService> {
         let config = new Map<string, IService>();
         for (const moduleDependency of this.modules) {
             config = new Map([...config, ...moduleDependency.getServices()]);
@@ -52,9 +72,9 @@ export default class ModuleContext {
         return config;
     }
 
-    private getServices(): ServiceList {
+    private getServices(): Map<string, IService> {
         const dependencies = this.mergeModuleDependenciesConfig();
-        return new Map([...dependencies, ...this.config.services]);
+        return new Map([...dependencies, ...this.normalizedServices]);
     }
 
     private static bindHandlers(handlers: Constructor[]): IService {

@@ -9,8 +9,10 @@ class UserCreatedEventV1 implements DomainEvent {
     public readonly version: number = 1;
 
     constructor(
+        public readonly aggregateId: string,
         public readonly userId: string,
         public readonly name: string,
+        public readonly occurredAt: Date = new Date()
     ) {}
 }
 
@@ -18,9 +20,11 @@ class UserCreatedEventV2 implements DomainEvent {
     public readonly version: number = 2;
 
     constructor(
+        public readonly aggregateId: string,
         public readonly userId: string,
         public readonly name: string,
         public readonly email: string,
+        public readonly occurredAt: Date = new Date()
     ) {}
 }
 
@@ -28,15 +32,21 @@ class UserCreatedEventV3 implements DomainEvent {
     public readonly version: number = 3;
 
     constructor(
+        public readonly aggregateId: string,
         public readonly userId: string,
         public readonly name: string,
         public readonly email: string,
         public readonly createdAt: Date,
+        public readonly occurredAt: Date = new Date()
     ) {}
 }
 
 class UnversionedEvent implements DomainEvent {
-    constructor(public readonly data: string) {}
+    constructor(
+        public readonly aggregateId: string,
+        public readonly data: string,
+        public readonly occurredAt: Date = new Date()
+    ) {}
 }
 
 describe("UpcasterChain", () => {
@@ -48,7 +58,7 @@ describe("UpcasterChain", () => {
                 eventType: "UserCreatedEventV1",
                 fromVersion: 1,
                 toVersion: 2,
-                upcast: (event) => new UserCreatedEventV2(event.userId, event.name, "") as any,
+                upcast: (event) => new UserCreatedEventV2(event.aggregateId, event.userId, event.name, "", event.occurredAt) as any,
             };
 
             chain.register(upcaster);
@@ -64,14 +74,14 @@ describe("UpcasterChain", () => {
                 eventType: "UserCreatedEventV1",
                 fromVersion: 1,
                 toVersion: 2,
-                upcast: (event: any) => new UserCreatedEventV2(event.userId, event.name, "") as any,
+                upcast: (event: any) => new UserCreatedEventV2(event.aggregateId, event.userId, event.name, "", event.occurredAt) as any,
             };
 
             const upcasterV2ToV3: EventUpcaster = {
                 eventType: "UserCreatedEventV1",
                 fromVersion: 2,
                 toVersion: 3,
-                upcast: (event: any) => new UserCreatedEventV3(event.userId, event.name, event.email, new Date()) as any,
+                upcast: (event: any) => new UserCreatedEventV3(event.aggregateId, event.userId, event.name, event.email, new Date(), event.occurredAt) as any,
             };
 
             chain.register(upcasterV1ToV2);
@@ -140,13 +150,13 @@ describe("UpcasterChain", () => {
                 fromVersion: 1,
                 toVersion: 2,
                 upcast: (event) => {
-                    return new UserCreatedEventV2(event.userId, event.name, "default@email.com") as any;
+                    return new UserCreatedEventV2(event.aggregateId, event.userId, event.name, "default@email.com", event.occurredAt) as any;
                 },
             };
 
             chain.register(upcaster);
 
-            const v1Event = new UserCreatedEventV1("user-123", "John Doe");
+            const v1Event = new UserCreatedEventV1("user-123", "user-123", "John Doe");
             const upcastedEvent = chain.upcast(v1Event) as UserCreatedEventV2;
 
             expect(upcastedEvent.version).toBe(2);
@@ -164,7 +174,7 @@ describe("UpcasterChain", () => {
                 fromVersion: 1,
                 toVersion: 2,
                 upcast: (event) => {
-                    return new UserCreatedEventV2(event.userId, event.name, "default@email.com") as any;
+                    return new UserCreatedEventV2(event.aggregateId, event.userId, event.name, "default@email.com", event.occurredAt) as any;
                 },
             };
 
@@ -173,14 +183,14 @@ describe("UpcasterChain", () => {
                 fromVersion: 2,
                 toVersion: 3,
                 upcast: (event) => {
-                    return new UserCreatedEventV3(event.userId, event.name, event.email, fixedDate) as any;
+                    return new UserCreatedEventV3(event.aggregateId, event.userId, event.name, event.email, fixedDate, event.occurredAt) as any;
                 },
             };
 
             chain.register(upcasterV1ToV2);
             chain.register(upcasterV2ToV3);
 
-            const v1Event = new UserCreatedEventV1("user-123", "John Doe");
+            const v1Event = new UserCreatedEventV1("user-123", "user-123", "John Doe");
             const upcastedEvent = chain.upcast(v1Event) as UserCreatedEventV3;
 
             expect(upcastedEvent.version).toBe(3);
@@ -202,7 +212,7 @@ describe("UpcasterChain", () => {
 
             chain.register(upcaster);
 
-            const unknownEvent = new UnversionedEvent("some data");
+            const unknownEvent = new UnversionedEvent("agg-1", "some data");
             const result = chain.upcast(unknownEvent);
 
             expect(result).toBe(unknownEvent);
@@ -212,7 +222,7 @@ describe("UpcasterChain", () => {
         it("should pass through events with no registered upcasters", () => {
             const chain = new UpcasterChain();
 
-            const v1Event = new UserCreatedEventV1("user-123", "John Doe");
+            const v1Event = new UserCreatedEventV1("user-123", "user-123", "John Doe");
             const result = chain.upcast(v1Event);
 
             expect(result).toBe(v1Event);
@@ -226,14 +236,14 @@ describe("UpcasterChain", () => {
                 fromVersion: 1,
                 toVersion: 2,
                 upcast: (event) => {
-                    return new UserCreatedEventV2(event.userId, event.name, "default@email.com") as any;
+                    return new UserCreatedEventV2(event.aggregateId, event.userId, event.name, "default@email.com", event.occurredAt) as any;
                 },
             };
 
             chain.register(upcaster);
 
             // Create a v2 event directly
-            const v2Event = new UserCreatedEventV2("user-123", "John Doe", "john@example.com");
+            const v2Event = new UserCreatedEventV2("user-123", "user-123", "John Doe", "john@example.com");
             const result = chain.upcast(v2Event);
 
             // The event should not be upcasted since its version (2) doesn't match fromVersion (1)
@@ -251,7 +261,7 @@ describe("UpcasterChain", () => {
                 fromVersion: 1,
                 toVersion: 2,
                 upcast: (event) => {
-                    return new UserCreatedEventV2(event.userId, event.name, "default@email.com") as any;
+                    return new UserCreatedEventV2(event.aggregateId, event.userId, event.name, "default@email.com", event.occurredAt) as any;
                 },
             };
 
@@ -260,7 +270,7 @@ describe("UpcasterChain", () => {
                 fromVersion: 2,
                 toVersion: 3,
                 upcast: (event) => {
-                    return new UserCreatedEventV3(event.userId, event.name, event.email, fixedDate) as any;
+                    return new UserCreatedEventV3(event.aggregateId, event.userId, event.name, event.email, fixedDate, event.occurredAt) as any;
                 },
             };
 
@@ -268,7 +278,7 @@ describe("UpcasterChain", () => {
             chain.register(upcasterV2ToV3);
 
             // Start from v2 event - upcaster lookup uses constructor.name (UserCreatedEventV2)
-            const v2Event = new UserCreatedEventV2("user-123", "John Doe", "john@example.com");
+            const v2Event = new UserCreatedEventV2("user-123", "user-123", "John Doe", "john@example.com");
             const upcastedEvent = chain.upcast(v2Event) as UserCreatedEventV3;
 
             expect(upcastedEvent.version).toBe(3);
@@ -373,6 +383,10 @@ describe("UpcasterChain", () => {
 
             class TestEvent implements DomainEvent {
                 public readonly version = 1;
+                constructor(
+                    public readonly aggregateId: string = 'test',
+                    public readonly occurredAt: Date = new Date()
+                ) {}
             }
 
             chain.upcast(new TestEvent());

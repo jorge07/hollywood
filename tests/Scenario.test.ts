@@ -1,47 +1,40 @@
 import "reflect-metadata";
 import {Dog, SayWolf} from './Domain/AggregateRoot.test';
-import Scenario from "./Scenario"
-import EventBus from "../src/EventSourcing/EventBus/EventBus";
-import InMemorySnapshotStoreDBAL from "../src/EventSourcing/Snapshot/InMemorySnapshotStoreDBAL";
-import InMemoryEventStore from "../src/EventSourcing/InMemoryEventStore";
-import EventStore from "../src/EventSourcing/EventStore";
+import {Scenario, createTestEventStore} from "../src/Testing";
+import { Identity } from "../src/Domain/AggregateRoot";
 
 describe("Scenario", () => {
     it("BDD Scenario for an action", async () => {
-        const eventBus = new EventBus();
-        const snapshotDBAL = new InMemorySnapshotStoreDBAL();
-
-        const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus, snapshotDBAL);
+        const store = createTestEventStore(Dog, { withSnapshots: true });
 
         const scenario = new Scenario<Dog>(Dog, store);
+        const dogId = Identity.fromString('00000000-0000-4000-8000-000000000001');
 
         scenario
-            .withAggregateId('1')
+            .withAggregateId(dogId)
             .when(() => {
-                const dog = new Dog('1');
+                const dog = new Dog(dogId);
                 dog.sayWolf()
 
                 return dog;
             });
         scenario
             .then([
-                new SayWolf('1')
+                new SayWolf(dogId.toString())
             ])
         ;
     });
 
     it("BDD Scenario for an state", async () => {
-        const eventBus = new EventBus();
-        const snapshotDBAL = new InMemorySnapshotStoreDBAL();
-
-        const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus, snapshotDBAL);
+        const store = createTestEventStore(Dog, { withSnapshots: true });
 
         const scenario = new Scenario<Dog>(Dog, store);
+        const dogId = Identity.fromString('00000000-0000-4000-8000-000000000001');
 
         await scenario
-            .withAggregateId('1')
+            .withAggregateId(dogId)
             .given([
-                new SayWolf('1')
+                new SayWolf(dogId.toString())
             ]);
         scenario.when((dog?: Dog) => {
             if (!dog) {

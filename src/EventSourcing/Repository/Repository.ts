@@ -1,7 +1,8 @@
-import type EventStore from "../../EventSourcing/EventStore";
-import type IRepository from "./IRepository";
-import type EventSourcedAggregateRoot from "../EventSourcedAggregateRoot";
-import ConcurrencyException from "../../EventSourcing/Exception/ConcurrencyException";
+import type EventStore from "../EventStore";
+import type IRepository from "../../Domain/Repository/IRepository";
+import type EventSourcedAggregateRoot from "../../Domain/EventSourcedAggregateRoot";
+import { Identity } from "../../Domain/AggregateRoot";
+import ConcurrencyException from "../Exception/ConcurrencyException";
 
 export type RetryCallback<T extends EventSourcedAggregateRoot> = (aggregate: T) => void | Promise<void>;
 
@@ -12,12 +13,12 @@ export default abstract class Repository<T extends EventSourcedAggregateRoot> im
         await this.eventStore.save(aggregateRoot);
     }
 
-    public async load(aggregateRootId: string): Promise<T> {
+    public async load(aggregateRootId: Identity): Promise<T> {
         return this.eventStore.load(aggregateRootId);
     }
 
     public async saveWithRetry(
-        aggregateRootId: string,
+        aggregateRootId: Identity,
         updateFn: RetryCallback<T>,
         maxRetries: number = 3
     ): Promise<void> {

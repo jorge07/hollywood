@@ -1,12 +1,12 @@
-import {AggregateRootId, DomainEventStream, DomainMessage} from "../Domain";
+import {DomainEventStream, DomainMessage} from "../Domain";
 
 export default interface IEventStoreDBAL {
 
-    load(aggregateId: AggregateRootId, from?: number): Promise<DomainEventStream>;
+    load(aggregateId: string, from?: number): Promise<DomainEventStream>;
 
-    loadFromTo(aggregateId: AggregateRootId, from?: number, to?: number): Promise<DomainEventStream>;
+    loadFromTo(aggregateId: string, from?: number, to?: number): Promise<DomainEventStream>;
 
-    append(aggregateId: AggregateRootId, stream: DomainEventStream, expectedVersion?: number): void | Promise<any>;
+    append(aggregateId: string, stream: DomainEventStream, expectedVersion?: number): void | Promise<any>;
 
     /**
      * Load all events from the event store starting from a global position.

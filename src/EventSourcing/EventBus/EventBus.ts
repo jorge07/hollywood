@@ -1,6 +1,7 @@
 import type DomainMessage from "../../Domain/Event/DomainMessage";
 import type EventListener from "./EventListener";
 import type EventSubscriber from "./EventSubscriber";
+import type IEventBus from "./IEventBus";
 
 interface ISubscriberRegistry {
     [key: string]: EventSubscriber[];
@@ -10,7 +11,7 @@ interface IListenersRegistry {
     [key: string]: EventListener;
 }
 
-export default class EventBus {
+export default class EventBus implements IEventBus {
 
     private readonly subscribersRegistry: ISubscriberRegistry = {};
     private readonly listenersRegistry: IListenersRegistry = {};

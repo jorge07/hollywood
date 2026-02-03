@@ -2,14 +2,13 @@ import type ISnapshotStoreDBAL from "./SnapshotStoreDBAL";
 import { decorate, inject, injectable } from 'inversify';
 import type EventSourcedAggregateRoot from "../../Domain/EventSourcedAggregateRoot";
 import { SERVICES_ALIAS } from "../../Framework";
-import type {AggregateRootId} from "../../Domain";
 
 export default class SnapshotStore<T extends EventSourcedAggregateRoot> {
     constructor(
         private readonly store: ISnapshotStoreDBAL
     ) {}
 
-    public async retrieve(aggregateRootId: AggregateRootId): Promise<any> {
+    public async retrieve(aggregateRootId: string): Promise<any> {
         return this.store.get(aggregateRootId);
     }
 

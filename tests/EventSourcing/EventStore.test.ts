@@ -11,6 +11,7 @@ import EventStore from "../../src/EventSourcing/EventStore";
 import InMemoryEventStore from "../../src/EventSourcing/InMemoryEventStore";
 import InMemorySnapshotStoreDBAL from "../../src/EventSourcing/Snapshot/InMemorySnapshotStoreDBAL";
 import AggregateRootNotFoundException from "../../src/EventSourcing/Exception/AggregateRootNotFoundException";
+import { Identity } from "../../src/Domain/AggregateRoot";
 
 class OnWolfEventSubscriber extends EventSubscriber {
     public wolf: any;
@@ -77,7 +78,7 @@ describe("EventStore", () => {
         const globalListener = new GlobalListener();
         const eventBus = new EventBus();
         const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus);
-        const pluto = new Dog("31");
+        const pluto = new Dog(Identity.fromString('00000000-0000-4000-8000-000000000031'));
 
         eventBus
             .attach(SayWolf, onWolfEventSubscriber)
@@ -107,7 +108,7 @@ describe("EventStore", () => {
         const globalListener = new GlobalListener(true);
         const eventBus = new EventBus();
         const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus);
-        const pluto = new Dog("31");
+        const pluto = new Dog(Identity.fromString('00000000-0000-4000-8000-000000000031'));
 
         eventBus
             .attach(SayWolf, onWolfEventSubscriber)
@@ -145,7 +146,7 @@ describe("EventStore", () => {
         const globalListener = new GlobalListener();
         const eventBus = new EventBus();
         const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus);
-        const pluto = new Dog("31");
+        const pluto = new Dog(Identity.fromString('00000000-0000-4000-8000-000000000031'));
 
         eventBus
             .attach(SayWolf, onWolfEventSubscriber)
@@ -171,7 +172,7 @@ describe("EventStore", () => {
 
         expect(globalListener.events.length).toBe(2);
 
-        await store.replayFrom(pluto.getAggregateRootId(), 0);
+        await store.replayFrom(pluto.getAggregateRootId().toString(), 0);
 
         expect(globalListener.events.length).toBe(4);
     });
@@ -179,7 +180,7 @@ describe("EventStore", () => {
     it("EventSourcing should throw exception when not aggregate was found", async () => {
         const eventBus = new EventBus();
         const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus);
-        const pluto = new Dog("31");
+        const pluto = new Dog(Identity.fromString('00000000-0000-4000-8000-000000000031'));
 
         const toTest = async () => {
             return await store.load(pluto.getAggregateRootId());
@@ -191,7 +192,7 @@ describe("EventStore", () => {
     it("EventSourcing should collect exceptions", async () => {
         const eventBus = new EventBus();
         const store = new EventStore<Dog>(Dog, new InMemoryErrorEventStore(), eventBus);
-        const pluto = new Dog("31");
+        const pluto = new Dog(Identity.fromString('00000000-0000-4000-8000-000000000031'));
 
         pluto.sayGrr();
 
@@ -226,7 +227,7 @@ describe("EventStore", () => {
         }
 
         const store = new EventStore<Dog>(Dog, new EmptyStreamEventStore(), eventBus, snapshotDBAL, 2);
-        const pluto = new Dog("31");
+        const pluto = new Dog(Identity.fromString('00000000-0000-4000-8000-000000000031'));
 
         // Create events to trigger snapshot at version 2
         pluto.sayWolf(); // playhead = 0
@@ -239,7 +240,7 @@ describe("EventStore", () => {
         await store.save(pluto);
 
         // Verify snapshot was created
-        const snapshot = await snapshotDBAL.get(pluto.getAggregateRootId());
+        const snapshot = await snapshotDBAL.get(pluto.getAggregateRootId().toString());
         expect(snapshot).not.toBeNull();
 
         // Load the aggregate - snapshot exists but event store returns empty stream
@@ -260,7 +261,7 @@ describe("EventStore", () => {
         const store = new EventStore<Dog>(Dog, inMemoryEventStore, eventBus, snapshotDBAL);
 
         // Attempt to load a non-existent aggregate (no snapshot, no events)
-        await expect(store.load("non-existent-id")).rejects.toThrow(AggregateRootNotFoundException);
+        await expect(store.load(Identity.fromString('550e8400-e29b-41d4-a716-446655440000'))).rejects.toThrow(AggregateRootNotFoundException);
     });
 
     it("load aggregate with snapshot and new events should apply both", async () => {
@@ -270,7 +271,7 @@ describe("EventStore", () => {
 
         // Use snapshotMargin of 2 for easier testing
         const store = new EventStore<Dog>(Dog, inMemoryEventStore, eventBus, snapshotDBAL, 2);
-        const pluto = new Dog("31");
+        const pluto = new Dog(Identity.fromString('00000000-0000-4000-8000-000000000031'));
 
         // Create 3 events to trigger snapshot at version 2
         pluto.sayWolf(); // playhead = 0, wolfCount = 1
@@ -282,24 +283,24 @@ describe("EventStore", () => {
         await store.save(pluto);
 
         // Verify snapshot was created at version 2
-        const snapshot = await snapshotDBAL.get(pluto.getAggregateRootId());
+        const snapshot = await snapshotDBAL.get(pluto.getAggregateRootId().toString());
         expect(snapshot).not.toBeNull();
 
         // Load and verify snapshot + events are combined correctly
-        // Note: Due to existing behavior in InMemoryEventStore, loading replays events from snapshot version
-        // With 3 events (0,1,2) and snapshot at version 2, slice(2) returns [event at index 2]
-        // So after load: wolfCount = 3 (from snapshot) + 1 (replayed) = 4, version = 3
+        // With 3 events (0,1,2) and snapshot at version 2, load should start from version 3
+        // Since there are no events after version 2, the state should match the snapshot
+        // So after load: wolfCount = 3 (from snapshot), version = 2 (from snapshot)
         const loadedDog = await store.load(pluto.getAggregateRootId());
-        expect(loadedDog.wolfCount).toBe(4);
-        expect(loadedDog.version()).toBe(3);
+        expect(loadedDog.wolfCount).toBe(3);
+        expect(loadedDog.version()).toBe(2);
 
         // Add more events and verify state changes
+        loadedDog.sayWolf();  // playhead = 3, wolfCount = 4
         loadedDog.sayWolf();  // playhead = 4, wolfCount = 5
-        loadedDog.sayWolf();  // playhead = 5, wolfCount = 6
-        loadedDog.sayGrr();   // playhead = 6, wolfCount still 6
+        loadedDog.sayGrr();   // playhead = 5, wolfCount still 5
 
-        expect(loadedDog.version()).toBe(6);
-        expect(loadedDog.wolfCount).toBe(6);
+        expect(loadedDog.version()).toBe(5);
+        expect(loadedDog.wolfCount).toBe(5);
 
         // Note: With optimistic locking, a second save would require the expectedVersion
         // to match the event store's current version. This test focuses on verifying

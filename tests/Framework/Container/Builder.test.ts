@@ -13,6 +13,7 @@ import {EventBus, EventStore} from "../../../src/EventSourcing";
 import {Dog, SayWolf} from '../../Domain/AggregateRoot.test';
 import {autowiring, ICommand, ICommandHandler} from "../../../src/Application";
 import {IAppError} from "../../../src/Application/Bus/CallbackArg";
+import { Identity } from "../../../src/Domain/AggregateRoot";
 
 class EchoListener extends EventListener {
     public counter = 0;
@@ -31,7 +32,7 @@ class SayWolfHandler implements ICommandHandler {
     }
     @autowiring
     async handle(command: SayWolfCommand): Promise<void | IAppError> {
-        const dog = new Dog('1');
+        const dog = new Dog(Identity.fromString('00000000-0000-4000-8000-000000000001'));
         dog.sayWolf();
          await this.store.save(dog);
     }

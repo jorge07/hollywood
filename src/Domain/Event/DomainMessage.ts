@@ -1,4 +1,3 @@
-import { AggregateRootId } from "../AggregateRoot";
 import type DomainEvent from "./DomainEvent";
 
 /**
@@ -6,7 +5,7 @@ import type DomainEvent from "./DomainEvent";
  * This creates a deterministic key that can be used to detect duplicate event processing.
  */
 function generateIdempotencyKey(
-    uuid: AggregateRootId,
+    uuid: string,
     playhead: number,
     eventType: string,
     occurred: Date,
@@ -24,13 +23,29 @@ function generateIdempotencyKey(
 }
 
 /**
+ * Wrapper for domain events that adds metadata for event sourcing.
+ *
+ * DomainMessage encapsulates a domain event along with:
+ * - Aggregate ID (uuid) - derived from event.aggregateId
+ * - Sequence number (playhead)
+ * - Occurrence timestamp - derived from event.occurredAt
+ * - Idempotency key
+ * - Optional metadata
+ *
+ * The event property accepts both DomainEvent instances and plain objects
+ * to support deserialization from event stores where events lose their
+ * class prototypes after JSON serialization.
+ *
+ * Note: uuid and occurred are derived from the event's aggregateId and occurredAt.
+ * This ensures consistency between the event and its metadata wrapper.
+ *
  * @internal
  */
 export default class DomainMessage {
     public static create(
-        uuid: AggregateRootId,
+        uuid: string,
         playhead: number,
-        event: object|DomainEvent,
+        event: DomainEvent,
         metadata: any[] = [],
         occurred?: Date,
         idempotencyKey?: string,
@@ -40,7 +55,7 @@ export default class DomainMessage {
             playhead,
             event,
             metadata,
-            occurred ?? new Date(),
+            occurred ?? event.occurredAt,
             idempotencyKey,
         );
     }
@@ -49,11 +64,11 @@ export default class DomainMessage {
     public readonly idempotencyKey: string;
 
     private constructor(
-        public readonly uuid: AggregateRootId,
+        public readonly uuid: string,
         public readonly playhead: number,
-        public readonly event: object|DomainEvent,
+        public readonly event: DomainEvent,
         public readonly metadata: any[],
-        public readonly occurred: Date = new Date(),
+        public readonly occurred: Date,
         idempotencyKey?: string,
     ) {
         this.eventType = DomainMessage.extractEventType(event);
@@ -65,7 +80,7 @@ export default class DomainMessage {
         );
     }
 
-    private static extractEventType(event: object) {
+    private static extractEventType(event: DomainEvent): string {
         return event.constructor.name;
     }
 }

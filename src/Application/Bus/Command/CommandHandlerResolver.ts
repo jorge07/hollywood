@@ -4,6 +4,8 @@ import type IMiddleware from "../Middleware";
 import type { NextMiddleware } from "../Middleware";
 import type ICommand from "./Command";
 import type ICommandHandler from "./CommandHandler";
+import MissingAutowiringAnnotationException from "../Exception/MissingAutowiringAnnotationException";
+import type { IAnnotatedHandler } from "../autowiring";
 
 /** Response type for command execution */
 export type CommandResponse = void | IAppError;
@@ -37,6 +39,12 @@ export default class CommandHandlerResolver implements IMiddleware<ICommand, Com
     }
 
     public addHandler(command: { name: string }, handler: ICommandHandler): CommandHandlerResolver {
+        // Validate that handler has autowiring metadata
+        const annotatedHandler = handler as ICommandHandler & Partial<IAnnotatedHandler<ICommandHandler>>;
+        if (!annotatedHandler.command) {
+            throw new MissingAutowiringAnnotationException(handler, 'handle');
+        }
+
         this.handlers[command.name] = handler;
 
         return this;

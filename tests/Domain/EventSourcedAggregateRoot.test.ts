@@ -3,18 +3,32 @@ import EventSourced from "../../src/Domain/EventSourced";
 import type DomainEvent from "../../src/Domain/Event/DomainEvent";
 import DomainMessage from "../../src/Domain/Event/DomainMessage";
 import DomainEventStream from "../../src/Domain/Event/DomainEventStream";
+import { Identity } from "../../src/Domain/AggregateRoot";
 
 // Test events
 class ItemAdded implements DomainEvent {
-    constructor(public readonly itemId: string, public readonly name: string) {}
+    constructor(
+        public readonly aggregateId: string,
+        public readonly itemId: string,
+        public readonly name: string,
+        public readonly occurredAt: Date = new Date()
+    ) {}
 }
 
 class ItemRemoved implements DomainEvent {
-    constructor(public readonly itemId: string) {}
+    constructor(
+        public readonly aggregateId: string,
+        public readonly itemId: string,
+        public readonly occurredAt: Date = new Date()
+    ) {}
 }
 
 class UnhandledEvent implements DomainEvent {
-    constructor(public readonly data: string) {}
+    constructor(
+        public readonly aggregateId: string,
+        public readonly data: string,
+        public readonly occurredAt: Date = new Date()
+    ) {}
 }
 
 // Aggregate using explicit handler registration (new pattern)
@@ -22,7 +36,7 @@ class ShoppingCart extends EventSourcedAggregateRoot {
     public items: string[] = [];
     private readonly itemTracker: ItemTracker;
 
-    constructor(id: string) {
+    constructor(id: Identity) {
         super(id);
         this.registerChildren(this.itemTracker = new ItemTracker());
 
@@ -32,15 +46,15 @@ class ShoppingCart extends EventSourcedAggregateRoot {
     }
 
     public addItem(itemId: string, name: string): void {
-        this.raise(new ItemAdded(itemId, name));
+        this.raise(new ItemAdded(this.getAggregateRootId().toString(), itemId, name));
     }
 
     public removeItem(itemId: string): void {
-        this.raise(new ItemRemoved(itemId));
+        this.raise(new ItemRemoved(this.getAggregateRootId().toString(), itemId));
     }
 
     public raiseUnhandledEvent(): void {
-        this.raise(new UnhandledEvent("test"));
+        this.raise(new UnhandledEvent(this.getAggregateRootId().toString(), "test"));
     }
 
     public getTrackedItems(): string[] {
@@ -75,58 +89,12 @@ class ItemTracker extends EventSourced {
     }
 }
 
-// Aggregate using legacy apply* pattern (for backwards compatibility testing)
-class LegacyCart extends EventSourcedAggregateRoot {
-    public items: string[] = [];
 
-    constructor(id: string) {
-        super(id);
-    }
+describe("EventSourcedAggregateRoot", () => {
 
-    public addItem(itemId: string, name: string): void {
-        this.raise(new ItemAdded(itemId, name));
-    }
-
-    // Legacy pattern - apply<EventName> method
-    public applyItemAdded(event: ItemAdded): void {
-        this.items.push(event.name);
-    }
-}
-
-// Mixed aggregate using both patterns
-class MixedCart extends EventSourcedAggregateRoot {
-    public items: string[] = [];
-    public removedCount: number = 0;
-
-    constructor(id: string) {
-        super(id);
-        // Only register handler for ItemAdded
-        this.registerHandler(ItemAdded, (event) => this.onItemAdded(event));
-    }
-
-    public addItem(itemId: string, name: string): void {
-        this.raise(new ItemAdded(itemId, name));
-    }
-
-    public removeItem(itemId: string): void {
-        this.raise(new ItemRemoved(itemId));
-    }
-
-    private onItemAdded(event: ItemAdded): void {
-        this.items.push(event.name);
-    }
-
-    // Legacy pattern for ItemRemoved - should not be called when handlers are registered
-    public applyItemRemoved(event: ItemRemoved): void {
-        this.removedCount++;
-    }
-}
-
-describe("EventSourcedAggregateRoot with explicit handler registration", () => {
-
-    describe("New handler registration pattern", () => {
+    describe("Handler registration pattern", () => {
         it("should handle events using registered handlers", () => {
-            const cart = new ShoppingCart("cart-1");
+            const cart = new ShoppingCart(Identity.fromString('00000000-0000-4000-8000-0000000000c1'));
 
             cart.addItem("item-1", "Apple");
             cart.addItem("item-2", "Banana");
@@ -135,7 +103,7 @@ describe("EventSourcedAggregateRoot with explicit handler registration", () => {
         });
 
         it("should propagate events to child entities with registered handlers", () => {
-            const cart = new ShoppingCart("cart-1");
+            const cart = new ShoppingCart(Identity.fromString('00000000-0000-4000-8000-0000000000c1'));
 
             cart.addItem("item-1", "Apple");
             cart.addItem("item-2", "Banana");
@@ -144,7 +112,7 @@ describe("EventSourcedAggregateRoot with explicit handler registration", () => {
         });
 
         it("should handle remove events", () => {
-            const cart = new ShoppingCart("cart-1");
+            const cart = new ShoppingCart(Identity.fromString('00000000-0000-4000-8000-0000000000c1'));
 
             cart.addItem("item-1", "Apple");
             cart.addItem("item-2", "Banana");
@@ -154,7 +122,7 @@ describe("EventSourcedAggregateRoot with explicit handler registration", () => {
         });
 
         it("should throw error when no handler is registered for an event", () => {
-            const cart = new ShoppingCart("cart-1");
+            const cart = new ShoppingCart(Identity.fromString('00000000-0000-4000-8000-0000000000c1'));
 
             expect(() => {
                 cart.raiseUnhandledEvent();
@@ -162,7 +130,7 @@ describe("EventSourcedAggregateRoot with explicit handler registration", () => {
         });
 
         it("should store uncommitted events", () => {
-            const cart = new ShoppingCart("cart-1");
+            const cart = new ShoppingCart(Identity.fromString('00000000-0000-4000-8000-0000000000c1'));
 
             cart.addItem("item-1", "Apple");
             cart.addItem("item-2", "Banana");
@@ -174,10 +142,10 @@ describe("EventSourcedAggregateRoot with explicit handler registration", () => {
         });
 
         it("should reconstruct from event history", () => {
-            const cart = new ShoppingCart("cart-1");
+            const cart = new ShoppingCart(Identity.fromString('00000000-0000-4000-8000-0000000000c1'));
             const events = [
-                DomainMessage.create("cart-1", 0, new ItemAdded("item-1", "Apple")),
-                DomainMessage.create("cart-1", 1, new ItemAdded("item-2", "Banana")),
+                DomainMessage.create("cart-1", 0, new ItemAdded("cart-1", "item-1", "Apple")),
+                DomainMessage.create("cart-1", 1, new ItemAdded("cart-1", "item-2", "Banana")),
             ];
             const stream = new DomainEventStream(events);
 
@@ -188,63 +156,6 @@ describe("EventSourcedAggregateRoot with explicit handler registration", () => {
             expect(cart.version()).toBe(1);
         });
     });
-
-    describe("Legacy apply* pattern backwards compatibility", () => {
-        it("should still work with legacy apply* methods", () => {
-            const cart = new LegacyCart("cart-1");
-
-            cart.addItem("item-1", "Apple");
-            cart.addItem("item-2", "Banana");
-
-            expect(cart.items).toEqual(["Apple", "Banana"]);
-        });
-
-        it("should reconstruct from history with legacy pattern", () => {
-            const cart = new LegacyCart("cart-1");
-            const events = [
-                DomainMessage.create("cart-1", 0, new ItemAdded("item-1", "Apple")),
-                DomainMessage.create("cart-1", 1, new ItemAdded("item-2", "Banana")),
-            ];
-            const stream = new DomainEventStream(events);
-
-            cart.fromHistory(stream);
-
-            expect(cart.items).toEqual(["Apple", "Banana"]);
-        });
-
-        it("should silently ignore unhandled events in legacy mode", () => {
-            // LegacyCart only handles ItemAdded, not ItemRemoved
-            const cart = new LegacyCart("cart-1");
-            const events = [
-                DomainMessage.create("cart-1", 0, new ItemAdded("item-1", "Apple")),
-                DomainMessage.create("cart-1", 1, new ItemRemoved("item-1")), // No handler for this
-            ];
-            const stream = new DomainEventStream(events);
-
-            // Should not throw - legacy behavior is to silently ignore
-            expect(() => {
-                cart.fromHistory(stream);
-            }).not.toThrow();
-
-            expect(cart.items).toEqual(["Apple"]);
-        });
-    });
-
-    describe("Mixed pattern behavior", () => {
-        it("should throw when using handlers but event has no handler", () => {
-            const cart = new MixedCart("cart-1");
-
-            // ItemAdded has a registered handler, works fine
-            cart.addItem("item-1", "Apple");
-            expect(cart.items).toEqual(["Apple"]);
-
-            // ItemRemoved has no registered handler, even though applyItemRemoved exists
-            // Since we registered at least one handler, strict mode is enabled
-            expect(() => {
-                cart.removeItem("item-1");
-            }).toThrow("No handler registered for ItemRemoved");
-        });
-    });
 });
 
 // Aggregate with partial handler child for testing error case
@@ -252,7 +163,7 @@ class CartWithPartialTracker extends EventSourcedAggregateRoot {
     public items: string[] = [];
     private readonly tracker: PartialTracker;
 
-    constructor(id: string) {
+    constructor(id: Identity) {
         super(id);
         this.registerChildren(this.tracker = new PartialTracker());
         this.registerHandler(ItemAdded, (event) => this.onItemAdded(event));
@@ -260,11 +171,11 @@ class CartWithPartialTracker extends EventSourcedAggregateRoot {
     }
 
     public addItem(itemId: string, name: string): void {
-        this.raise(new ItemAdded(itemId, name));
+        this.raise(new ItemAdded(this.getAggregateRootId().toString(), itemId, name));
     }
 
     public removeItem(itemId: string): void {
-        this.raise(new ItemRemoved(itemId));
+        this.raise(new ItemRemoved(this.getAggregateRootId().toString(), itemId));
     }
 
     private onItemAdded(event: ItemAdded): void {
@@ -293,7 +204,7 @@ class PartialTracker extends EventSourced {
 
 describe("EventSourced child entities with explicit handler registration", () => {
     it("should use registered handlers in child entities", () => {
-        const cart = new ShoppingCart("cart-1");
+        const cart = new ShoppingCart(Identity.fromString('00000000-0000-4000-8000-0000000000c1'));
 
         cart.addItem("item-1", "Apple");
 
@@ -303,7 +214,7 @@ describe("EventSourced child entities with explicit handler registration", () =>
     it("should throw when child has handlers but event has no handler", () => {
         // PartialTracker only registers handler for ItemAdded
         // When ItemRemoved is raised, it should throw
-        const cart = new CartWithPartialTracker("cart-1");
+        const cart = new CartWithPartialTracker(Identity.fromString('00000000-0000-4000-8000-0000000000c1'));
 
         cart.addItem("item-1", "Apple");
 

@@ -2,9 +2,14 @@ import DomainMessage from "../../../src/Domain/Event/DomainMessage";
 import EventListener from "../../../src/EventSourcing/EventBus/EventListener";
 import IdempotentHandler, { makeIdempotent } from "../../../src/EventSourcing/Idempotency/IdempotentHandler";
 import InMemoryIdempotencyStore from "../../../src/EventSourcing/Idempotency/InMemoryIdempotencyStore";
+import type DomainEvent from "../../../src/Domain/Event/DomainEvent";
 
-class TestEvent {
-    constructor(public readonly value: string) {}
+class TestEvent implements DomainEvent {
+    constructor(
+        public readonly aggregateId: string,
+        public readonly value: string,
+        public readonly occurredAt: Date = new Date()
+    ) {}
 }
 
 class TestEventListener extends EventListener {
@@ -44,7 +49,7 @@ describe("IdempotentHandler", () => {
 
     describe("duplicate detection", () => {
         it("should process event on first call", async () => {
-            const message = DomainMessage.create("123", 0, new TestEvent("test"));
+            const message = DomainMessage.create("123", 0, new TestEvent("123", "test"));
 
             await handler.on(message);
 
@@ -53,7 +58,7 @@ describe("IdempotentHandler", () => {
         });
 
         it("should skip processing on duplicate event", async () => {
-            const message = DomainMessage.create("123", 0, new TestEvent("test"));
+            const message = DomainMessage.create("123", 0, new TestEvent("123", "test"));
 
             await handler.on(message);
             await handler.on(message);
@@ -63,8 +68,8 @@ describe("IdempotentHandler", () => {
         });
 
         it("should process different events", async () => {
-            const message1 = DomainMessage.create("123", 0, new TestEvent("test1"));
-            const message2 = DomainMessage.create("123", 1, new TestEvent("test2"));
+            const message1 = DomainMessage.create("123", 0, new TestEvent("123", "test1"));
+            const message2 = DomainMessage.create("123", 1, new TestEvent("123", "test2"));
 
             await handler.on(message1);
             await handler.on(message2);
@@ -73,8 +78,8 @@ describe("IdempotentHandler", () => {
         });
 
         it("should use idempotencyKey from message", async () => {
-            const message1 = DomainMessage.create("123", 0, new TestEvent("test"), [], undefined, "custom-key-1");
-            const message2 = DomainMessage.create("456", 0, new TestEvent("test"), [], undefined, "custom-key-1");
+            const message1 = DomainMessage.create("123", 0, new TestEvent("123", "test"), [], undefined, "custom-key-1");
+            const message2 = DomainMessage.create("456", 0, new TestEvent("123", "test"), [], undefined, "custom-key-1");
 
             await handler.on(message1);
             await handler.on(message2); // Same custom key
@@ -92,7 +97,7 @@ describe("IdempotentHandler", () => {
                 { onDuplicate: (msg) => duplicates.push(msg) }
             );
 
-            const message = DomainMessage.create("123", 0, new TestEvent("test"));
+            const message = DomainMessage.create("123", 0, new TestEvent("123", "test"));
 
             await handlerWithCallback.on(message);
             await handlerWithCallback.on(message);
@@ -111,7 +116,7 @@ describe("IdempotentHandler", () => {
                 { ttl: 50 }
             );
 
-            const message = DomainMessage.create("123", 0, new TestEvent("test"));
+            const message = DomainMessage.create("123", 0, new TestEvent("123", "test"));
 
             await handlerWithTTL.on(message);
             expect(innerHandler.callCount).toBe(1);
@@ -129,7 +134,7 @@ describe("IdempotentHandler", () => {
         it("should re-throw error by default", async () => {
             const failingHandler = new FailingEventListener();
             const idempotentHandler = new IdempotentHandler(failingHandler, store);
-            const message = DomainMessage.create("123", 0, new TestEvent("test"));
+            const message = DomainMessage.create("123", 0, new TestEvent("123", "test"));
 
             await expect(idempotentHandler.on(message)).rejects.toThrow("Handler failed");
         });
@@ -137,7 +142,7 @@ describe("IdempotentHandler", () => {
         it("should not mark as processed when handler fails", async () => {
             const failingHandler = new FailingEventListener();
             const idempotentHandler = new IdempotentHandler(failingHandler, store);
-            const message = DomainMessage.create("123", 0, new TestEvent("test"));
+            const message = DomainMessage.create("123", 0, new TestEvent("123", "test"));
 
             try {
                 await idempotentHandler.on(message);
@@ -159,7 +164,7 @@ describe("IdempotentHandler", () => {
                     onError: (error, msg) => errors.push({ error, message: msg }),
                 }
             );
-            const message = DomainMessage.create("123", 0, new TestEvent("test"));
+            const message = DomainMessage.create("123", 0, new TestEvent("123", "test"));
 
             await idempotentHandler.on(message); // Should not throw
 
@@ -179,7 +184,7 @@ describe("makeIdempotent", () => {
 
         expect(handler).toBeInstanceOf(IdempotentHandler);
 
-        const message = DomainMessage.create("123", 0, new TestEvent("test"));
+        const message = DomainMessage.create("123", 0, new TestEvent("123", "test"));
         await handler.on(message);
 
         expect(innerHandler.callCount).toBe(1);

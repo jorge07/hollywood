@@ -1,6 +1,7 @@
 import type DomainMessage from "../../Domain/Event/DomainMessage";
 import type EventListener from "../EventBus/EventListener";
 import type EventSubscriber from "../EventBus/EventSubscriber";
+import type IEventBus from "../EventBus/IEventBus";
 import type IIdempotencyStore from "./IIdempotencyStore";
 import EventBus from "../EventBus/EventBus";
 

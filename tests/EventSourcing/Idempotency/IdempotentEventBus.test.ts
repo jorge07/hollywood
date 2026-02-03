@@ -3,13 +3,22 @@ import EventListener from "../../../src/EventSourcing/EventBus/EventListener";
 import EventSubscriber from "../../../src/EventSourcing/EventBus/EventSubscriber";
 import IdempotentEventBus from "../../../src/EventSourcing/Idempotency/IdempotentEventBus";
 import InMemoryIdempotencyStore from "../../../src/EventSourcing/Idempotency/InMemoryIdempotencyStore";
+import type DomainEvent from "../../../src/Domain/Event/DomainEvent";
 
-class TestEvent {
-    constructor(public readonly value: string) {}
+class TestEvent implements DomainEvent {
+    constructor(
+        public readonly aggregateId: string,
+        public readonly value: string,
+        public readonly occurredAt: Date = new Date()
+    ) {}
 }
 
-class AnotherEvent {
-    constructor(public readonly data: number) {}
+class AnotherEvent implements DomainEvent {
+    constructor(
+        public readonly aggregateId: string,
+        public readonly data: number,
+        public readonly occurredAt: Date = new Date()
+    ) {}
 }
 
 class TestEventSubscriber extends EventSubscriber {
@@ -60,7 +69,7 @@ describe("IdempotentEventBus", () => {
             const subscriber = new TestEventSubscriber();
             eventBus.attach(TestEvent, subscriber);
 
-            const message = DomainMessage.create("123", 0, new TestEvent("test"));
+            const message = DomainMessage.create("123", 0, new TestEvent("123", "test"));
             await eventBus.publish(message);
 
             expect(subscriber.callCount).toBe(1);
@@ -70,7 +79,7 @@ describe("IdempotentEventBus", () => {
             const subscriber = new TestEventSubscriber();
             eventBus.attach(TestEvent, subscriber);
 
-            const message = DomainMessage.create("123", 0, new TestEvent("test"));
+            const message = DomainMessage.create("123", 0, new TestEvent("123", "test"));
 
             await eventBus.publish(message);
             await eventBus.publish(message);
@@ -83,8 +92,8 @@ describe("IdempotentEventBus", () => {
             const listener = new TestEventListener();
             eventBus.addListener(listener);
 
-            const message1 = DomainMessage.create("123", 0, new TestEvent("test1"));
-            const message2 = DomainMessage.create("123", 1, new TestEvent("test2"));
+            const message1 = DomainMessage.create("123", 0, new TestEvent("123", "test1"));
+            const message2 = DomainMessage.create("123", 1, new TestEvent("123", "test2"));
 
             await eventBus.publish(message1);
             await eventBus.publish(message2);
@@ -99,7 +108,7 @@ describe("IdempotentEventBus", () => {
             eventBus.attach(TestEvent, subscriber);
             eventBus.addListener(listener);
 
-            const message = DomainMessage.create("123", 0, new TestEvent("test"));
+            const message = DomainMessage.create("123", 0, new TestEvent("123", "test"));
             await eventBus.publish(message);
 
             expect(subscriber.callCount).toBe(1);
@@ -117,7 +126,7 @@ describe("IdempotentEventBus", () => {
             const subscriber = new TestEventSubscriber();
             busWithCallback.attach(TestEvent, subscriber);
 
-            const message = DomainMessage.create("123", 0, new TestEvent("test"));
+            const message = DomainMessage.create("123", 0, new TestEvent("123", "test"));
 
             await busWithCallback.publish(message);
             await busWithCallback.publish(message);
@@ -134,7 +143,7 @@ describe("IdempotentEventBus", () => {
             const subscriber = new TestEventSubscriber();
             busWithTTL.attach(TestEvent, subscriber);
 
-            const message = DomainMessage.create("123", 0, new TestEvent("test"));
+            const message = DomainMessage.create("123", 0, new TestEvent("123", "test"));
 
             await busWithTTL.publish(message);
             expect(subscriber.callCount).toBe(1);
@@ -152,7 +161,7 @@ describe("IdempotentEventBus", () => {
             const failingListener = new FailingListener();
             eventBus.addListener(failingListener);
 
-            const message = DomainMessage.create("123", 0, new TestEvent("test"));
+            const message = DomainMessage.create("123", 0, new TestEvent("123", "test"));
 
             await expect(eventBus.publish(message)).rejects.toThrow("Listener failed");
 
@@ -174,7 +183,7 @@ describe("IdempotentEventBus", () => {
 
             eventBus.addListener(conditionalListener);
 
-            const message = DomainMessage.create("123", 0, new TestEvent("test"));
+            const message = DomainMessage.create("123", 0, new TestEvent("123", "test"));
 
             // First attempt fails
             await expect(eventBus.publish(message)).rejects.toThrow("Temporary failure");
@@ -192,7 +201,7 @@ describe("IdempotentEventBus", () => {
             const listener = new TestEventListener();
             eventBus.addListener(listener);
 
-            const message = DomainMessage.create("123", 0, new TestEvent("test"));
+            const message = DomainMessage.create("123", 0, new TestEvent("123", "test"));
 
             // Sequential publishing - idempotency works correctly
             await eventBus.publish(message);
@@ -208,9 +217,9 @@ describe("IdempotentEventBus", () => {
             eventBus.addListener(listener);
 
             const messages = [
-                DomainMessage.create("123", 0, new TestEvent("test1")),
-                DomainMessage.create("123", 1, new TestEvent("test2")),
-                DomainMessage.create("123", 2, new TestEvent("test3")),
+                DomainMessage.create("123", 0, new TestEvent("123", "test1")),
+                DomainMessage.create("123", 1, new TestEvent("123", "test2")),
+                DomainMessage.create("123", 2, new TestEvent("123", "test3")),
             ];
 
             for (const message of messages) {

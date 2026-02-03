@@ -1,7 +1,12 @@
 import DomainMessage from "../../../src/Domain/Event/DomainMessage";
 import DemoEvent from './DemoEvent';
+import type DomainEvent from "../../../src/Domain/Event/DomainEvent";
 
-class Event {
+class Event implements DomainEvent {
+    constructor(
+        public readonly aggregateId: string = 'test-agg',
+        public readonly occurredAt: Date = new Date()
+    ) {}
 }
 
 describe("DomainMessage", () => {

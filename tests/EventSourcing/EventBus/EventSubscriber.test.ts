@@ -4,15 +4,29 @@ import type DomainEvent from "../../../src/Domain/Event/DomainEvent";
 
 // Test events
 class UserCreated implements DomainEvent {
-    constructor(public readonly userId: string, public readonly name: string) {}
+    constructor(
+        public readonly aggregateId: string,
+        public readonly userId: string,
+        public readonly name: string,
+        public readonly occurredAt: Date = new Date()
+    ) {}
 }
 
 class UserUpdated implements DomainEvent {
-    constructor(public readonly userId: string, public readonly newName: string) {}
+    constructor(
+        public readonly aggregateId: string,
+        public readonly userId: string,
+        public readonly newName: string,
+        public readonly occurredAt: Date = new Date()
+    ) {}
 }
 
 class UserDeleted implements DomainEvent {
-    constructor(public readonly userId: string) {}
+    constructor(
+        public readonly aggregateId: string,
+        public readonly userId: string,
+        public readonly occurredAt: Date = new Date()
+    ) {}
 }
 
 // Subscriber using new explicit handler registration pattern
@@ -97,7 +111,7 @@ describe("EventSubscriber", () => {
             const createdMessage = DomainMessage.create(
                 "user-1",
                 0,
-                new UserCreated("user-1", "John")
+                new UserCreated("user-1", "user-1", "John")
             );
 
             await subscriber.on(createdMessage);
@@ -113,12 +127,12 @@ describe("EventSubscriber", () => {
             const createdMessage = DomainMessage.create(
                 "user-1",
                 0,
-                new UserCreated("user-1", "John")
+                new UserCreated("user-1", "user-1", "John")
             );
             const updatedMessage = DomainMessage.create(
                 "user-1",
                 1,
-                new UserUpdated("user-1", "Jane")
+                new UserUpdated("user-1", "user-1", "Jane")
             );
 
             await subscriber.on(createdMessage);
@@ -135,7 +149,7 @@ describe("EventSubscriber", () => {
             const deletedMessage = DomainMessage.create(
                 "user-1",
                 0,
-                new UserDeleted("user-1")
+                new UserDeleted("user-1", "user-1")
             );
 
             // Should not throw
@@ -150,7 +164,7 @@ describe("EventSubscriber", () => {
             const createdMessage = DomainMessage.create(
                 "user-1",
                 0,
-                new UserCreated("user-1", "John")
+                new UserCreated("user-1", "user-1", "John")
             );
 
             await subscriber.on(createdMessage);
@@ -166,7 +180,7 @@ describe("EventSubscriber", () => {
             const createdMessage = DomainMessage.create(
                 "user-1",
                 0,
-                new UserCreated("user-1", "John")
+                new UserCreated("user-1", "user-1", "John")
             );
 
             await subscriber.on(createdMessage);
@@ -181,12 +195,12 @@ describe("EventSubscriber", () => {
             const createdMessage = DomainMessage.create(
                 "user-1",
                 0,
-                new UserCreated("user-1", "John")
+                new UserCreated("user-1", "user-1", "John")
             );
             const updatedMessage = DomainMessage.create(
                 "user-1",
                 1,
-                new UserUpdated("user-1", "Jane")
+                new UserUpdated("user-1", "user-1", "Jane")
             );
 
             await subscriber.on(createdMessage);
@@ -202,7 +216,7 @@ describe("EventSubscriber", () => {
             const deletedMessage = DomainMessage.create(
                 "user-1",
                 0,
-                new UserDeleted("user-1")
+                new UserDeleted("user-1", "user-1")
             );
 
             // Should not throw
@@ -217,12 +231,12 @@ describe("EventSubscriber", () => {
             const createdMessage = DomainMessage.create(
                 "user-1",
                 0,
-                new UserCreated("user-1", "John")
+                new UserCreated("user-1", "user-1", "John")
             );
             const updatedMessage = DomainMessage.create(
                 "user-1",
                 1,
-                new UserUpdated("user-1", "Jane")
+                new UserUpdated("user-1", "user-1", "Jane")
             );
 
             await subscriber.on(createdMessage);
@@ -250,7 +264,7 @@ describe("EventSubscriber", () => {
             const message = DomainMessage.create(
                 "user-1",
                 0,
-                new UserCreated("user-1", "John")
+                new UserCreated("user-1", "user-1", "John")
             );
 
             await subscriber.on(message);
