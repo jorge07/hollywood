@@ -2,6 +2,7 @@ import IEventStoreDBAL from "./IEventStoreDBAL";
 import DomainMessage from "../Domain/Event/DomainMessage";
 import DomainEventStream from "../Domain/Event/DomainEventStream";
 import AggregateRootNotFoundException from "./Exception/AggregateRootNotFoundException";
+import ConcurrencyException from "./Exception/ConcurrencyException";
 
 export default class InMemoryEventStore implements IEventStoreDBAL {
     private readonly events: { [key: string]: DomainMessage[] } = {};
@@ -28,13 +29,28 @@ export default class InMemoryEventStore implements IEventStoreDBAL {
         throw new AggregateRootNotFoundException();
     }
 
-    public append(aggregateId: string, stream: DomainEventStream): void {
+    public append(aggregateId: string, stream: DomainEventStream, expectedVersion?: number): void {
         if (! this.events[aggregateId]) {
             this.events[aggregateId] = [];
+        }
+
+        if (expectedVersion !== undefined) {
+            const currentVersion = this.getCurrentVersion(aggregateId);
+            if (currentVersion !== expectedVersion) {
+                throw new ConcurrencyException(aggregateId, expectedVersion, currentVersion);
+            }
         }
 
         stream.events.forEach((message: DomainMessage) => {
             this.events[aggregateId].push(message);
         });
+    }
+
+    private getCurrentVersion(aggregateId: string): number {
+        const events = this.events[aggregateId];
+        if (!events || events.length === 0) {
+            return -1;
+        }
+        return events.length - 1;
     }
 }

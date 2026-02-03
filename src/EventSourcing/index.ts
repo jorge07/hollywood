@@ -1,4 +1,5 @@
 import AggregateRootNotFoundException from "./Exception/AggregateRootNotFoundException";
+import ConcurrencyException from "./Exception/ConcurrencyException";
 import EventBus from "./EventBus/EventBus";
 import IEventListener from "./EventBus/IEventListener";
 import EventListener from "./EventBus/EventListener";
@@ -33,6 +34,7 @@ import {
 
 export {
     AggregateRootNotFoundException,
+    ConcurrencyException,
     EventBus,
     EventListener,
     EventStore,

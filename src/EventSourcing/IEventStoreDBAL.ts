@@ -6,5 +6,5 @@ export default interface IEventStoreDBAL {
 
     loadFromTo(aggregateId: AggregateRootId, from?: number, to?: number): Promise<DomainEventStream>;
 
-    append(aggregateId: AggregateRootId, stream: DomainEventStream): void | Promise<any>;
+    append(aggregateId: AggregateRootId, stream: DomainEventStream, expectedVersion?: number): void | Promise<any>;
 }
