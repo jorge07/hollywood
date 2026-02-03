@@ -55,4 +55,23 @@ export interface IService<
     overwrite?: boolean;
 }
 
-export type ServiceList = Map<UniqueServiceIdentifier, IService>;
+/**
+ * Service list definition for module configuration.
+ * Can be provided as either a Map or object literal for convenience.
+ *
+ * @example
+ * ```typescript
+ * // Object literal syntax (recommended)
+ * const services = {
+ *   'customer.repository': { instance: CustomerRepository },
+ *   'logger': { instance: Logger }
+ * };
+ *
+ * // Map syntax (legacy, still supported)
+ * const services = new Map([
+ *   ['customer.repository', { instance: CustomerRepository }],
+ *   ['logger', { instance: Logger }]
+ * ]);
+ * ```
+ */
+export type ServiceList = Map<UniqueServiceIdentifier, IService> | { [key: string]: IService };

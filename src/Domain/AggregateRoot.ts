@@ -1,9 +1,11 @@
-export type AggregateRootId = string;
+import Identity from "./Identity";
 
 export default abstract class AggregateRoot {
-    constructor(private readonly aggregateRootId: AggregateRootId) {}
+    constructor(private readonly aggregateRootId: Identity) {}
 
-    public getAggregateRootId(): AggregateRootId {
+    public getAggregateRootId(): Identity {
         return this.aggregateRootId;
     }
 }
+
+export { Identity };

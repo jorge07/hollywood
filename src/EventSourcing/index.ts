@@ -1,6 +1,7 @@
 import AggregateRootNotFoundException from "./Exception/AggregateRootNotFoundException";
 import ConcurrencyException from "./Exception/ConcurrencyException";
 import EventBus from "./EventBus/EventBus";
+import IEventBus from "./EventBus/IEventBus";
 import IEventListener from "./EventBus/IEventListener";
 import EventListener from "./EventBus/EventListener";
 import EventStore from "./EventStore";
@@ -12,6 +13,7 @@ import InMemorySnapshotStoreDBAL from "./Snapshot/InMemorySnapshotStoreDBAL";
 import IEventStoreDBAL from "./IEventStoreDBAL";
 import EventUpcaster from "./Upcasting/EventUpcaster";
 import UpcasterChain from "./Upcasting/UpcasterChain";
+import Repository from "./Repository/Repository";
 import {
     DeadLetterMessage,
     createDeadLetterMessage,
@@ -39,7 +41,9 @@ export {
     EventListener,
     EventStore,
     EventSubscriber,
+    IEventBus,
     InMemoryEventStore,
+    Repository,
     SnapshotStore,
     IEventStoreDBAL,
     IEventListener,

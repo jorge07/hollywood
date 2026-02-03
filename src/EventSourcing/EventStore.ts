@@ -5,12 +5,12 @@ import SnapshotStore from "./Snapshot/SnapshotStore";
 import type ISnapshotStoreDBAL from "./Snapshot/SnapshotStoreDBAL";
 import type { UpcasterChain } from "./Upcasting/UpcasterChain";
 import EventSourcedAggregateRoot from "../Domain/EventSourcedAggregateRoot";
-import {AggregateRootId} from "../Domain/AggregateRoot";
+import { Identity } from "../Domain/AggregateRoot";
 import DomainEvent from "../Domain/Event/DomainEvent";
 import DomainEventStream from "../Domain/Event/DomainEventStream";
 import DomainMessage from "../Domain/Event/DomainMessage";
 
-export type AggregateFactory<T extends EventSourcedAggregateRoot> = new (aggregateRootID: AggregateRootId) => T;
+export type AggregateFactory<T extends EventSourcedAggregateRoot> = new (aggregateRootID: Identity) => T;
 
 const MIN_SNAPSHOT_MARGIN: number = 10;
 
@@ -41,15 +41,17 @@ export default class EventStore<T extends EventSourcedAggregateRoot> {
         }
     }
 
-    public async load(aggregateRootId: AggregateRootId): Promise<T> {
+    public async load(aggregateRootId: Identity): Promise<T> {
 
         let aggregateRoot: T | null;
 
         aggregateRoot = await this.fromSnapshot(aggregateRootId);
 
+        // If loading from snapshot, we need to load events AFTER the snapshot version
+        // version() returns the last applied playhead, so we need version() + 1
         let stream: DomainEventStream = await this.dbal.load(
-            aggregateRootId,
-            aggregateRoot ? aggregateRoot.version() : 0,
+            aggregateRootId.toString(),
+            aggregateRoot ? aggregateRoot.version() + 1 : 0,
         );
 
         if (stream.isEmpty() && !aggregateRoot) {
@@ -69,7 +71,7 @@ export default class EventStore<T extends EventSourcedAggregateRoot> {
         const stream: DomainEventStream = entity.getUncommittedEvents();
         const expectedVersion = this.calculateExpectedVersion(entity, stream);
 
-        await this.append(entity.getAggregateRootId(), stream, expectedVersion);
+        await this.append(entity.getAggregateRootId().toString(), stream, expectedVersion);
 
         await this.takeSnapshot(entity);
 
@@ -78,7 +80,7 @@ export default class EventStore<T extends EventSourcedAggregateRoot> {
         }
     }
 
-    public async append(aggregateId: AggregateRootId, stream: DomainEventStream, expectedVersion?: number): Promise<void> {
+    public async append(aggregateId: string, stream: DomainEventStream, expectedVersion?: number): Promise<void> {
 
         await this.dbal.append(aggregateId, stream, expectedVersion);
     }
@@ -89,7 +91,7 @@ export default class EventStore<T extends EventSourcedAggregateRoot> {
         return entity.version() - stream.events.length;
     }
 
-    public async replayFrom(uuid: AggregateRootId, from: number, to?: number): Promise<void> {
+    public async replayFrom(uuid: string, from: number, to?: number): Promise<void> {
 
         const replayStream: DomainEventStream = await this.dbal.loadFromTo(uuid, from, to);
 
@@ -111,14 +113,14 @@ export default class EventStore<T extends EventSourcedAggregateRoot> {
         return version !== 0 && version / this.snapshotMargin >= 1 && version % this.snapshotMargin === 0;
     }
 
-    private async fromSnapshot(aggregateRootId: AggregateRootId): Promise<T|null> {
+    private async fromSnapshot(aggregateRootId: Identity): Promise<T|null> {
 
         if (!this.snapshotStore) {
 
             return null;
         }
 
-        const snapshot = await this.snapshotStore.retrieve(aggregateRootId);
+        const snapshot = await this.snapshotStore.retrieve(aggregateRootId.toString());
 
         if (!snapshot) {
 
@@ -132,7 +134,7 @@ export default class EventStore<T extends EventSourcedAggregateRoot> {
         return aggregateRoot;
     }
 
-    private aggregateFactory(aggregateRootId: AggregateRootId): T {
+    private aggregateFactory(aggregateRootId: Identity): T {
 
         return new this.modelConstructor(aggregateRootId);
     }

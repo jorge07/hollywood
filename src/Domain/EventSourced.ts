@@ -2,18 +2,46 @@ import type IEventSourced from "./IEventSourced";
 import type DomainEvent from "./Event/DomainEvent";
 
 export default abstract class EventSourced implements IEventSourced {
-    protected readonly eventHandlers = new Map<string, (event: DomainEvent) => void>();
+    protected eventHandlers = new Map<string, (event: DomainEvent) => void>();
     private children: EventSourced[] = [];
+    /**
+     * Restores entity state from a snapshot.
+     *
+     * Uses a safe rehydration pattern instead of Object.assign to:
+     * - Preserve class prototypes and methods
+     * - Avoid overwriting critical infrastructure (event handlers)
+     * - Only copy data properties, not methods
+     *
+     * @param snapshot - Snapshot data to restore from
+     * @returns This entity with restored state
+     */
     public fromSnapshot(snapshot: EventSourced): EventSourced {
-        Object.assign(this, snapshot);
+        // Preserve infrastructure that shouldn't be in snapshots
+        const handlers = this.eventHandlers;
+
+        // Copy only data properties (not methods or special properties)
+        // This preserves the prototype chain and class methods
+        for (const key in snapshot) {
+            if (snapshot.hasOwnProperty(key) && key !== 'eventHandlers' && key !== 'children') {
+                // Only copy if it's a data property (not a method)
+                const descriptor = Object.getOwnPropertyDescriptor(snapshot, key);
+                if (descriptor && typeof descriptor.value !== 'function') {
+                    (this as any)[key] = (snapshot as any)[key];
+                }
+            }
+        }
+
+        // Restore infrastructure
+        this.eventHandlers = handlers;
+
         return this;
     }
 
-    public recursiveHandling(event: object|DomainEvent, method: string): void {
-        this.handle(event, method);
+    public recursiveHandling(event: DomainEvent, eventType?: string): void {
+        this.handle(event, eventType);
 
         this.getChildEntities().forEach((aggregate: EventSourced) => {
-            aggregate.recursiveHandling(event, method);
+            aggregate.recursiveHandling(event, eventType);
         });
     }
 
@@ -27,7 +55,7 @@ export default abstract class EventSourced implements IEventSourced {
 
     /**
      * Register an explicit event handler for a specific event type.
-     * This is the preferred approach over the legacy apply* method pattern.
+     * All events raised by the aggregate must have a registered handler.
      */
     protected registerHandler<T extends DomainEvent>(
         eventType: new (...args: any[]) => T,
@@ -36,26 +64,17 @@ export default abstract class EventSourced implements IEventSourced {
         this.eventHandlers.set(eventType.name, handler as (event: DomainEvent) => void);
     }
 
-    private handle(event: object|DomainEvent, method: string): void {
-        const eventName = event.constructor.name;
+    private handle(event: DomainEvent, eventType?: string): void {
+        // Use provided eventType (from DomainMessage) or fall back to constructor.name
+        // This handles deserialized events that lose their prototype
+        const eventName = eventType || event.constructor.name;
         const handler = this.eventHandlers.get(eventName);
 
-        if (handler) {
-            handler(event as DomainEvent);
-            return;
-        }
-
-        // If handlers are registered, we're in strict mode - throw if no handler found
-        // This prevents silent failures when using the explicit registration pattern
-        if (this.eventHandlers.size > 0) {
+        if (!handler) {
             throw new Error(`No handler registered for ${eventName}`);
         }
 
-        // Fallback to legacy apply* method pattern for backwards compatibility
-        // Only used when NO handlers are registered at all
-        if ((this as any)[method]) {
-            (this as any)[method](event);
-        }
+        handler(event);
     }
 
 }

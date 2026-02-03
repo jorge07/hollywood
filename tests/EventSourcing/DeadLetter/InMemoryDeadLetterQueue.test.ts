@@ -6,11 +6,15 @@ import DomainMessage from "../../../src/Domain/Event/DomainMessage";
 import type DomainEvent from "../../../src/Domain/Event/DomainEvent";
 
 class TestEvent implements DomainEvent {
-    constructor(public readonly data: string) {}
+    constructor(
+        public readonly aggregateId: string,
+        public readonly data: string,
+        public readonly occurredAt: Date = new Date()
+    ) {}
 }
 
 function createTestDeadLetterMessage(id: string, retryCount: number = 0): DeadLetterMessage {
-    const domainMessage = DomainMessage.create("test-uuid", 1, new TestEvent("test-data"));
+    const domainMessage = DomainMessage.create("test-uuid", 1, new TestEvent("test-uuid", "test-data"));
     return createDeadLetterMessage(
         id,
         domainMessage,

@@ -9,11 +9,19 @@ import DomainMessage from "../../../src/Domain/Event/DomainMessage";
 import type DomainEvent from "../../../src/Domain/Event/DomainEvent";
 
 class TestEvent implements DomainEvent {
-    constructor(public readonly data: string) {}
+    constructor(
+        public readonly aggregateId: string,
+        public readonly data: string,
+        public readonly occurredAt: Date = new Date()
+    ) {}
 }
 
 class FailingEvent implements DomainEvent {
-    constructor(public readonly data: string) {}
+    constructor(
+        public readonly aggregateId: string,
+        public readonly data: string,
+        public readonly occurredAt: Date = new Date()
+    ) {}
 }
 
 class SuccessfulSubscriber extends EventSubscriber {
@@ -78,7 +86,7 @@ describe("DeadLetterAwareEventBus", () => {
 
             eventBus.attach(TestEvent, subscriber);
 
-            const message = DomainMessage.create("test-uuid", 1, new TestEvent("test-data"));
+            const message = DomainMessage.create("test-uuid", 1, new TestEvent("test-uuid", "test-data"));
             await eventBus.publish(message);
 
             expect(subscriber.processedEvents.length).toBe(1);
@@ -92,7 +100,7 @@ describe("DeadLetterAwareEventBus", () => {
 
             eventBus.attach(FailingEvent, failingSubscriber);
 
-            const message = DomainMessage.create("test-uuid", 1, new FailingEvent("fail-data"));
+            const message = DomainMessage.create("test-uuid", 1, new FailingEvent("test-uuid", "fail-data"));
             await eventBus.publish(message);
 
             expect(failingSubscriber.attemptCount).toBe(1);
@@ -110,7 +118,7 @@ describe("DeadLetterAwareEventBus", () => {
 
             eventBus.addListener(failingListener);
 
-            const message = DomainMessage.create("test-uuid", 1, new TestEvent("test-data"));
+            const message = DomainMessage.create("test-uuid", 1, new TestEvent("test-uuid", "test-data"));
             await eventBus.publish(message);
 
             expect(failingListener.attemptCount).toBe(1);
@@ -128,7 +136,7 @@ describe("DeadLetterAwareEventBus", () => {
             eventBus.addListener(failingListener);
             eventBus.addListener(successfulListener);
 
-            const message = DomainMessage.create("test-uuid", 1, new TestEvent("test-data"));
+            const message = DomainMessage.create("test-uuid", 1, new TestEvent("test-uuid", "test-data"));
             await eventBus.publish(message);
 
             expect(failingListener.attemptCount).toBe(1);
@@ -149,7 +157,7 @@ describe("DeadLetterAwareEventBus", () => {
 
             eventBus.attach(FailingEvent, failingSubscriber);
 
-            const message = DomainMessage.create("test-uuid", 1, new FailingEvent("fail-data"));
+            const message = DomainMessage.create("test-uuid", 1, new FailingEvent("test-uuid", "fail-data"));
             await eventBus.publish(message);
 
             // Should have attempted 1 initial + 2 retries = 3 attempts
@@ -172,7 +180,7 @@ describe("DeadLetterAwareEventBus", () => {
 
             eventBus.attach(FailingEvent, subscriber);
 
-            const message = DomainMessage.create("test-uuid", 1, new FailingEvent("eventually-succeeds"));
+            const message = DomainMessage.create("test-uuid", 1, new FailingEvent("test-uuid", "eventually-succeeds"));
             await eventBus.publish(message);
 
             expect(subscriber.attemptCount).toBe(2);
@@ -187,7 +195,7 @@ describe("DeadLetterAwareEventBus", () => {
 
             eventBus.attach(FailingEvent, failingSubscriber);
 
-            const message = DomainMessage.create("test-uuid", 1, new FailingEvent("no-retry"));
+            const message = DomainMessage.create("test-uuid", 1, new FailingEvent("test-uuid", "no-retry"));
             await eventBus.publish(message);
 
             expect(failingSubscriber.attemptCount).toBe(1);
@@ -203,7 +211,7 @@ describe("DeadLetterAwareEventBus", () => {
             eventBus.attach(FailingEvent, failingSubscriber);
 
             // First, cause a failure to add to DLQ
-            const message = DomainMessage.create("test-uuid", 1, new FailingEvent("fail-data"));
+            const message = DomainMessage.create("test-uuid", 1, new FailingEvent("test-uuid", "fail-data"));
             await eventBus.publish(message);
 
             expect(await dlq.count()).toBe(1);
@@ -228,7 +236,7 @@ describe("DeadLetterAwareEventBus", () => {
             eventBus.attach(FailingEvent, failingSubscriber);
 
             // First, cause a failure to add to DLQ
-            const message = DomainMessage.create("test-uuid", 1, new FailingEvent("fail-data"));
+            const message = DomainMessage.create("test-uuid", 1, new FailingEvent("test-uuid", "fail-data"));
             await eventBus.publish(message);
 
             const dlqMessages = await dlq.getAll();
@@ -272,7 +280,7 @@ describe("DeadLetterAwareEventBus", () => {
 
             // Publish a FailingEvent - failingSubscriber handles it and fails
             // Both listeners also try to handle it
-            const message = DomainMessage.create("test-uuid", 1, new FailingEvent("mixed"));
+            const message = DomainMessage.create("test-uuid", 1, new FailingEvent("test-uuid", "mixed"));
             await eventBus.publish(message);
 
             // FailingSubscriber should have failed and be in DLQ
@@ -290,7 +298,7 @@ describe("DeadLetterAwareEventBus", () => {
 
             eventBus.attach(FailingEvent, failingSubscriber);
 
-            const originalEvent = new FailingEvent("preserve-this-data");
+            const originalEvent = new FailingEvent("test-uuid", "preserve-this-data");
             const message = DomainMessage.create("test-uuid-123", 5, originalEvent);
             await eventBus.publish(message);
 

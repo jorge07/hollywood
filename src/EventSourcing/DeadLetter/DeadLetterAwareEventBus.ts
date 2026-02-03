@@ -1,6 +1,7 @@
 import type DomainMessage from "../../Domain/Event/DomainMessage";
 import type EventListener from "../EventBus/EventListener";
 import type EventSubscriber from "../EventBus/EventSubscriber";
+import type IEventBus from "../EventBus/IEventBus";
 import type IDeadLetterQueue from "./IDeadLetterQueue";
 import { createDeadLetterMessage } from "./DeadLetterMessage";
 import type RetryPolicy from "./RetryPolicy";
@@ -25,9 +26,9 @@ interface IListenersRegistry {
  * Supports retry policies for automatic retry attempts before moving to DLQ.
  *
  * This class does not extend EventBus to avoid private property conflicts;
- * instead, it implements the same interface with DLQ support.
+ * instead, it implements the IEventBus interface with DLQ support.
  */
-export default class DeadLetterAwareEventBus {
+export default class DeadLetterAwareEventBus implements IEventBus {
     private readonly subscribersRegistry: ISubscriberRegistry = {};
     private readonly listenersRegistry: IListenersRegistry = {};
 

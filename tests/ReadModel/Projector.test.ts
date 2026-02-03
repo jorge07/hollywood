@@ -15,7 +15,7 @@ class DogReadModelProjector extends EventSubscriber {
     }
 
     onSayWolf(event: SayWolf): void {
-        this.repository.save(event.uuid, 'Wolf');
+        this.repository.save(event.aggregateId, 'Wolf');
     }
 }
 

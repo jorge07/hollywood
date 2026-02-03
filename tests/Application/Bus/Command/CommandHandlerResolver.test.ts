@@ -4,6 +4,8 @@ import ICommand from "../../../../src/Application/Bus/Command/Command";
 import ICommandHandler from "../../../../src/Application/Bus/Command/CommandHandler";
 import { IAppError } from "../../../../src/Application/Bus/CallbackArg";
 import IMiddleware, { NextMiddleware } from "../../../../src/Application/Bus/Middleware";
+import MissingAutowiringAnnotationException from "../../../../src/Application/Bus/Exception/MissingAutowiringAnnotationException";
+import autowiring from "../../../../src/Application/Bus/autowiring";
 
 // Type-safe mock for the next middleware function
 const createMockNext = (): NextMiddleware<ICommand, CommandResponse> =>
@@ -29,6 +31,7 @@ class FailingCommand implements ICommand {
 class CreateUserHandler implements ICommandHandler {
     public handledCommands: CreateUserCommand[] = [];
 
+    @autowiring
     async handle(command: CreateUserCommand): Promise<void | IAppError> {
         this.handledCommands.push(command);
     }
@@ -37,16 +40,25 @@ class CreateUserHandler implements ICommandHandler {
 class DeleteUserHandler implements ICommandHandler {
     public deletedUserIds: string[] = [];
 
+    @autowiring
     async handle(command: DeleteUserCommand): Promise<void | IAppError> {
         this.deletedUserIds.push(command.userId);
     }
 }
 
 class FailingHandler implements ICommandHandler {
+    @autowiring
     async handle(command: FailingCommand): Promise<void | IAppError> {
         if (command.shouldFail) {
             throw { code: 500, message: "Handler failed" } as IAppError;
         }
+    }
+}
+
+// Handler without autowiring decorator for testing validation
+class HandlerWithoutAutowiring implements ICommandHandler {
+    async handle(command: CreateUserCommand): Promise<void | IAppError> {
+        // This handler intentionally missing @autowiring decorator
     }
 }
 
@@ -63,6 +75,44 @@ class TrackingMiddleware implements IMiddleware {
 }
 
 describe("CommandHandlerResolver", () => {
+    describe("autowiring validation", () => {
+        it("should throw MissingAutowiringAnnotationException when handler lacks @autowiring decorator", () => {
+            const resolver = new CommandHandlerResolver();
+            const handlerWithoutAutowiring = new HandlerWithoutAutowiring();
+
+            expect(() => {
+                resolver.addHandler(CreateUserCommand, handlerWithoutAutowiring);
+            }).toThrow(MissingAutowiringAnnotationException);
+        });
+
+        it("should include helpful error message with handler class and method name", () => {
+            const resolver = new CommandHandlerResolver();
+            const handlerWithoutAutowiring = new HandlerWithoutAutowiring();
+
+            expect(() => {
+                resolver.addHandler(CreateUserCommand, handlerWithoutAutowiring);
+            }).toThrow(/HandlerWithoutAutowiring\.handle/);
+        });
+
+        it("should include instructions on how to fix the issue", () => {
+            const resolver = new CommandHandlerResolver();
+            const handlerWithoutAutowiring = new HandlerWithoutAutowiring();
+
+            expect(() => {
+                resolver.addHandler(CreateUserCommand, handlerWithoutAutowiring);
+            }).toThrow(/@autowiring/);
+        });
+
+        it("should accept handler with proper @autowiring decorator", () => {
+            const resolver = new CommandHandlerResolver();
+            const handler = new CreateUserHandler();
+
+            expect(() => {
+                resolver.addHandler(CreateUserCommand, handler);
+            }).not.toThrow();
+        });
+    });
+
     describe("handler registration", () => {
         it("should register a handler for a command", () => {
             const resolver = new CommandHandlerResolver();

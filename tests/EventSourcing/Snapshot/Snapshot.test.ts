@@ -5,6 +5,7 @@ import InMemorySnapshotStoreDBAL from "../../../src/EventSourcing/Snapshot/InMem
 import EventBus from "../../../src/EventSourcing/EventBus/EventBus";
 import InMemoryEventStore from "../../../src/EventSourcing/InMemoryEventStore";
 import EventStore from "../../../src/EventSourcing/EventStore";
+import { Identity } from "../../../src/Domain/AggregateRoot";
 
 describe("SnapshotStore", () => {
     it("EventSourcing should store, publish and retrieve events when snapshot is found", async () => {
@@ -13,7 +14,7 @@ describe("SnapshotStore", () => {
         const inMemoryEventStore = new InMemoryEventStore();
 
         const store = new EventStore<Dog>(Dog, inMemoryEventStore, eventBus, snapshotDBAL);
-        const pluto = new Dog("31");
+        const pluto = new Dog(Identity.fromString('00000000-0000-4000-8000-000000000031'));
 
         pluto.sayWolf();
         pluto.sayWolf();
@@ -44,7 +45,7 @@ describe("SnapshotStore", () => {
         const snapshotDBAL = new InMemorySnapshotStoreDBAL();
 
         const store = new EventStore<Dog>(Dog, new InMemoryEventStore(), eventBus, snapshotDBAL);
-        const pluto = new Dog("31");
+        const pluto = new Dog(Identity.fromString('00000000-0000-4000-8000-000000000031'));
 
         pluto.sayWolf();
         pluto.sayWolf();

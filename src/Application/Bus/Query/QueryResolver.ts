@@ -4,6 +4,8 @@ import type IMiddleware from "../Middleware";
 import type { NextMiddleware } from "../Middleware";
 import type IQuery from "./Query";
 import type IQueryHandler from "./QueryHandler";
+import MissingAutowiringAnnotationException from "../Exception/MissingAutowiringAnnotationException";
+import type { IAnnotatedHandler } from "../autowiring";
 
 /**
  * QueryHandlerResolver is a TERMINAL middleware handler for queries.
@@ -33,6 +35,12 @@ export default class QueryHandlerResolver implements IMiddleware<IQuery, QueryBu
     }
 
     public addHandler(command: { name: string }, handler: IQueryHandler): QueryHandlerResolver {
+        // Validate that handler has autowiring metadata
+        const annotatedHandler = handler as IQueryHandler & Partial<IAnnotatedHandler<IQueryHandler>>;
+        if (!annotatedHandler.command) {
+            throw new MissingAutowiringAnnotationException(handler, 'handle');
+        }
+
         this.handlers[command.name] = handler;
 
         return this;
