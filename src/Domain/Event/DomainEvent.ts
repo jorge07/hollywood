@@ -13,15 +13,26 @@
  *
  * @example
  * ```typescript
+ * // Simple event without versioning
  * class UserCreated implements DomainEvent {
- *     readonly version = 1;
  *     constructor(
  *         public readonly userId: string,
  *         public readonly email: string
  *     ) {}
  * }
+ *
+ * // Versioned event for upcasting support
+ * class UserCreatedV2 implements DomainEvent {
+ *     readonly version = 2;
+ *     constructor(
+ *         public readonly userId: string,
+ *         public readonly email: string,
+ *         public readonly createdAt: Date
+ *     ) {}
+ * }
  * ```
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export default interface DomainEvent {
     // Marker interface - implementations should be immutable data classes
     // For upcasting support, add: readonly version?: number;

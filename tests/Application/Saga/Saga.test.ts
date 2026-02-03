@@ -7,48 +7,40 @@ import { SagaStatus } from "../../../src/Application/Saga/SagaState";
 import CommandBus from "../../../src/Application/Bus/Command/CommandBus";
 import CommandHandlerResolver from "../../../src/Application/Bus/Command/CommandHandlerResolver";
 import DomainMessage from "../../../src/Domain/Event/DomainMessage";
-import DomainEvent from "../../../src/Domain/Event/DomainEvent";
+import type DomainEvent from "../../../src/Domain/Event/DomainEvent";
 import type ICommand from "../../../src/Application/Bus/Command/Command";
-import type IMiddleware from "../../../src/Application/Bus/Middelware";
+import type IMiddleware from "../../../src/Application/Bus/Middleware";
 import type ICommandHandler from "../../../src/Application/Bus/Command/CommandHandler";
 import autowiring from "../../../src/Application/Bus/autowiring";
 
 // Test Events
-class OrderPlaced extends DomainEvent {
+class OrderPlaced implements DomainEvent {
     constructor(
         public readonly orderId: string,
         public readonly customerId: string,
         public readonly amount: number,
-    ) {
-        super();
-    }
+    ) {}
 }
 
-class PaymentReceived extends DomainEvent {
+class PaymentReceived implements DomainEvent {
     constructor(
         public readonly orderId: string,
         public readonly paymentId: string,
-    ) {
-        super();
-    }
+    ) {}
 }
 
-class ShipmentCreated extends DomainEvent {
+class ShipmentCreated implements DomainEvent {
     constructor(
         public readonly orderId: string,
         public readonly shipmentId: string,
-    ) {
-        super();
-    }
+    ) {}
 }
 
-class PaymentFailed extends DomainEvent {
+class PaymentFailed implements DomainEvent {
     constructor(
         public readonly orderId: string,
         public readonly reason: string,
-    ) {
-        super();
-    }
+    ) {}
 }
 
 // Test Commands

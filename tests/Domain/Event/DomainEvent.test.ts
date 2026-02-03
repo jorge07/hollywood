@@ -1,13 +1,10 @@
-import DomainEvent from '../../../src/Domain/Event/DomainEvent';
-import DemoEvent from './DemoEvent';
 import type DomainEvent from '../../../src/Domain/Event/DomainEvent';
+import DemoEvent from './DemoEvent';
 
-class VersionedEvent extends DomainEvent {
+class VersionedEvent implements DomainEvent {
     public readonly version: number = 2;
 
-    constructor(public readonly data: string) {
-        super();
-    }
+    constructor(public readonly data: string) {}
 }
 
 describe("DomainEvent", () => {
@@ -27,13 +24,16 @@ describe("DomainEvent", () => {
         expect(event).toBeDefined();
     });
 
-    it("DomainEvent should have a default version of 1", () => {
+    it("DomainEvent is a marker interface - events can have any shape", () => {
         const event = new DemoEvent();
 
-        expect(event.version).toBe(1);
+        // DomainEvent is an empty marker interface - version is not required
+        // Events can define their own properties
+        expect(event).toBeDefined();
+        expect((event as { version?: number }).version).toBeUndefined();
     });
 
-    it("DomainEvent version can be overridden in subclasses", () => {
+    it("DomainEvent version can be set in implementations", () => {
         const event = new VersionedEvent("test data");
 
         expect(event.version).toBe(2);

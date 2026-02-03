@@ -44,15 +44,15 @@ describe("DomainMessage idempotencyKey", () => {
     describe("custom idempotency key", () => {
         it("should use custom idempotency key when provided", () => {
             const customKey = "my-custom-idempotency-key";
-            const message = DomainMessage.create("123", 0, new TestEvent("test"), [], customKey);
+            const message = DomainMessage.create("123", 0, new TestEvent("test"), [], undefined, customKey);
 
             expect(message.idempotencyKey).toBe(customKey);
         });
 
         it("should preserve custom key even with different content", () => {
             const customKey = "shared-key";
-            const message1 = DomainMessage.create("123", 0, new TestEvent("value1"), [], customKey);
-            const message2 = DomainMessage.create("456", 5, new TestEvent("value2"), [], customKey);
+            const message1 = DomainMessage.create("123", 0, new TestEvent("value1"), [], undefined, customKey);
+            const message2 = DomainMessage.create("456", 5, new TestEvent("value2"), [], undefined, customKey);
 
             expect(message1.idempotencyKey).toBe(customKey);
             expect(message2.idempotencyKey).toBe(customKey);

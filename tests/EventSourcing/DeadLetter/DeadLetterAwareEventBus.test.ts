@@ -6,18 +6,14 @@ import RetryPolicy from "../../../src/EventSourcing/DeadLetter/RetryPolicy";
 import EventSubscriber from "../../../src/EventSourcing/EventBus/EventSubscriber";
 import EventListener from "../../../src/EventSourcing/EventBus/EventListener";
 import DomainMessage from "../../../src/Domain/Event/DomainMessage";
-import DomainEvent from "../../../src/Domain/Event/DomainEvent";
+import type DomainEvent from "../../../src/Domain/Event/DomainEvent";
 
-class TestEvent extends DomainEvent {
-    constructor(public readonly data: string) {
-        super();
-    }
+class TestEvent implements DomainEvent {
+    constructor(public readonly data: string) {}
 }
 
-class FailingEvent extends DomainEvent {
-    constructor(public readonly data: string) {
-        super();
-    }
+class FailingEvent implements DomainEvent {
+    constructor(public readonly data: string) {}
 }
 
 class SuccessfulSubscriber extends EventSubscriber {

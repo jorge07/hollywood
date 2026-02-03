@@ -76,7 +76,7 @@ export class UpcasterChain {
      * @returns The upcasted event at the latest version
      */
     upcast(event: DomainEvent): DomainEvent {
-        const eventType = event.domainEventName();
+        const eventType = event.constructor.name;
         const upcasters = this.upcasters.get(eventType);
 
         if (!upcasters || upcasters.length === 0) {
@@ -84,7 +84,8 @@ export class UpcasterChain {
         }
 
         let currentEvent = event;
-        let currentVersion = event.version;
+        // Events without version property are treated as version 1
+        let currentVersion = (event as { version?: number }).version ?? 1;
 
         // Apply upcasters in sequence
         for (const upcaster of upcasters) {

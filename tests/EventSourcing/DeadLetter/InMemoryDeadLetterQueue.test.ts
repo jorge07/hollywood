@@ -3,12 +3,10 @@ import "reflect-metadata";
 import InMemoryDeadLetterQueue from "../../../src/EventSourcing/DeadLetter/InMemoryDeadLetterQueue";
 import { createDeadLetterMessage, DeadLetterMessage } from "../../../src/EventSourcing/DeadLetter/DeadLetterMessage";
 import DomainMessage from "../../../src/Domain/Event/DomainMessage";
-import DomainEvent from "../../../src/Domain/Event/DomainEvent";
+import type DomainEvent from "../../../src/Domain/Event/DomainEvent";
 
-class TestEvent extends DomainEvent {
-    constructor(public readonly data: string) {
-        super();
-    }
+class TestEvent implements DomainEvent {
+    constructor(public readonly data: string) {}
 }
 
 function createTestDeadLetterMessage(id: string, retryCount: number = 0): DeadLetterMessage {
