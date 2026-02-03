@@ -53,7 +53,7 @@ export default abstract class EventSourcedAggregateRoot extends AggregateRoot im
         // Copy only data properties (not methods or special properties)
         // This preserves the prototype chain and class methods
         for (const key in snapshot) {
-            if (snapshot.hasOwnProperty(key) && key !== 'children' && key !== 'eventHandlers') {
+            if (Object.prototype.hasOwnProperty.call(snapshot, key) && key !== 'children' && key !== 'eventHandlers') {
                 // Only copy if it's a data property (not a method)
                 const descriptor = Object.getOwnPropertyDescriptor(snapshot, key);
                 if (descriptor && typeof descriptor.value !== 'function') {
