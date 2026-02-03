@@ -116,12 +116,25 @@ export default class Scenario<T extends EventSourcedAggregateRoot> {
     /**
      * Asserts that the expected domain events were raised (Then).
      * Compares the uncommitted events from the aggregate against the expected events.
+     * Note: occurredAt timestamps are ignored in comparison to avoid flaky tests.
      *
      * @param thens - Array of expected domain events
      */
     public then(thens: object[] | DomainEvent[]): void {
+        const actual = this.events();
+        const normalizedExpected = thens.map(e => this.normalizeEvent(e));
+        const normalizedActual = actual.map(e => this.normalizeEvent(e));
 
-        expect(thens).toEqual(this.events())
+        expect(normalizedActual).toEqual(normalizedExpected);
+    }
+
+    /**
+     * Normalizes an event for comparison by removing timestamp fields.
+     */
+    private normalizeEvent(event: object | DomainEvent): object {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { occurredAt, ...rest } = event as DomainEvent & { occurredAt?: Date };
+        return rest;
     }
 
     private events(): object[] | DomainEvent[] {
