@@ -7,6 +7,20 @@ import ICommandHandler from "./Bus/Command/CommandHandler";
 import IQueryHandler from "./Bus/Query/QueryHandler";
 import ICommand from "./Bus/Command/Command";
 import IQuery from "./Bus/Query/Query";
+import {
+    Saga,
+    SagaManager,
+    ISagaRepository,
+    InMemorySagaRepository,
+    SagaStatus,
+} from "./Saga";
+import type {
+    CommandDispatcher,
+    SagaFactory,
+    CorrelationIdExtractor,
+    SagaStateSnapshot,
+    SagaStepResult,
+} from "./Saga";
 
 export {
     autowiring,
@@ -18,4 +32,14 @@ export {
     IQueryHandler,
     MissingAutowiringAnnotationException,
     QueryBus,
+    Saga,
+    SagaManager,
+    ISagaRepository,
+    InMemorySagaRepository,
+    SagaStatus,
+    CommandDispatcher,
+    SagaFactory,
+    CorrelationIdExtractor,
+    SagaStateSnapshot,
+    SagaStepResult,
 };
