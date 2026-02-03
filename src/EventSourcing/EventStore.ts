@@ -67,8 +67,9 @@ export default class EventStore<T extends EventSourcedAggregateRoot> {
     public async save(entity: T): Promise<void> {
 
         const stream: DomainEventStream = entity.getUncommittedEvents();
+        const expectedVersion = this.calculateExpectedVersion(entity, stream);
 
-        await this.append(entity.getAggregateRootId(), stream);
+        await this.append(entity.getAggregateRootId(), stream, expectedVersion);
 
         await this.takeSnapshot(entity);
 
@@ -77,9 +78,15 @@ export default class EventStore<T extends EventSourcedAggregateRoot> {
         }
     }
 
-    public async append(aggregateId: AggregateRootId, stream: DomainEventStream): Promise<void> {
+    public async append(aggregateId: AggregateRootId, stream: DomainEventStream, expectedVersion?: number): Promise<void> {
 
-        await this.dbal.append(aggregateId, stream);
+        await this.dbal.append(aggregateId, stream, expectedVersion);
+    }
+
+    private calculateExpectedVersion(entity: T, stream: DomainEventStream): number {
+        // Expected version is the version before the uncommitted events were applied
+        // Current version - number of uncommitted events
+        return entity.version() - stream.events.length;
     }
 
     public async replayFrom(uuid: AggregateRootId, from: number, to?: number): Promise<void> {
