@@ -4,70 +4,61 @@ Hollywood-JS is a TypeScript framework implementing Event Sourcing, CQRS (Comman
 
 **Version**: 6.0.0-beta
 
+> **TL;DR:** Hollywood has 5 layers: **Framework** (DI & bootstrapping) → **Application** (commands & queries) → **Domain** (aggregates & events) → **EventSourcing** (persistence) → **ReadModel** (projections). Commands modify aggregates, which emit events, which update read models.
+
+---
+
 ## System Architecture Diagram
 
 ```mermaid
 classDiagram
-    namespace FrameworkLayer {
-        class Kernel {
-            <<AggregateRoot>>
-            +App app
-            +Container container
-        }
-        class ModuleContext
-        class Container
+    class Kernel {
+        +App app
+        +Container container
+    }
+    class ModuleContext
+    class Container
+
+    class App {
+        +handle(command)
+        +ask(query)
+    }
+    class CommandBus
+    class QueryBus
+    class IMiddleware {
+        <<interface>>
+    }
+    class Saga
+    class SagaManager
+
+    class EventSourcedAggregateRoot {
+        +raise(event)
+        +getUncommittedEvents()
+        +registerHandler()
+    }
+    class Repository
+    class DomainEvent {
+        <<interface>>
+    }
+    class DomainMessage
+
+    class EventStore {
+        +save(entity)
+        +load(id)
+    }
+    class EventBus
+    class DeadLetterAwareEventBus
+    class IdempotentEventBus
+    class SnapshotStore
+    class UpcasterChain
+    class IEventStoreDBAL {
+        <<interface>>
     }
 
-    namespace ApplicationLayer {
-        class App {
-            <<AggregateRoot>>
-            +handle(ICommand)
-            +ask(IQuery)
-        }
-        class CommandBus
-        class QueryBus
-        class IMiddleware~TMessage,TResponse~
-        class Saga~TState~
-        class SagaManager
-    }
+    class Projector
+    class ProjectionManager
+    class InMemoryReadModelRepository
 
-    namespace DomainLayer {
-        class EventSourcedAggregateRoot {
-            <<AggregateRoot>>
-            +raise(DomainEvent)
-            +getUncommittedEvents()
-            +registerHandler(eventType, handler)
-        }
-        class Repository~T~
-        class DomainEvent {
-            <<interface>>
-        }
-        class DomainMessage
-    }
-
-    namespace EventSourcingLayer {
-        class EventStore~T~ {
-            <<AggregateRoot>>
-            +save(T)
-            +load(id)
-        }
-        class EventBus
-        class DeadLetterAwareEventBus
-        class IdempotentEventBus
-        class SnapshotStore~T~
-        class UpcasterChain
-        class IEventStoreDBAL
-    }
-
-    namespace ReadModelLayer {
-        class Projector {
-            <<type alias>>
-        }
-        class ProjectionManager
-        class InMemoryReadModelRepository
-    }
-
-    %% Cross-layer relationships
     Kernel *-- App : creates
     Kernel *-- Container : owns
 

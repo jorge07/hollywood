@@ -215,6 +215,14 @@ describe("Framework:Container", () => {
     it("Container Builder should allow overwrite services definition", async () => {
         expect.assertions(14);
 
+        // Mock event class for testing subscriber configuration
+        class YepEvent {
+            constructor(
+                public readonly aggregateId: string = 'test',
+                public readonly occurredAt: Date = new Date()
+            ) {}
+        }
+
         // tslint:disable-next-line:max-classes-per-file
         @injectable()
         class Yep {}
@@ -247,7 +255,7 @@ describe("Framework:Container", () => {
                 instance: Noop,
                 bus: SERVICES_ALIAS.DEFAULT_EVENT_BUS,
                 overwrite: true,
-                subscriber: [Yep],
+                subscriber: [YepEvent],
             }],
         ]);
         const mainServices = new Map<string, IService>([

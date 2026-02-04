@@ -19,215 +19,186 @@ The Event Sourcing Layer implements the persistence and publication mechanisms f
 
 ```mermaid
 classDiagram
-    namespace EventSourcingLayer {
-        %% Event Store (Aggregate Root of Infrastructure Context)
-        class EventStore~T~ {
-            <<AggregateRoot>>
-            -IEventStoreDBAL dbal
-            -EventBus eventBus
-            -SnapshotStore~T~ snapshotStore
-            -UpcasterChain upcasterChain
-            -AggregateFactory~T~ modelConstructor
-            -number snapshotMargin
-            +Promise~T~ load(AggregateRootId aggregateRootId)
-            +Promise~void~ save(T entity)
-            +Promise~void~ append(AggregateRootId aggregateId, DomainEventStream stream)
-            +Promise~void~ replayFrom(AggregateRootId uuid, number from, number to)
-            -Promise~void~ takeSnapshot(T entity)
-            -bool isSnapshotNeeded(number version)
-            -Promise~T|null~ fromSnapshot(AggregateRootId aggregateRootId)
-            -T aggregateFactory(AggregateRootId aggregateRootId)
-            -DomainEventStream upcastStream(DomainEventStream stream)
-        }
-
-        class AggregateFactory~T~ {
-            <<TypeAlias>>
-            new(AggregateRootId) T
-        }
-
-        %% Event Store DBAL Interface (Port)
-        class IEventStoreDBAL {
-            <<interface>>
-            +Promise~DomainEventStream~ load(AggregateRootId aggregateId, number from)
-            +Promise~DomainEventStream~ loadFromTo(AggregateRootId aggregateId, number from, number to)
-            +void|Promise~any~ append(AggregateRootId aggregateId, DomainEventStream stream, number expectedVersion)
-            +AsyncIterator~DomainMessage~ loadAll(number fromPosition)
-        }
-
-        %% In-Memory Implementation (Adapter)
-        class InMemoryEventStore {
-            -Object events
-            -number globalPosition
-            +Promise~DomainEventStream~ load(string aggregateId, number from)
-            +Promise~DomainEventStream~ loadFromTo(string aggregateId, number from, number to)
-            +void append(string aggregateId, DomainEventStream stream, number expectedVersion)
-            +AsyncIterator~DomainMessage~ loadAll(number fromPosition)
-        }
-
-        %% Event Bus
-        class EventBus {
-            -ISubscriberRegistry subscribersRegistry
-            -IListenersRegistry listenersRegistry
-            +Promise~void~ publish(DomainMessage message)
-            +EventBus attach(any event, EventSubscriber subscriber)
-            +EventBus addListener(EventListener listener)
-            -EventSubscriber[] subscribersFor(string eventType)
-        }
-
-        %% Dead Letter Queue (v6)
-        class DeadLetterAwareEventBus {
-            -IDeadLetterQueue deadLetterQueue
-            -RetryPolicy retryPolicy
-            +Promise~void~ publish(DomainMessage message)
-            +DeadLetterAwareEventBus attach(event, subscriber)
-            +DeadLetterAwareEventBus addListener(listener)
-            -Promise~void~ safeExecute(fn, message, handlerName)
-        }
-
-        class IDeadLetterQueue {
-            <<interface>>
-            +Promise~void~ enqueue(DeadLetterMessage message)
-            +Promise~DeadLetterMessage[]~ dequeue(number limit)
-            +Promise~number~ size()
-        }
-
-        class DeadLetterMessage {
-            +string id
-            +DomainMessage originalMessage
-            +string handlerName
-            +Error error
-            +number retryCount
-            +Date failedAt
-            +Date nextRetryAt
-        }
-
-        class RetryPolicy {
-            -RetryPolicyConfig config
-            +RetryDecision evaluate(number currentRetryCount)
-            +RetryPolicy default()$
-            +RetryPolicy noRetry()$
-        }
-
-        %% Idempotency (v6)
-        class IdempotentEventBus {
-            -IIdempotencyStore idempotencyStore
-            -IdempotentEventBusOptions options
-            +Promise~void~ publish(DomainMessage message)
-        }
-
-        class IIdempotencyStore {
-            <<interface>>
-            +Promise~bool~ exists(string key)
-            +Promise~void~ mark(string key, number ttl)
-            +Promise~void~ remove(string key)
-        }
-
-        class InMemoryIdempotencyStore {
-            -Map~string,IdempotencyEntry~ store
-            +Promise~bool~ exists(string key)
-            +Promise~void~ mark(string key, number ttl)
-            +Promise~void~ remove(string key)
-        }
-
-        %% Event Upcasting (v6)
-        class UpcasterChain {
-            -Map~string,EventUpcaster[]~ upcasters
-            +void register~T~(EventUpcaster~T~ upcaster)
-            +DomainEvent upcast(DomainEvent event)
-            +number getLatestVersion(string eventType)
-            +bool hasUpcasters(string eventType)
-        }
-
-        class EventUpcaster~T~ {
-            <<interface>>
-            +string eventType
-            +number fromVersion
-            +number toVersion
-            +T upcast(T event)
-        }
-
-        %% Event Listener Contracts
-        class IEventListener {
-            <<interface>>
-            +void on(DomainMessage message)
-        }
-
-        class EventListener {
-            <<abstract>>
-            +Promise~void~|void on(DomainMessage message)
-        }
-
-        class EventSubscriber {
-            <<abstract>>
-            #Map~string,Function~ handlers
-            +Promise~void~ on(DomainMessage message)
-            #void registerHandler~T~(eventType, handler)
-        }
-
-        %% Subscriber Registry (Value Object)
-        class ISubscriberRegistry {
-            <<interface>>
-            +EventSubscriber[] [key: string]
-        }
-
-        class IListenersRegistry {
-            <<interface>>
-            +EventListener [key: string]
-        }
-
-        %% Snapshot Store
-        class SnapshotStore~T~ {
-            -ISnapshotStoreDBAL store
-            +Promise~any~ retrieve(AggregateRootId aggregateRootId)
-            +Promise~void~ snapshot(T entity)
-        }
-
-        %% Snapshot DBAL Interface (Port)
-        class ISnapshotStoreDBAL {
-            <<interface>>
-            +Promise~any|null~ get(AggregateRootId uuid)
-            +Promise~void~ store(EventSourcedAggregateRoot entity)
-        }
-
-        %% In-Memory Snapshot Implementation (Adapter)
-        class InMemorySnapshotStoreDBAL {
-            +ISnapshotDictionary snapshots
-            +Promise~EventSourcedAggregateRoot|null~ get(AggregateRootId uuid)
-            +Promise~void~ store(EventSourcedAggregateRoot entity)
-        }
-
-        %% Exceptions
-        class AggregateRootNotFoundException {
-            <<Exception>>
-        }
-
-        class ConcurrencyException {
-            <<Exception>>
-            +string aggregateId
-            +number expectedVersion
-            +number actualVersion
-        }
+    class EventStore {
+        -IEventStoreDBAL dbal
+        -EventBus eventBus
+        -SnapshotStore snapshotStore
+        -UpcasterChain upcasterChain
+        -modelConstructor
+        -number snapshotMargin
+        +load(aggregateRootId) Promise
+        +save(entity) Promise
+        +append(aggregateId, stream) Promise
+        +replayFrom(uuid, from, to) Promise
+        -takeSnapshot(entity) Promise
+        -isSnapshotNeeded(version) bool
+        -fromSnapshot(aggregateRootId) Promise
+        -aggregateFactory(aggregateRootId)
+        -upcastStream(stream)
     }
 
-    %% Import from Domain Layer
-    namespace DomainLayer {
-        class DomainMessage {
-            +string eventType
-            +AggregateRootId uuid
-            +string idempotencyKey
-        }
-        class DomainEventStream {
-            +DomainMessage[] events
-        }
-        class EventSourcedAggregateRoot {
-            <<AggregateRoot>>
-        }
-        class AggregateRootId {
-            <<ValueObject>>
-        }
+    class IEventStoreDBAL {
+        <<interface>>
+        +load(aggregateId, from) Promise
+        +loadFromTo(aggregateId, from, to) Promise
+        +append(aggregateId, stream, expectedVersion)
+        +loadAll(fromPosition) AsyncIterator
     }
 
-    %% Implementation Relationships
+    class InMemoryEventStore {
+        -Object events
+        -number globalPosition
+        +load(aggregateId, from) Promise
+        +loadFromTo(aggregateId, from, to) Promise
+        +append(aggregateId, stream, expectedVersion)
+        +loadAll(fromPosition) AsyncIterator
+    }
+
+    class EventBus {
+        -ISubscriberRegistry subscribersRegistry
+        -IListenersRegistry listenersRegistry
+        +publish(message) Promise
+        +attach(event, subscriber) EventBus
+        +addListener(listener) EventBus
+        -subscribersFor(eventType) EventSubscriber[]
+    }
+
+    class DeadLetterAwareEventBus {
+        -IDeadLetterQueue deadLetterQueue
+        -RetryPolicy retryPolicy
+        +publish(message) Promise
+        +attach(event, subscriber)
+        +addListener(listener)
+        -safeExecute(fn, message, handlerName) Promise
+    }
+
+    class IDeadLetterQueue {
+        <<interface>>
+        +enqueue(message) Promise
+        +dequeue(limit) Promise
+        +size() Promise
+    }
+
+    class DeadLetterMessage {
+        +string id
+        +DomainMessage originalMessage
+        +string handlerName
+        +Error error
+        +number retryCount
+        +Date failedAt
+        +Date nextRetryAt
+    }
+
+    class RetryPolicy {
+        -RetryPolicyConfig config
+        +evaluate(currentRetryCount) RetryDecision
+        +default()
+        +noRetry()
+    }
+
+    class IdempotentEventBus {
+        -IIdempotencyStore idempotencyStore
+        -options
+        +publish(message) Promise
+    }
+
+    class IIdempotencyStore {
+        <<interface>>
+        +exists(key) Promise
+        +mark(key, ttl) Promise
+        +remove(key) Promise
+    }
+
+    class InMemoryIdempotencyStore {
+        -Map store
+        +exists(key) Promise
+        +mark(key, ttl) Promise
+        +remove(key) Promise
+    }
+
+    class UpcasterChain {
+        -Map upcasters
+        +register(upcaster)
+        +upcast(event) DomainEvent
+        +getLatestVersion(eventType) number
+        +hasUpcasters(eventType) bool
+    }
+
+    class EventUpcaster {
+        <<interface>>
+        +string eventType
+        +number fromVersion
+        +number toVersion
+        +upcast(event)
+    }
+
+    class IEventListener {
+        <<interface>>
+        +on(message)
+    }
+
+    class EventListener {
+        <<abstract>>
+        +on(message) Promise
+    }
+
+    class EventSubscriber {
+        <<abstract>>
+        #Map handlers
+        +on(message) Promise
+        #registerHandler(eventType, handler)
+    }
+
+    class ISubscriberRegistry {
+        <<interface>>
+    }
+
+    class IListenersRegistry {
+        <<interface>>
+    }
+
+    class SnapshotStore {
+        -ISnapshotStoreDBAL store
+        +retrieve(aggregateRootId) Promise
+        +snapshot(entity) Promise
+    }
+
+    class ISnapshotStoreDBAL {
+        <<interface>>
+        +get(uuid) Promise
+        +store(entity) Promise
+    }
+
+    class InMemorySnapshotStoreDBAL {
+        +snapshots
+        +get(uuid) Promise
+        +store(entity) Promise
+    }
+
+    class AggregateRootNotFoundException {
+        <<Exception>>
+    }
+
+    class ConcurrencyException {
+        <<Exception>>
+        +string aggregateId
+        +number expectedVersion
+        +number actualVersion
+    }
+
+    class DomainMessage {
+        +string eventType
+        +uuid
+        +string idempotencyKey
+    }
+
+    class DomainEventStream {
+        +DomainMessage[] events
+    }
+
+    class EventSourcedAggregateRoot {
+    }
+
     InMemoryEventStore ..|> IEventStoreDBAL : implements
     InMemorySnapshotStoreDBAL ..|> ISnapshotStoreDBAL : implements
     InMemoryIdempotencyStore ..|> IIdempotencyStore : implements
@@ -236,12 +207,10 @@ classDiagram
     DeadLetterAwareEventBus --|> EventBus : extends
     IdempotentEventBus --|> EventBus : extends
 
-    %% Composition Relationships
     EventStore *-- IEventStoreDBAL : uses
     EventStore *-- EventBus : publishes to
     EventStore *-- SnapshotStore : optional
     EventStore *-- UpcasterChain : upcasts with
-    EventStore *-- AggregateFactory : creates with
     SnapshotStore *-- ISnapshotStoreDBAL : uses
     EventBus *-- ISubscriberRegistry : manages
     EventBus *-- IListenersRegistry : manages
@@ -249,7 +218,6 @@ classDiagram
     DeadLetterAwareEventBus *-- RetryPolicy : uses
     IdempotentEventBus *-- IIdempotencyStore : uses
 
-    %% Dependencies
     EventStore ..> DomainEventStream : loads/appends
     EventStore ..> EventSourcedAggregateRoot : manages
     EventStore ..> AggregateRootNotFoundException : throws

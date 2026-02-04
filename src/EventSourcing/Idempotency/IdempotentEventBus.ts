@@ -1,7 +1,7 @@
 import type DomainMessage from "../../Domain/Event/DomainMessage";
 import type EventListener from "../EventBus/EventListener";
 import type EventSubscriber from "../EventBus/EventSubscriber";
-import type IEventBus from "../EventBus/IEventBus";
+import type { DomainEventConstructor } from "../EventBus/IEventBus";
 import type IIdempotencyStore from "./IIdempotencyStore";
 import EventBus from "../EventBus/EventBus";
 
@@ -69,7 +69,7 @@ export default class IdempotentEventBus extends EventBus {
      * Attach a subscriber to an event type.
      * Overridden to return the correct type.
      */
-    public attach(event: any, subscriber: EventSubscriber): IdempotentEventBus {
+    public attach(event: DomainEventConstructor, subscriber: EventSubscriber): IdempotentEventBus {
         super.attach(event, subscriber);
         return this;
     }

@@ -10,7 +10,7 @@ import type Projector from "../../src/ReadModel/Projector";
  * The Projector type alias provides semantic clarity that this is a read model projector.
  */
 class DogReadModelProjector extends EventSubscriber {
-    constructor(private readonly repository: InMemoryReadModelRepository) {
+    constructor(private readonly repository: InMemoryReadModelRepository<string>) {
         super();
     }
 
@@ -21,7 +21,7 @@ class DogReadModelProjector extends EventSubscriber {
 
 describe("Projector", () => {
     it("It should receive an Domain Message and store a Projection", async () => {
-        const readModel: InMemoryReadModelRepository = new InMemoryReadModelRepository();
+        const readModel = new InMemoryReadModelRepository<string>();
 
         const eventBus: EventBus = new EventBus();
 
@@ -33,7 +33,7 @@ describe("Projector", () => {
     });
 
     it("Projector type alias is assignable from EventSubscriber", () => {
-        const readModel: InMemoryReadModelRepository = new InMemoryReadModelRepository();
+        const readModel = new InMemoryReadModelRepository<string>();
 
         // Projector is a type alias for EventSubscriber
         // This verifies the type system works correctly
@@ -45,7 +45,7 @@ describe("Projector", () => {
     it("In Memory repository should fail of not exist", async () => {
         expect.assertions(1);
 
-        const readModel: InMemoryReadModelRepository = new InMemoryReadModelRepository();
+        const readModel = new InMemoryReadModelRepository<string>();
 
         try {
             readModel.oneOrFail('demo');

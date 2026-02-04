@@ -1,14 +1,13 @@
-# HOLLYWOOD <small>5.0.2</small>
+# Hollywood <small>6.0</small>
 
-> Modular Framework for Javascript and Typescript Backends
+> Event Sourcing & CQRS Framework for TypeScript
 
-- Built on top of Inversify
-- CQRS and ES capabilities
+Build event-sourced applications with clean architecture patterns.
 
-[![Build Status](https://travis-ci.org/jorge07/hollywood.svg?branch=master)](https://travis-ci.org/jorge07/hollywood) [![Coverage Status](https://coveralls.io/repos/github/jorge07/hollywood/badge.svg?branch=master)](https://coveralls.io/github/jorge07/hollywood?branch=master)
-[![NPM Version](http://img.shields.io/npm/v/hollywood-js.svg?style=flat)](https://www.npmjs.org/package/hollywood-js)
-[![NPM Downloads](https://img.shields.io/npm/dm/hollywood-js.svg?style=flat)](https://npmcharts.com/compare/hollywood-js?minimal=true)
-[![Install Size](https://packagephobia.now.sh/badge?p=hollywood-js)](https://packagephobia.now.sh/result?p=hollywood-js)
+- **CQRS** - Separate read and write paths
+- **Event Sourcing** - Full audit trail, time travel debugging
+- **Modular** - Bounded contexts that stay bounded
+- **TypeScript Native** - Full type safety
 
+[Get Started](getting-started/installation.md)
 [GitHub](https://github.com/jorge07/hollywood/)
-[Getting Started](/#hollywood)

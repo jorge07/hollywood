@@ -2,6 +2,7 @@ import type DomainMessage from "../../Domain/Event/DomainMessage";
 import type EventListener from "./EventListener";
 import type EventSubscriber from "./EventSubscriber";
 import type IEventBus from "./IEventBus";
+import type { DomainEventConstructor } from "./IEventBus";
 
 interface ISubscriberRegistry {
     [key: string]: EventSubscriber[];
@@ -32,7 +33,7 @@ export default class EventBus implements IEventBus {
         }
     }
 
-    public attach(event: any, subscriber: EventSubscriber): EventBus {
+    public attach(event: DomainEventConstructor, subscriber: EventSubscriber): EventBus {
         const eventName = event.name;
         const collection = this.subscribersRegistry[eventName] || [];
 

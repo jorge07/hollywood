@@ -18,127 +18,112 @@ The Domain Layer provides the building blocks for Domain-Driven Design with Even
 
 ```mermaid
 classDiagram
-    namespace DomainLayer {
-        %% Aggregate Root Hierarchy
-        class AggregateRoot {
-            <<abstract>>
-            -AggregateRootId aggregateRootId
-            +AggregateRootId getAggregateRootId()
-        }
-
-        class EventSourcedAggregateRoot {
-            <<abstract>>
-            <<AggregateRoot>>
-            #string methodPrefix
-            #Map~string,Function~ eventHandlers
-            -number playhead
-            -DomainMessage[] events
-            -EventSourced[] children
-            +DomainEventStream getUncommittedEvents()
-            +EventSourcedAggregateRoot fromHistory(DomainEventStream stream)
-            +EventSourcedAggregateRoot fromSnapshot(any snapshot)
-            +void recursiveHandling(object|DomainEvent event, string method)
-            +number version()
-            #EventSourced[] getChildEntities()
-            #void registerChildren(EventSourced child)
-            #void registerHandler~T~(eventType, handler)
-            #void raise(object|DomainEvent event)
-            -void handle(object|DomainEvent event, string method)
-            -string methodToApplyEvent(string eventName)
-        }
-
-        %% Event Sourced Entities
-        class IEventSourced {
-            <<interface>>
-            +IEventSourced fromSnapshot(IEventSourced snapshot)
-            +void recursiveHandling(object|DomainEvent event, string method)
-        }
-
-        class EventSourced {
-            <<abstract>>
-            -EventSourced[] children
-            +EventSourced fromSnapshot(EventSourced snapshot)
-            +void recursiveHandling(object|DomainEvent event, string method)
-            #EventSourced[] getChildEntities()
-            #void registerChildren(EventSourced child)
-            -void handle(object|DomainEvent event, string method)
-        }
-
-        %% Domain Events
-        class DomainEvent {
-            <<interface>>
-            %% Marker interface - event type determined by constructor.name
-            %% Optional: +number version (defaults to 1)
-        }
-
-        class DomainMessage {
-            +Date occurred
-            +string eventType
-            +AggregateRootId uuid
-            +number playhead
-            +object|DomainEvent event
-            +any[] metadata
-            +string idempotencyKey
-            +DomainMessage create(AggregateRootId uuid, number playhead, object|DomainEvent event, any[] metadata)$
-            +DomainMessage createWithIdempotencyKey(uuid, playhead, event, idempotencyKey, metadata)$
-            +string generateIdempotencyKey()$
-            -string extractEventType(object event)$
-        }
-
-        class DomainEventStream {
-            +DomainMessage[] events
-            +StreamName name
-            +bool isEmpty()
-        }
-
-        %% Value Objects
-        class AggregateRootId {
-            <<ValueObject>>
-            string
-        }
-
-        class StreamName {
-            <<ValueObject>>
-            string
-        }
-
-        %% Repository Contracts
-        class IRepository~T~ {
-            <<interface>>
-            +Promise~void~ save(T aggregateRoot)
-            +Promise~T~ load(string aggregateRootId)
-        }
-
-        class Repository~T~ {
-            <<abstract>>
-            -EventStore~T~ eventStore
-            +Promise~void~ save(T aggregateRoot)
-            +Promise~T~ load(string aggregateRootId)
-            +Promise~void~ saveWithRetry(id, updateFn, maxRetries)
-        }
+    class AggregateRoot {
+        <<abstract>>
+        -AggregateRootId aggregateRootId
+        +getAggregateRootId() AggregateRootId
     }
 
-    %% Inheritance Relationships
+    class EventSourcedAggregateRoot {
+        <<abstract>>
+        #string methodPrefix
+        #Map eventHandlers
+        -number playhead
+        -DomainMessage[] events
+        -EventSourced[] children
+        +getUncommittedEvents() DomainEventStream
+        +fromHistory(DomainEventStream stream)
+        +fromSnapshot(any snapshot)
+        +recursiveHandling(event, string method)
+        +version() number
+        #getChildEntities() EventSourced[]
+        #registerChildren(EventSourced child)
+        #registerHandler(eventType, handler)
+        #raise(event)
+        -handle(event, string method)
+        -methodToApplyEvent(string eventName)
+    }
+
+    class IEventSourced {
+        <<interface>>
+        +fromSnapshot(snapshot)
+        +recursiveHandling(event, string method)
+    }
+
+    class EventSourced {
+        <<abstract>>
+        -EventSourced[] children
+        +fromSnapshot(snapshot)
+        +recursiveHandling(event, string method)
+        #getChildEntities() EventSourced[]
+        #registerChildren(EventSourced child)
+        -handle(event, string method)
+    }
+
+    class DomainEvent {
+        <<interface>>
+    }
+
+    class DomainMessage {
+        +Date occurred
+        +string eventType
+        +AggregateRootId uuid
+        +number playhead
+        +event
+        +any[] metadata
+        +string idempotencyKey
+        +create(uuid, playhead, event, metadata)
+        +createWithIdempotencyKey(uuid, playhead, event, idempotencyKey, metadata)
+        +generateIdempotencyKey()
+        -extractEventType(event)
+    }
+
+    class DomainEventStream {
+        +DomainMessage[] events
+        +StreamName name
+        +isEmpty() bool
+    }
+
+    class AggregateRootId {
+        <<ValueObject>>
+        string
+    }
+
+    class StreamName {
+        <<ValueObject>>
+        string
+    }
+
+    class IRepository {
+        <<interface>>
+        +save(aggregateRoot) Promise
+        +load(string aggregateRootId) Promise
+    }
+
+    class Repository {
+        <<abstract>>
+        -eventStore
+        +save(aggregateRoot) Promise
+        +load(string aggregateRootId) Promise
+        +saveWithRetry(id, updateFn, maxRetries) Promise
+    }
+
     EventSourcedAggregateRoot --|> AggregateRoot : extends
     EventSourcedAggregateRoot ..|> IEventSourced : implements
     EventSourced ..|> IEventSourced : implements
     Repository ..|> IRepository : implements
 
-    %% Composition Relationships (Strong Ownership)
     EventSourcedAggregateRoot *-- DomainMessage : uncommitted events
     EventSourcedAggregateRoot *-- EventSourced : child entities
     DomainEventStream *-- DomainMessage : contains
     DomainMessage *-- DomainEvent : wraps
 
-    %% Aggregation Relationships (Weak Ownership)
     EventSourced o-- EventSourced : child entities
 
-    %% Value Object Associations
     AggregateRoot --> AggregateRootId : identity
     DomainMessage --> AggregateRootId : references
     DomainEventStream --> StreamName : named by
 
-    %% Dependencies
     Repository ..> EventSourcedAggregateRoot : manages
     DomainMessage ..> DomainEvent : extracts type from
     EventSourcedAggregateRoot ..> DomainEventStream : produces

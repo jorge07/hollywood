@@ -1,6 +1,17 @@
 import type DomainMessage from "../../Domain/Event/DomainMessage";
+import type DomainEvent from "../../Domain/Event/DomainEvent";
 import type EventListener from "./EventListener";
 import type EventSubscriber from "./EventSubscriber";
+
+/**
+ * Constructor type for domain events.
+ * Used to register event-specific subscribers.
+ *
+ * Note: Constructor parameters use `any[]` for variance - this allows
+ * accepting constructors with any parameter signature.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type DomainEventConstructor<T extends DomainEvent = DomainEvent> = new (...args: any[]) => T;
 
 /**
  * Interface for event buses that publish domain events to subscribers and listeners.
@@ -47,7 +58,7 @@ export default interface IEventBus {
      * @param subscriber - The subscriber that will handle the event
      * @returns The event bus instance for method chaining
      */
-    attach(event: any, subscriber: EventSubscriber): IEventBus;
+    attach(event: DomainEventConstructor, subscriber: EventSubscriber): IEventBus;
 
     /**
      * Adds a global event listener that receives all published events.

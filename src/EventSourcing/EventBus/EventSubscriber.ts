@@ -15,6 +15,9 @@ export default abstract class EventSubscriber implements IEventListener {
      * @param eventType - The event class constructor
      * @param handler - The handler function to invoke when this event type is received
      *
+     * Note: Constructor parameters use `any[]` for variance - this allows
+     * registering constructors with any parameter signature.
+     *
      * @example
      * ```typescript
      * class MySubscriber extends EventSubscriber {
@@ -30,6 +33,7 @@ export default abstract class EventSubscriber implements IEventListener {
      * ```
      */
     protected registerHandler<T extends DomainEvent>(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         eventType: new (...args: any[]) => T,
         handler: (event: T) => Promise<void> | void
     ): void {

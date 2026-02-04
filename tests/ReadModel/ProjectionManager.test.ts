@@ -25,8 +25,13 @@ class UserNameChanged implements DomainEvent {
     ) {}
 }
 
+interface UserReadModel {
+    name: string;
+    version: number;
+}
+
 class UserReadModelProjector extends EventSubscriber {
-    constructor(private readonly repository: InMemoryReadModelRepository) {
+    constructor(private readonly repository: InMemoryReadModelRepository<UserReadModel>) {
         super();
     }
 
@@ -45,7 +50,7 @@ class UserReadModelProjector extends EventSubscriber {
 
 // Simulates a "fixed" projector after a bug fix
 class FixedUserReadModelProjector extends EventSubscriber {
-    constructor(private readonly repository: InMemoryReadModelRepository) {
+    constructor(private readonly repository: InMemoryReadModelRepository<UserReadModel>) {
         super();
     }
 
@@ -69,13 +74,13 @@ describe("ProjectionManager", () => {
     let eventStore: InMemoryEventStore;
     let positionStore: InMemoryProjectionPositionStore;
     let projectionManager: ProjectionManager;
-    let readModel: InMemoryReadModelRepository;
+    let readModel: InMemoryReadModelRepository<UserReadModel>;
 
     beforeEach(() => {
         eventStore = new InMemoryEventStore();
         positionStore = new InMemoryProjectionPositionStore();
         projectionManager = new ProjectionManager(eventStore, positionStore);
-        readModel = new InMemoryReadModelRepository();
+        readModel = new InMemoryReadModelRepository<UserReadModel>();
     });
 
     describe("rebuild", () => {

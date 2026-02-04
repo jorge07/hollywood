@@ -174,10 +174,10 @@ export default abstract class Entity<TId> {
      * @param obj - The object to check
      * @returns True if object has an equals method
      */
-    private hasEqualsMethod(obj: any): obj is { equals(other: any): boolean } {
+    private hasEqualsMethod(obj: unknown): obj is { equals(other: unknown): boolean } {
         return obj !== null &&
                obj !== undefined &&
                typeof obj === 'object' &&
-               typeof obj.equals === 'function';
+               typeof (obj as Record<string, unknown>).equals === 'function';
     }
 }
