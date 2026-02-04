@@ -15,7 +15,7 @@ export default abstract class EventSourced implements IEventSourced {
      * @param snapshot - Snapshot data to restore from
      * @returns This entity with restored state
      */
-    public fromSnapshot(snapshot: EventSourced): EventSourced {
+    public fromSnapshot(snapshot: Record<string, unknown>): this {
         // Preserve infrastructure that shouldn't be in snapshots
         const handlers = this.eventHandlers;
 
@@ -26,7 +26,7 @@ export default abstract class EventSourced implements IEventSourced {
                 // Only copy if it's a data property (not a method)
                 const descriptor = Object.getOwnPropertyDescriptor(snapshot, key);
                 if (descriptor && typeof descriptor.value !== 'function') {
-                    (this as any)[key] = (snapshot as any)[key];
+                    (this as Record<string, unknown>)[key] = snapshot[key];
                 }
             }
         }
@@ -56,8 +56,12 @@ export default abstract class EventSourced implements IEventSourced {
     /**
      * Register an explicit event handler for a specific event type.
      * All events raised by the aggregate must have a registered handler.
+     *
+     * Note: Constructor parameters use `any[]` for variance - this allows
+     * registering constructors with any parameter signature.
      */
     protected registerHandler<T extends DomainEvent>(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         eventType: new (...args: any[]) => T,
         handler: (event: T) => void
     ): void {

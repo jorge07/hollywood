@@ -54,7 +54,7 @@ export default abstract class ValueObject<T> {
      *
      * @returns An iterable of values to compare for equality
      */
-    protected abstract getEqualityComponents(): Iterable<any>;
+    protected abstract getEqualityComponents(): Iterable<unknown>;
 
     /**
      * Checks if this value object is equal to another.
@@ -85,7 +85,7 @@ export default abstract class ValueObject<T> {
      * @param components2 - Second array of components
      * @returns True if all components are deeply equal
      */
-    private componentsAreEqual(components1: any[], components2: any[]): boolean {
+    private componentsAreEqual(components1: unknown[], components2: unknown[]): boolean {
         if (components1.length !== components2.length) {
             return false;
         }
@@ -107,7 +107,7 @@ export default abstract class ValueObject<T> {
      * @param value2 - Second value to compare
      * @returns True if values are deeply equal
      */
-    private isEqual(value1: any, value2: any): boolean {
+    private isEqual(value1: unknown, value2: unknown): boolean {
         // Strict equality for primitives and references
         if (value1 === value2) {
             return true;
@@ -171,7 +171,7 @@ export default abstract class ValueObject<T> {
      * @param value - The value to check
      * @returns True if the value is a plain object
      */
-    private isPlainObject(value: any): boolean {
+    private isPlainObject(value: unknown): value is Record<string, unknown> {
         if (typeof value !== 'object' || value === null) {
             return false;
         }

@@ -95,12 +95,12 @@ class OrderFulfillmentSaga extends Saga<OrderFulfillmentState> {
         return ['OrderPlaced'];
     }
 
-    protected getEventHandlers(): Map<string, (event: any) => Promise<void>> {
-        const handlers = new Map<string, (event: any) => Promise<void>>();
-        handlers.set('OrderPlaced', this.onOrderPlaced.bind(this));
-        handlers.set('PaymentReceived', this.onPaymentReceived.bind(this));
-        handlers.set('ShipmentCreated', this.onShipmentCreated.bind(this));
-        handlers.set('PaymentFailed', this.onPaymentFailed.bind(this));
+    protected getEventHandlers(): Map<string, (event: DomainEvent) => Promise<void>> {
+        const handlers = new Map<string, (event: DomainEvent) => Promise<void>>();
+        handlers.set('OrderPlaced', this.onOrderPlaced.bind(this) as (event: DomainEvent) => Promise<void>);
+        handlers.set('PaymentReceived', this.onPaymentReceived.bind(this) as (event: DomainEvent) => Promise<void>);
+        handlers.set('ShipmentCreated', this.onShipmentCreated.bind(this) as (event: DomainEvent) => Promise<void>);
+        handlers.set('PaymentFailed', this.onPaymentFailed.bind(this) as (event: DomainEvent) => Promise<void>);
         return handlers;
     }
 
@@ -514,7 +514,7 @@ describe("SagaManager", () => {
                     correlationId
                 ),
                 ['OrderPlaced'],
-                (event) => event.orderId
+                (event) => (event as OrderPlaced).orderId
             );
 
             // No error thrown means successful registration
@@ -532,7 +532,7 @@ describe("SagaManager", () => {
                     correlationId
                 ),
                 ['OrderPlaced'],
-                (event) => event.orderId
+                (event) => (event as OrderPlaced).orderId
             );
         });
 
@@ -586,7 +586,7 @@ describe("SagaManager", () => {
                     correlationId
                 ),
                 ['OrderPlaced'],
-                (event) => event.orderId
+                (event) => (event as OrderPlaced).orderId
             );
         });
 
@@ -652,7 +652,7 @@ describe("SagaManager", () => {
                     correlationId
                 ),
                 ['OrderPlaced'],
-                (event) => event.orderId
+                (event) => (event as OrderPlaced).orderId
             );
         });
 
@@ -687,7 +687,7 @@ describe("SagaManager", () => {
                     correlationId
                 ),
                 ['OrderPlaced'],
-                (event) => event.orderId
+                (event) => (event as OrderPlaced).orderId
             );
         });
 

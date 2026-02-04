@@ -18,177 +18,165 @@ The Framework Layer implements the composition root for Hollywood-JS application
 
 ```mermaid
 classDiagram
-    namespace FrameworkLayer {
-        %% Kernel (Aggregate Root)
-        class Kernel {
-            <<AggregateRoot>>
-            +string env
-            +Container container
-            +App app
-            +Promise~Kernel~ createFromModuleContext(string env, ParametersList parameters, ModuleContext moduleContext, ParametersList testParameters)$
-            -ParametersList overwriteParamsOnTest(string env, ParametersList parameters, ParametersList testParameters)$
-        }
-
-        %% Module System
-        class ModuleContext {
-            +ModuleContext[] modules
-            +ModuleConfig config
-            +Promise~void~ load(Container container)
-            +void addFirstModuleContext(ModuleContext module)
-            -ServiceList mergeModuleDependenciesConfig()
-            -ServiceList getServices()
-            -IService bindCommands(ICommandHandler[]|IQueryHandler[] commands)$
-        }
-
-        class ModuleConfig {
-            <<interface>>
-            +any[] commands
-            +any[] queries
-            +ServiceList services
-            +ModuleContext[] modules
-        }
-
-        class HollywoodModule {
-            <<Factory>>
-            +ModuleContext invoke()
-        }
-
-        %% App Builder
-        class AppBuilder {
-            <<Factory>>
-            +App invoke(Container container)
-        }
-
-        %% Container Builder
-        class BuildFromModuleContext {
-            <<Factory>>
-            +Promise~Container~ invoke(ParametersList parameters, ModuleContext moduleContext)
-        }
-
-        %% Service Registration
-        class IService {
-            <<interface>>
-            +any instance
-            +any[] collection
-            +Function custom
-            +AggregateFactory eventStore
-            +Function async
-            +bool constant
-            +bool overwrite
-            +string bus
-            +bool listener
-            +any[] subscriber
-        }
-
-        class ServiceList {
-            <<ValueObject>>
-            Map~string, IService~
-        }
-
-        %% Service Type Handlers
-        class StandardType {
-            +void invoke(Rebind rebind, IsBound isBound, Bind bind)(string key, IService service)
-        }
-
-        class CollectionType {
-            +void invoke(Bind bind, Unbind unbind, IsBound isBound)(string key, IService service)
-            +bool IsCollectionType(IService service)$
-        }
-
-        class AsyncType {
-            +Promise~void~ invoke(Rebind rebind, IsBound isBound, Bind bind)(string key, IService service)
-            +bool IsAsyncType(IService service)$
-        }
-
-        class CustomType {
-            +void invoke(Rebind rebind, IsBound isBound, Bind bind)(string key, IService service)
-            +bool IsCustomType(IService service)$
-        }
-
-        class EventStoreType {
-            +void invoke(Rebind rebind, IsBound isBound, Bind bind)(string key, IService service)
-            +bool IsEventStoreType(IService service)$
-        }
-
-        class ListenerType {
-            +void invoke(Bind bind, Rebind rebind, IsBound isBound)(string key, IService service)
-            +bool IsListenerType(IService service)$
-        }
-
-        %% Parameters
-        class Parameter {
-            <<ValueObject>>
-            object | number | string
-        }
-
-        class ParametersList {
-            <<ValueObject>>
-            Map~string, Parameter~
-        }
-
-        class UniqueParameterIdentifier {
-            <<ValueObject>>
-            string
-        }
-
-        %% Service Aliases
-        class SERVICES_ALIAS {
-            <<Constants>>
-            +string COMMAND_HANDLERS$
-            +string QUERY_HANDLERS$
-            +string COMMAND_MIDDLEWARE$
-            +string QUERY_MIDDLEWARE$
-            +string DEFAULT_EVENT_BUS$
-            +string DEFAULT_EVENT_STORE_DBAL$
-            +string DEFAULT_EVENT_STORE_SNAPSHOT$
-            +string DEFAULT_EVENT_STORE_SNAPSHOT_DBAL$
-        }
-
-        class PARAMETERS_ALIAS {
-            <<Constants>>
-            +string DEFAULT_EVENT_STORE_MARGIN$
-        }
-
-        %% Parameter Binder
-        class parametersBinder {
-            <<Factory>>
-            +void invoke(Container container, ParametersList parameters)
-        }
-
-        %% Container Module Creator
-        class createContainerModule {
-            <<Factory>>
-            +AsyncContainerModule invoke(ServiceList serviceList)
-        }
+    class Kernel {
+        +string env
+        +Container container
+        +App app
+        +createFromModuleContext(env, parameters, moduleContext, testParameters) Promise
+        -overwriteParamsOnTest(env, parameters, testParameters)
     }
 
-    %% External Dependencies
-    namespace Inversify {
-        class Container {
-            +void loadAsync(AsyncContainerModule module)
-            +T[] getAll~T~(string identifier)
-        }
-        class AsyncContainerModule
+    class ModuleContext {
+        +ModuleContext[] modules
+        +ModuleConfig config
+        +load(Container container) Promise
+        +addFirstModuleContext(ModuleContext module)
+        -mergeModuleDependenciesConfig()
+        -getServices()
+        -bindCommands(commands)
     }
 
-    namespace ApplicationLayer {
-        class App
-        class ICommandHandler
-        class IQueryHandler
-        class IMiddleware
+    class ModuleConfig {
+        <<interface>>
+        +any[] commands
+        +any[] queries
+        +ServiceList services
+        +ModuleContext[] modules
     }
 
-    %% Inheritance/Implementation
+    class HollywoodModule {
+        <<Factory>>
+        +invoke() ModuleContext
+    }
+
+    class AppBuilder {
+        <<Factory>>
+        +invoke(Container container) App
+    }
+
+    class BuildFromModuleContext {
+        <<Factory>>
+        +invoke(parameters, moduleContext) Promise
+    }
+
+    class IService {
+        <<interface>>
+        +any instance
+        +any[] collection
+        +Function custom
+        +eventStore
+        +Function async
+        +bool constant
+        +bool overwrite
+        +string bus
+        +bool listener
+        +any[] subscriber
+    }
+
+    class ServiceList {
+        <<ValueObject>>
+    }
+
+    class StandardType {
+        +invoke(rebind, isBound, bind)
+    }
+
+    class CollectionType {
+        +invoke(bind, unbind, isBound)
+        +IsCollectionType(service) bool
+    }
+
+    class AsyncType {
+        +invoke(rebind, isBound, bind) Promise
+        +IsAsyncType(service) bool
+    }
+
+    class CustomType {
+        +invoke(rebind, isBound, bind)
+        +IsCustomType(service) bool
+    }
+
+    class EventStoreType {
+        +invoke(rebind, isBound, bind)
+        +IsEventStoreType(service) bool
+    }
+
+    class ListenerType {
+        +invoke(bind, rebind, isBound)
+        +IsListenerType(service) bool
+    }
+
+    class Parameter {
+        <<ValueObject>>
+    }
+
+    class ParametersList {
+        <<ValueObject>>
+    }
+
+    class UniqueParameterIdentifier {
+        <<ValueObject>>
+        string
+    }
+
+    class SERVICES_ALIAS {
+        <<Constants>>
+        +string COMMAND_HANDLERS
+        +string QUERY_HANDLERS
+        +string COMMAND_MIDDLEWARE
+        +string QUERY_MIDDLEWARE
+        +string DEFAULT_EVENT_BUS
+        +string DEFAULT_EVENT_STORE_DBAL
+        +string DEFAULT_EVENT_STORE_SNAPSHOT
+        +string DEFAULT_EVENT_STORE_SNAPSHOT_DBAL
+    }
+
+    class PARAMETERS_ALIAS {
+        <<Constants>>
+        +string DEFAULT_EVENT_STORE_MARGIN
+    }
+
+    class parametersBinder {
+        <<Factory>>
+        +invoke(container, parameters)
+    }
+
+    class createContainerModule {
+        <<Factory>>
+        +invoke(serviceList) AsyncContainerModule
+    }
+
+    class Container {
+        +loadAsync(module)
+        +getAll(identifier)
+    }
+
+    class AsyncContainerModule {
+    }
+
+    class App {
+    }
+
+    class ICommandHandler {
+        <<interface>>
+    }
+
+    class IQueryHandler {
+        <<interface>>
+    }
+
+    class IMiddleware {
+        <<interface>>
+    }
+
     HollywoodModule ..> ModuleContext : creates
 
-    %% Composition Relationships
     Kernel *-- Container : owns
     Kernel *-- App : owns
     ModuleContext *-- ModuleConfig : configured by
     ModuleContext *-- ModuleContext : nested modules
     ModuleConfig *-- ServiceList : defines
 
-    %% Dependencies
     Kernel ..> ModuleContext : builds from
     Kernel ..> AppBuilder : uses
     Kernel ..> BuildFromModuleContext : uses

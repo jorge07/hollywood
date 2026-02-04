@@ -17,209 +17,173 @@ The Application Layer provides the entry point for all use cases in the system. 
 
 ```mermaid
 classDiagram
-    namespace ApplicationLayer {
-        %% Core Application Facade
-        class App {
-            -CommandHandlerResolver commandResolver
-            -QueryHandlerResolver queryResolver
-            -CommandBus commandBus
-            -QueryBus queryBus
-            +Promise~IAppResponse~ ask(IQuery query)
-            +Promise~void~ handle(ICommand command)
-            -void bindResolvers(Map commands, Map queries)
-            -void registerCommand(any command, ICommandHandler handler)
-            -void registerQuery(any query, IQueryHandler handler)
-        }
-
-        %% Command Side
-        class ICommand {
-            <<interface>>
-        }
-
-        class ICommandHandler {
-            <<interface>>
-            +Promise~void|IAppError~ handle(ICommand command)
-        }
-
-        class CommandBus {
-            +Promise~void|IAppError~ handle(ICommand command)
-        }
-
-        class CommandHandlerResolver {
-            -ICommandRegistry handlers
-            +Promise~void|IAppError~ execute(any command, Function next)
-            +CommandHandlerResolver addHandler(Object command, ICommandHandler handler)
-            -Promise~void|IAppError~ resolve(ICommand command)
-            -ICommandHandler getHandlerForCommand(ICommand command)
-        }
-
-        %% Query Side
-        class IQuery {
-            <<interface>>
-        }
-
-        class IQueryHandler {
-            <<interface>>
-            +Promise~IAppResponse|IAppError~ handle(IQuery request)
-        }
-
-        class QueryBus {
-            +Promise~QueryBusResponse~ ask(IQuery query)
-        }
-
-        class QueryHandlerResolver {
-            -IQueryRegistry handlers
-            +Promise~any~ execute(any command, Function next)
-            +QueryHandlerResolver addHandler(Object command, IQueryHandler handler)
-            -Promise~IAppResponse|IAppError|null~ resolve(IQuery command)
-            -IQueryHandler getHandlerFor(IQuery command)
-        }
-
-        %% Shared Bus Infrastructure
-        class MessageBus {
-            <<abstract>>
-            #Function middlewareChain
-            #constructor(IMiddleware[] middlewares)
-            -Function createChain(IMiddleware[] middlewares)
-            -IMiddleware[] reverse(IMiddleware[] middlewares)$
-        }
-
-        class IMiddleware~TMessage,TResponse~ {
-            <<interface>>
-            +Promise~TResponse~ execute(TMessage message, NextMiddleware~TMessage,TResponse~ next)
-        }
-
-        class Message {
-            <<TypeAlias>>
-            ICommand | IQuery
-        }
-
-        class NextMiddleware~TMessage,TResponse~ {
-            <<TypeAlias>>
-            (message: TMessage) => Promise~TResponse~
-        }
-
-        %% Response DTOs
-        class IAppResponse~TData,TMeta~ {
-            <<interface>>
-            +TData data
-            +TMeta[] meta
-        }
-
-        class IAppError {
-            <<interface>>
-            +string message
-            +number code
-            +any data
-            +any[] meta
-        }
-
-        class QueryBusResponse~TData,TMeta~ {
-            <<TypeAlias>>
-            IAppResponse~TData,TMeta~ | IAppError | null
-        }
-
-        %% Handler Base
-        class IHandler {
-            <<interface>>
-        }
-
-        %% Registries (Value Objects)
-        class ICommandRegistry {
-            <<interface>>
-            +ICommandHandler [key: string]
-        }
-
-        class IQueryRegistry {
-            <<interface>>
-            +IQueryHandler [key: string]
-        }
-
-        %% Autowiring Decorator
-        class IAnnotatedHandler~T~ {
-            <<interface>>
-            +Object command
-        }
-
-        %% Saga/Process Manager (v6)
-        class Saga~TState~ {
-            <<abstract>>
-            -string sagaId
-            #TState state
-            #SagaStatus status
-            #string correlationId
-            #Date startedAt
-            #Date updatedAt
-            #Date completedAt
-            #string failureReason
-            #string[] processedEvents
-            +string sagaType
-            +Promise~void~ handleEvent(DomainMessage message)
-            +void complete()
-            +void fail(string reason)
-            +SagaStateSnapshot~TState~ snapshot()
-            +void restore(SagaStateSnapshot~TState~ snapshot)
-            #void dispatchCommand(ICommand command)
-            #Map~string,Function~ getEventHandlers()
-            #Map~string,Function~ getCompensationHandlers()
-            +string[] startedBy()$
-            +string[] interestedIn()
-        }
-
-        class SagaManager {
-            -Map~string,SagaRegistration~ registrations
-            -Map~string,string[]~ startingEventMap
-            -Map~string,string[]~ eventInterestMap
-            -Map~string,Saga~ activeSagas
-            -CommandBus commandBus
-            -ISagaRepository repository
-            +void register(sagaType, factory, startingEvents, correlationIdExtractor)
-            +Promise~void~ on(DomainMessage message)
-        }
-
-        class ISagaRepository {
-            <<interface>>
-            +Promise~SagaStateSnapshot|null~ findById(string sagaId)
-            +Promise~SagaStateSnapshot[]~ findByCorrelationId(string correlationId)
-            +Promise~void~ save(SagaStateSnapshot snapshot)
-            +Promise~void~ delete(string sagaId)
-        }
-
-        class SagaStatus {
-            <<Enum>>
-            PENDING
-            RUNNING
-            COMPLETED
-            FAILED
-            COMPENSATING
-        }
-
-        class SagaStateSnapshot~TState~ {
-            <<interface>>
-            +string sagaId
-            +string sagaType
-            +SagaStatus status
-            +TState state
-            +string correlationId
-            +Date startedAt
-            +Date updatedAt
-            +Date completedAt
-            +string failureReason
-            +string[] processedEvents
-        }
+    class App {
+        -CommandHandlerResolver commandResolver
+        -QueryHandlerResolver queryResolver
+        -CommandBus commandBus
+        -QueryBus queryBus
+        +ask(IQuery query) Promise
+        +handle(ICommand command) Promise
+        -bindResolvers(Map commands, Map queries)
+        -registerCommand(any command, ICommandHandler handler)
+        -registerQuery(any query, IQueryHandler handler)
     }
 
-    %% Inheritance Relationships
+    class ICommand {
+        <<interface>>
+    }
+
+    class ICommandHandler {
+        <<interface>>
+        +handle(ICommand command) Promise
+    }
+
+    class CommandBus {
+        +handle(ICommand command) Promise
+    }
+
+    class CommandHandlerResolver {
+        -ICommandRegistry handlers
+        +execute(any command, Function next) Promise
+        +addHandler(Object command, ICommandHandler handler)
+        -resolve(ICommand command) Promise
+        -getHandlerForCommand(ICommand command)
+    }
+
+    class IQuery {
+        <<interface>>
+    }
+
+    class IQueryHandler {
+        <<interface>>
+        +handle(IQuery request) Promise
+    }
+
+    class QueryBus {
+        +ask(IQuery query) Promise
+    }
+
+    class QueryHandlerResolver {
+        -IQueryRegistry handlers
+        +execute(any command, Function next) Promise
+        +addHandler(Object command, IQueryHandler handler)
+        -resolve(IQuery command) Promise
+        -getHandlerFor(IQuery command)
+    }
+
+    class MessageBus {
+        <<abstract>>
+        #Function middlewareChain
+        #constructor(middlewares)
+        -createChain(middlewares)
+        -reverse(middlewares)
+    }
+
+    class IMiddleware {
+        <<interface>>
+        +execute(message, next) Promise
+    }
+
+    class IAppResponse {
+        <<interface>>
+        +data
+        +meta
+    }
+
+    class IAppError {
+        <<interface>>
+        +string message
+        +number code
+        +any data
+        +any[] meta
+    }
+
+    class IHandler {
+        <<interface>>
+    }
+
+    class ICommandRegistry {
+        <<interface>>
+    }
+
+    class IQueryRegistry {
+        <<interface>>
+    }
+
+    class Saga {
+        <<abstract>>
+        -string sagaId
+        #state
+        #SagaStatus status
+        #string correlationId
+        #Date startedAt
+        #Date updatedAt
+        #Date completedAt
+        #string failureReason
+        #string[] processedEvents
+        +string sagaType
+        +handleEvent(DomainMessage message) Promise
+        +complete()
+        +fail(string reason)
+        +snapshot()
+        +restore(snapshot)
+        #dispatchCommand(ICommand command)
+        #getEventHandlers()
+        #getCompensationHandlers()
+        +startedBy()
+        +interestedIn()
+    }
+
+    class SagaManager {
+        -Map registrations
+        -Map startingEventMap
+        -Map eventInterestMap
+        -Map activeSagas
+        -CommandBus commandBus
+        -ISagaRepository repository
+        +register(sagaType, factory, startingEvents, correlationIdExtractor)
+        +on(DomainMessage message) Promise
+    }
+
+    class ISagaRepository {
+        <<interface>>
+        +findById(string sagaId) Promise
+        +findByCorrelationId(string correlationId) Promise
+        +save(snapshot) Promise
+        +delete(string sagaId) Promise
+    }
+
+    class SagaStatus {
+        <<enumeration>>
+        PENDING
+        RUNNING
+        COMPLETED
+        FAILED
+        COMPENSATING
+    }
+
+    class SagaStateSnapshot {
+        <<interface>>
+        +string sagaId
+        +string sagaType
+        +SagaStatus status
+        +state
+        +string correlationId
+        +Date startedAt
+        +Date updatedAt
+        +Date completedAt
+        +string failureReason
+        +string[] processedEvents
+    }
+
     CommandBus --|> MessageBus : extends
     QueryBus --|> MessageBus : extends
     IQueryHandler --|> IHandler : extends
     ICommandHandler --|> IHandler : extends
 
-    %% Implementation Relationships
     CommandHandlerResolver ..|> IMiddleware : implements
     QueryHandlerResolver ..|> IMiddleware : implements
 
-    %% Composition Relationships
     App *-- CommandBus : owns
     App *-- QueryBus : owns
     App *-- CommandHandlerResolver : owns
@@ -227,13 +191,11 @@ classDiagram
     SagaManager *-- ISagaRepository : uses
     SagaManager *-- CommandBus : dispatches via
 
-    %% Aggregation Relationships
     MessageBus o-- IMiddleware : middleware chain
     CommandHandlerResolver o-- ICommandRegistry : handlers
     QueryHandlerResolver o-- IQueryRegistry : handlers
     SagaManager o-- Saga : manages
 
-    %% Dependencies
     CommandBus ..> ICommand : processes
     QueryBus ..> IQuery : processes
     CommandHandlerResolver ..> ICommandHandler : resolves

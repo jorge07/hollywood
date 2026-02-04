@@ -11,11 +11,13 @@ import type DomainEvent from "./Event/DomainEvent";
 export default interface IEventSourced {
     /**
      * Restores the entity's state from a snapshot.
+     * Snapshots are typically stored as plain objects after serialization,
+     * so we use Record<string, unknown> to represent the deserialized state.
      *
      * @param snapshot - The snapshot data to restore from
      * @returns The entity instance for chaining
      */
-    fromSnapshot(snapshot: IEventSourced): IEventSourced;
+    fromSnapshot(snapshot: Record<string, unknown>): IEventSourced;
 
     /**
      * Applies an event to this entity and recursively to all child entities.

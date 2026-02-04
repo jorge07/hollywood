@@ -9,6 +9,8 @@ import type { SagaStateSnapshot } from "./SagaState";
  */
 export type CommandDispatcher = (command: ICommand) => Promise<void>;
 
+import type DomainEvent from "../../Domain/Event/DomainEvent";
+
 /**
  * Abstract base class for implementing sagas (process managers).
  *
@@ -24,7 +26,7 @@ export type CommandDispatcher = (command: ICommand) => Promise<void>;
  *     return ['OrderPlaced'];
  *   }
  *
- *   protected getEventHandlers(): Map<string, (event: any) => Promise<void>> {
+ *   protected getEventHandlers(): Map<string, (event: DomainEvent) => Promise<void>> {
  *     return new Map([
  *       ['OrderPlaced', this.onOrderPlaced.bind(this)],
  *       ['PaymentReceived', this.onPaymentReceived.bind(this)],
@@ -282,7 +284,7 @@ export default abstract class Saga<TState = unknown> {
      * Get the map of event type to handler function.
      * Override in subclass to define event handlers.
      */
-    protected abstract getEventHandlers(): Map<string, (event: any) => Promise<void>>;
+    protected abstract getEventHandlers(): Map<string, (event: DomainEvent) => Promise<void>>;
 
     /**
      * Get the map of event type to compensation handler function.

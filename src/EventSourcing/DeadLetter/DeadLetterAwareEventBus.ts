@@ -2,6 +2,7 @@ import type DomainMessage from "../../Domain/Event/DomainMessage";
 import type EventListener from "../EventBus/EventListener";
 import type EventSubscriber from "../EventBus/EventSubscriber";
 import type IEventBus from "../EventBus/IEventBus";
+import type { DomainEventConstructor } from "../EventBus/IEventBus";
 import type IDeadLetterQueue from "./IDeadLetterQueue";
 import { createDeadLetterMessage } from "./DeadLetterMessage";
 import type RetryPolicy from "./RetryPolicy";
@@ -62,7 +63,7 @@ export default class DeadLetterAwareEventBus implements IEventBus {
         }
     }
 
-    public attach(event: any, subscriber: EventSubscriber): DeadLetterAwareEventBus {
+    public attach(event: DomainEventConstructor, subscriber: EventSubscriber): DeadLetterAwareEventBus {
         const eventName = event.name;
         const collection = this.subscribersRegistry[eventName] || [];
 

@@ -150,7 +150,7 @@ describe("AggregateRoot", () => {
     it("Aggregate Roots can be created from an snapshot", () => {
         const dog = new Dog(Identity.fromString('00000000-0000-4000-8000-000000000031'));
 
-        const snapshot: EventSourced = { version: 2, wolfCount: 2, children:[{recorded:["wolf"]}]} as any
+        const snapshot: Record<string, unknown> = { version: 2, wolfCount: 2, children:[{recorded:["wolf"]}]};
         dog.fromSnapshot(snapshot);
         expect(dog.wolfCount).toBe(2);
         expect(dog.version).toBe(2);

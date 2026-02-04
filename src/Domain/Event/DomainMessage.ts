@@ -23,6 +23,12 @@ function generateIdempotencyKey(
 }
 
 /**
+ * Metadata entry for domain events.
+ * Key-value pairs for storing contextual information about events.
+ */
+export type EventMetadata = Record<string, unknown>;
+
+/**
  * Wrapper for domain events that adds metadata for event sourcing.
  *
  * DomainMessage encapsulates a domain event along with:
@@ -46,7 +52,7 @@ export default class DomainMessage {
         uuid: string,
         playhead: number,
         event: DomainEvent,
-        metadata: any[] = [],
+        metadata: EventMetadata[] = [],
         occurred?: Date,
         idempotencyKey?: string,
     ): DomainMessage {
@@ -67,7 +73,7 @@ export default class DomainMessage {
         public readonly uuid: string,
         public readonly playhead: number,
         public readonly event: DomainEvent,
-        public readonly metadata: any[],
+        public readonly metadata: EventMetadata[],
         public readonly occurred: Date,
         idempotencyKey?: string,
     ) {

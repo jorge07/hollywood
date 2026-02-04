@@ -1,171 +1,72 @@
 # Hollywood
 
-[![Build Status](https://travis-ci.org/jorge07/hollywood.svg?branch=master)](https://travis-ci.org/jorge07/hollywood) [![Coverage Status](https://coveralls.io/repos/github/jorge07/hollywood/badge.svg?branch=master)](https://coveralls.io/github/jorge07/hollywood?branch=master)
 [![NPM Version](http://img.shields.io/npm/v/hollywood-js.svg?style=flat)](https://www.npmjs.org/package/hollywood-js)
 [![NPM Downloads](https://img.shields.io/npm/dm/hollywood-js.svg?style=flat)](https://npmcharts.com/compare/hollywood-js?minimal=true)
-[![Install Size](https://packagephobia.now.sh/badge?p=hollywood-js)](https://packagephobia.now.sh/result?p=hollywood-js)
-[![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
+[![Build Status](https://github.com/jorge07/hollywood/workflows/CI/badge.svg)](https://github.com/jorge07/hollywood/actions)
 
-Hollywood-js is a Framework for building very modular and high scalable server side applications following CQRS (Command Query Responsibility Segregation) and enforcing IoC.
+Build event-sourced TypeScript backends with clean architecture patterns.
 
-It provides a Modular, Bounded Context oriented architecture, enforcing isolation and event driven communication between them.
-Hollywood-js it's strongly CQRS structured, allowing you to define or not a DDD / Clean Architecture project.
+## Where to Start
 
-Includes advanced Event Sourcing capabilities like Event Store abstractions, Event Store Snapshots, Projections and Event Bus (Listeners and Subscribers).
+Choose the path that fits your style:
 
-### Installation
+| Learning Style | Start Here |
+|----------------|------------|
+| **Step by step** | [Installation](getting-started/installation.md) - Set up and work through each section |
+| **Learn by doing** | [Quick Start](getting-started/quick-start.md) - Build as you learn |
+| **Reference lookup** | [CQRS](reference/cqrs.md) - Jump to specific topics |
 
-NPM:
+## Quick Install
 
-`npm install hollywood-js`
-
-Yarn:
-
-`yarn add hollywood-js`
-
-
-### CQRS Framework with Event Sourcing support.
-
-Features:
-
-- Dependency Injection (Built around Inversify).
-  - Module hierarchy for isolation.
-- DDD toolbox
-  - Event Driven
-    - Support for different event streams
-  - In Memory implementations for testing
-  - AggregateRoot and EventSourced abstractions
-- Event Store
-  - Event Store decoupled from storage implementation thanks to DBAL (Database Abstraction Layer)
-  - **In Memory** Event Store DBAL implementations for testing
-  - Configurable **SnapshotStore** support.
-  - In Memory Snapshot DBAL implementation for testing
-  - Built in Event Bus 
-- Command and Query Bus
-  - Command and Query handlers autowiring
-  - **Middlewares support** for Command and Query bus
-- Libraries should NOT log, I don't log, I throw Errors.
-- Not a server framework but tested with express and fastify (this last one the one I recommend, see /examples).
-
-
-### Basic Usage
-
-```typescript
-import ModuleContext from "./ModuleContext";
-import Kernel from "./Kernel";
-import {inject} from "inversify";
-
-const parameters = new Map([
-  ['hello.style', 'hey']
-]);
-
-class Hey {
-  constructor(@inject('hello.style') private readonly style: string) {}
-
-  hello(): string {
-    return this.style
-  }
-}
-
-const MainModule = new ModuleContext({
-  services: [
-    ['hey', {instance: Hey}]
-  ]
-})
-
-const kernel = new Kernel('dev', true, parameters, MainModule);
-
-kernel.container.get<Hey>('key').hello() // 'key'
+```bash
+npm install hollywood-js reflect-metadata
 ```
 
-### Module dependencies
-
 ```typescript
-import ModuleContext from "./ModuleContext";
-import Kernel from "./Kernel";
-import {inject} from "inversify";
+import { Framework, Application } from "hollywood-js";
 
-const parameters = new Map([
-  ['hello.style', 'hey']
-]);
+// Handle commands
+await kernel.app.handle(new CreateUser(userId, email));
 
-class Hey {
-  constructor(@inject('hello.style') private readonly style: string) {}
-
-  hello(): string {
-    return this.style
-  }
-}
-
-const HeyModule = new ModuleContext({
-  services: [
-    ['hey', {instance: Hey}]
-  ]
-})
-
-class Person {
-    constructor(@inject('hey') private readonly hey: Hey) {}
-
-    sayHello(): string {
-        return this.key.hello()
-    }
-}
-
-const PersonModule = new ModuleContext({
-  services: [
-    ['person', {instance: Person}]
-  ],
-  modules: [HeyModule]
-})
-const kernel = new Kernel('dev', true, parameters, MainModule);
-
-kernel.container.get<Person>('person').sayHello() // 'key'
+// Ask queries
+const user = await kernel.app.ask(new GetUser(userId));
 ```
 
-### Overwrite during testing
+## Core Features
 
-```typescript
-import ModuleContext from "./ModuleContext";
-import Kernel from "./Kernel";
-import {inject} from "inversify";
+- **CQRS Built-in** - Separate read and write paths from day one
+- **Event Sourcing** - Full audit trail, time travel debugging
+- **Modular Architecture** - Bounded contexts that actually stay bounded
+- **TypeScript Native** - Full type safety, no decorators required
+- **Production Ready** - Sagas, DLQ, optimistic locking, projection rebuilds
 
-const parameters = new Map([
-  ['hello.style', 'hey']
-]);
+## Documentation Sections
 
-const TestingParameters = new Map([
-  ['hello.style', 'HELLOOOOOOO!']
-]);
+### Getting Started
+- [Installation](getting-started/installation.md) - Install and configure
+- [Quick Start](getting-started/quick-start.md) - Build your first module
 
-class Hey {
-  constructor(@inject('hello.style') private readonly style: string) {}
+### The Basics
+- [Commands](basics/commands.md) - Handle state changes
+- [Queries](basics/queries.md) - Read data
+- [Events](basics/events.md) - Event-driven communication
+- [Dependency Injection](basics/dependency-injection.md) - Wire up services
 
-  hello(): string {
-    return this.style
-  }
-}
+### Advanced Topics
+- [Sagas](advanced/sagas.md) - Long-running workflows
+- [Event Versioning](advanced/event-versioning.md) - Schema evolution
+- [Dead Letter Queue](advanced/dead-letter-queue.md) - Error handling
+- [Projections](advanced/projections.md) - Read models
+- [Server Integration](advanced/server-integration.md) - HTTP layer
 
-const HeyModule = new ModuleContext({
-  services: [
-    ['hey', {instance: Hey}]
-  ]
-})
+### Reference
+- [CQRS](reference/cqrs.md) - Command and query patterns
+- [Event Sourcing](reference/event-sourcing.md) - Event store and aggregates
+- [Aggregates](reference/aggregates.md) - Domain modeling
+- [Container](reference/container.md) - Dependency injection
 
-class Person {
-    constructor(@inject('hey') private readonly hey: Hey) {}
+## Links
 
-    sayHello(): string {
-        return this.key.hello()
-    }
-}
-
-const PersonModule = new ModuleContext({
-  services: [
-    ['person', {instance: Person}]
-  ],
-  modules: [HeyModule]
-})
-const kernel = new Kernel('dev', true, parameters, MainModule, TestingParameters);
-
-kernel.container.get<Person>('person').sayHello() // 'HELLOOOOOOO!'
-```
+- [Architecture Overview](architecture/overview.md)
+- [Features](features.md)
+- [GitHub Repository](https://github.com/jorge07/hollywood)

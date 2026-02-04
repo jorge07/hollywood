@@ -1,6 +1,7 @@
 import type { interfaces } from "inversify";
 import type { AggregateFactory } from '../../../EventSourcing/EventStore';
 import type EventSourcedAggregateRoot from '../../../Domain/EventSourcedAggregateRoot';
+import type DomainEvent from '../../../Domain/Event/DomainEvent';
 
 type UniqueServiceIdentifier = string;
 
@@ -20,10 +21,20 @@ export interface IListener {
 export type Constructor<T = unknown> = new (...args: any[]) => T;
 
 /**
+ * Constructor type for domain events.
+ * Used in subscriber configurations to specify which events to handle.
+ *
+ * Note: Constructor parameters use `any[]` for variance - this allows
+ * accepting constructors with any parameter signature.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type DomainEventConstructor<T extends DomainEvent = DomainEvent> = new (...args: any[]) => T;
+
+/**
  * Subscriber configuration extending listener with event subscriptions.
  */
 export type Subscriber = IListener & {
-    subscriber: Constructor[];
+    subscriber: DomainEventConstructor[];
 };
 
 /**

@@ -1,4 +1,5 @@
 import type DomainMessage from "../../Domain/Event/DomainMessage";
+import type DomainEvent from "../../Domain/Event/DomainEvent";
 import type ICommand from "../Bus/Command/Command";
 import type CommandBus from "../Bus/Command/CommandBus";
 import type Saga from "./Saga";
@@ -19,7 +20,7 @@ export type SagaFactory<TState, TSaga extends Saga<TState>> = (
  * Correlation ID extractor function type.
  * Extracts the correlation ID from an event for saga routing.
  */
-export type CorrelationIdExtractor = (event: any) => string;
+export type CorrelationIdExtractor = (event: DomainEvent) => string;
 
 /**
  * Saga type registration information.
@@ -216,7 +217,7 @@ export default class SagaManager extends EventListener {
                 if (!saga) {
                     // Rehydrate saga from snapshot
                     saga = registration.factory(snapshot.sagaId, snapshot.correlationId);
-                    saga.fromSnapshot(snapshot as any);
+                    saga.fromSnapshot(snapshot);
                     this.setupSaga(saga);
                     this.activeSagas.set(snapshot.sagaId, saga);
                 }

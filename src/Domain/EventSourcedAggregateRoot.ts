@@ -20,7 +20,7 @@ export default abstract class EventSourcedAggregateRoot extends AggregateRoot im
         return stream;
     }
 
-    public fromHistory(stream: DomainEventStream): any {
+    public fromHistory(stream: DomainEventStream): this {
         stream.events.forEach(
             (message: DomainMessage) => {
                 this.playhead++;
@@ -43,9 +43,9 @@ export default abstract class EventSourcedAggregateRoot extends AggregateRoot im
      * @param snapshot - Snapshot data to restore from
      * @returns This aggregate with restored state
      */
-    public fromSnapshot(snapshot: any): EventSourcedAggregateRoot {
+    public fromSnapshot(snapshot: Record<string, unknown>): this {
         // Extract children before copying properties
-        const children = snapshot.children || [];
+        const children = (snapshot.children as unknown[] | undefined) || [];
 
         // Preserve infrastructure that shouldn't be in snapshots
         const handlers = this.eventHandlers;
@@ -57,7 +57,7 @@ export default abstract class EventSourcedAggregateRoot extends AggregateRoot im
                 // Only copy if it's a data property (not a method)
                 const descriptor = Object.getOwnPropertyDescriptor(snapshot, key);
                 if (descriptor && typeof descriptor.value !== 'function') {
-                    (this as any)[key] = snapshot[key];
+                    (this as Record<string, unknown>)[key] = snapshot[key];
                 }
             }
         }
@@ -68,7 +68,7 @@ export default abstract class EventSourcedAggregateRoot extends AggregateRoot im
         // Recursively restore child entities
         this.children.forEach((child: EventSourced, key: number) => {
             if (children[key]) {
-                child.fromSnapshot(children[key]);
+                child.fromSnapshot(children[key] as Record<string, unknown>);
             }
         });
 
@@ -100,8 +100,12 @@ export default abstract class EventSourcedAggregateRoot extends AggregateRoot im
     /**
      * Register an explicit event handler for a specific event type.
      * All events raised by the aggregate must have a registered handler.
+     *
+     * Note: Constructor parameters use `any[]` for variance - this allows
+     * registering constructors with any parameter signature.
      */
     protected registerHandler<T extends DomainEvent>(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         eventType: new (...args: any[]) => T,
         handler: (event: T) => void
     ): void {

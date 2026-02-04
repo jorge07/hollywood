@@ -1,0 +1,206 @@
+# Hollywood-JS LLM Reference
+
+## Install
+```bash
+npm install hollywood-js reflect-metadata
+```
+tsconfig: experimentalDecorators:true, emitDecoratorMetadata:true
+
+## Core Pattern
+```typescript
+import "reflect-metadata";
+import { Framework, Application, EventSourcing, Domain, ReadModel } from "hollywood-js";
+import { inject, injectable } from "inversify";
+
+// 1. Parameters
+const parameters = new Map([["key", "value"]]);
+
+// 2. Module
+const MyModule = new Framework.ModuleContext({
+  commands: [MyCommandHandler],
+  queries: [MyQueryHandler],
+  services: new Map().set("my.service", { instance: MyService }),
+  modules: [OtherModule], // dependencies
+});
+
+// 3. Kernel
+const kernel = await Framework.Kernel.createFromModuleContext("env", parameters, MyModule);
+
+// 4. Use
+await kernel.app.handle(new MyCommand()); // void
+const result = await kernel.app.ask(new MyQuery()); // {data, meta}
+const svc = kernel.container.get<MyService>("my.service");
+```
+
+## Command
+```typescript
+class CreateUser implements Application.ICommand {
+  constructor(public readonly id: string, public readonly name: string) {}
+}
+
+@injectable()
+class CreateUserHandler implements Application.ICommandHandler {
+  constructor(@inject("user.repo") private repo: UserRepo) {}
+
+  @Application.autowiring
+  async handle(cmd: CreateUser): Promise<void | Application.IAppError> {
+    await this.repo.save(new User(cmd.id, cmd.name));
+  }
+}
+```
+
+## Query
+```typescript
+class GetUser implements Application.IQuery {
+  constructor(public readonly id: string) {}
+}
+
+@injectable()
+class GetUserHandler implements Application.IQueryHandler {
+  constructor(@inject("user.repo") private repo: UserRepo) {}
+
+  @Application.autowiring
+  async handle(q: GetUser): Promise<Application.IAppResponse | Application.IAppError> {
+    return { data: await this.repo.find(q.id), meta: [] };
+  }
+}
+```
+
+## Events
+```typescript
+// Define
+class UserCreated extends Domain.DomainEvent {
+  constructor(public readonly id: string) { super(); }
+}
+
+// Publish
+eventBus.publish(Domain.DomainMessage.create(new UserCreated(id)));
+
+// Subscribe (specific events)
+class MySubscriber extends EventSourcing.EventListener {
+  async on(msg: Domain.DomainMessage): Promise<void> { /* handle */ }
+}
+services.set("sub", { instance: MySubscriber, bus: "hollywood.infrastructure.eventBus.default", subscriber: [UserCreated] });
+
+// Listen (all events)
+services.set("listener", { instance: MyListener, bus: "hollywood.infrastructure.eventBus.default", listener: true });
+```
+
+## Event-Sourced Aggregate
+```typescript
+class User extends EventSourcing.EventSourcedAggregateRoot {
+  public name: string = "";
+
+  constructor(id: string) { super(id); }
+
+  static create(id: string, name: string): User {
+    const u = new User(id);
+    u.raise(new UserCreated(id, name)); // auto-calls applyUserCreated
+    return u;
+  }
+
+  applyUserCreated(e: UserCreated): void { this.name = e.name; }
+}
+
+// Store
+const store = new EventSourcing.EventStore<User>(User, dbal, eventBus);
+await store.save(user);
+const loaded = await store.load(id);
+```
+
+## Service Types
+```typescript
+services.set("std", { instance: MyClass });
+services.set("async", { async: asyncFactory });
+services.set("custom", { custom: () => factory() });
+services.set("collection", { collection: [A, B, C] });
+services.set("es", { eventStore: MyAggregate });
+```
+
+## Saga
+```typescript
+class MySaga extends Application.Saga<{orderId?: string}> {
+  readonly sagaType = "MySaga";
+  static startedBy() { return ["OrderPlaced"]; }
+
+  protected getEventHandlers() {
+    return new Map([["OrderPlaced", this.onOrderPlaced.bind(this)]]);
+  }
+
+  protected getCompensationHandlers() {
+    return new Map([["PaymentTaken", this.refund.bind(this)]]);
+  }
+
+  private async onOrderPlaced(e: OrderPlaced) {
+    this.state.orderId = e.orderId;
+    await this.dispatch(new RequestPayment(e.orderId));
+  }
+
+  private async refund() { await this.dispatch(new Refund(this.state.orderId!)); }
+}
+
+sagaManager.register(MySaga, (id, cid) => new MySaga(id, {}, cid), MySaga.startedBy(), msg => msg.uuid);
+eventBus.addListener(sagaManager);
+```
+
+## DLQ
+```typescript
+const dlq = new EventSourcing.InMemoryDeadLetterQueue();
+const retry = new EventSourcing.RetryPolicy({ maxRetries: 3, initialDelayMs: 100, backoffMultiplier: 2 });
+const bus = new EventSourcing.DeadLetterAwareEventBus(dlq, retry);
+```
+
+## Upcasting
+```typescript
+const upcaster: EventSourcing.EventUpcaster<E> = {
+  eventType: "UserCreated", fromVersion: 1, toVersion: 2,
+  upcast: e => ({ ...e, email: e.email || "default@x.com", version: 2 })
+};
+const chain = new EventSourcing.UpcasterChain();
+chain.register(upcaster);
+// pass to EventStore
+```
+
+## Projection
+```typescript
+class MyProjector extends EventSourcing.EventSubscriber {
+  constructor(private repo: ReadModelRepo) {
+    super();
+    this.registerHandler(UserCreated, this.onUserCreated.bind(this));
+  }
+  private async onUserCreated(msg: Domain.DomainMessage) {
+    await this.repo.save({ id: msg.event.id, ... });
+  }
+}
+
+const projectionMgr = new ReadModel.ProjectionManager(eventStoreDBAL, positionStore);
+await projectionMgr.rebuild(projector);
+await projectionMgr.catchUp(projector);
+```
+
+## HTTP Integration
+```typescript
+// Express
+app.post("/user", async (req, res) => {
+  await kernel.app.handle(new CreateUser(req.body.id, req.body.name));
+  res.status(201).send();
+});
+app.get("/user/:id", async (req, res) => {
+  const r = await kernel.app.ask(new GetUser(req.params.id));
+  res.json(r.data);
+});
+```
+
+## Built-in Aliases
+- hollywood.infrastructure.eventBus.default
+- hollywood.infrastructure.eventStore.dbal.default
+- hollywood.infrastructure.eventStore.snapshot.default
+
+## Folder Structure Convention
+```
+src/modules/{module}/
+  application/command/{name}/command.ts,handler.ts
+  application/query/{name}/query.ts,handler.ts
+  domain/{entity}.ts,repository.ts,value-object/,error/
+  infrastructure/{module}-module.ts,read-model/
+```

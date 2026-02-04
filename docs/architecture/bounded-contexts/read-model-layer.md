@@ -17,117 +17,102 @@ The Read Model Layer implements the "Query" side of CQRS by providing projectors
 
 ```mermaid
 classDiagram
-    namespace ReadModelLayer {
-        %% Projector (Type Alias for EventSubscriber)
-        class Projector {
-            <<type alias>>
-            %% Type alias for EventSubscriber used in read model context
-            +Promise~void~ on(DomainMessage message)
-        }
-
-        %% Projection Manager (v6)
-        class ProjectionManager {
-            -IEventStoreDBAL eventStore
-            -IProjectionPositionStore positionStore
-            +Promise~void~ rebuild(Projector projector)
-            +Promise~void~ catchUp(Projector projector)
-            +Promise~number~ getPosition(string projectorName)
-            -Promise~void~ processEventsFrom(Projector projector, number fromPosition)
-            -string getProjectorName(Projector projector)
-        }
-
-        %% Projection Position Store (v6)
-        class IProjectionPositionStore {
-            <<interface>>
-            +Promise~ProjectionPosition|null~ get(string projectionName)
-            +Promise~void~ save(ProjectionPosition position)
-            +Promise~void~ reset(string projectionName)
-        }
-
-        class InMemoryProjectionPositionStore {
-            -Map~string,ProjectionPosition~ positions
-            +Promise~ProjectionPosition|null~ get(string projectionName)
-            +Promise~void~ save(ProjectionPosition position)
-            +Promise~void~ reset(string projectionName)
-        }
-
-        class ProjectionPosition {
-            <<interface>>
-            +string projectionName
-            +number lastProcessedPosition
-            +Date lastProcessedAt
-        }
-
-        %% Read Model Repository
-        class InMemoryReadModelRepository {
-            -Object collection
-            +void save(string id, any data)
-            +any oneOrFail(string id)
-            +any find(Function criteria)
-        }
-
-        %% Read Model Data Structure
-        class ReadModel {
-            <<interface>>
-            +string id
-            +any data
-        }
+    class Projector {
+        <<type alias>>
+        +on(message) Promise
     }
 
-    namespace EventSourcingLayer {
-        class EventSubscriber {
-            <<abstract>>
-            #Map~string,Function~ handlers
-            +Promise~void~ on(DomainMessage message)
-            #void registerHandler~T~(eventType, handler)
-        }
-
-        class DomainMessage {
-            +string eventType
-            +object|DomainEvent event
-            +AggregateRootId uuid
-            +Date occurred
-            +number playhead
-            +string idempotencyKey
-        }
-
-        class EventBus {
-            +EventBus attach(any event, EventSubscriber subscriber)
-        }
-
-        class IEventStoreDBAL {
-            <<interface>>
-            +AsyncIterator~DomainMessage~ loadAll(number fromPosition)
-        }
+    class ProjectionManager {
+        -IEventStoreDBAL eventStore
+        -IProjectionPositionStore positionStore
+        +rebuild(projector) Promise
+        +catchUp(projector) Promise
+        +getPosition(projectorName) Promise
+        -processEventsFrom(projector, fromPosition) Promise
+        -getProjectorName(projector) string
     }
 
-    namespace ApplicationLayer {
-        class IQuery {
-            <<interface>>
-        }
-
-        class IQueryHandler {
-            <<interface>>
-            +Promise~IAppResponse|IAppError~ handle(IQuery request)
-        }
-
-        class IAppResponse~TData,TMeta~ {
-            <<interface>>
-            +TData data
-            +TMeta[] meta
-        }
+    class IProjectionPositionStore {
+        <<interface>>
+        +get(projectionName) Promise
+        +save(position) Promise
+        +reset(projectionName) Promise
     }
 
-    %% Inheritance
+    class InMemoryProjectionPositionStore {
+        -Map positions
+        +get(projectionName) Promise
+        +save(position) Promise
+        +reset(projectionName) Promise
+    }
+
+    class ProjectionPosition {
+        <<interface>>
+        +string projectionName
+        +number lastProcessedPosition
+        +Date lastProcessedAt
+    }
+
+    class InMemoryReadModelRepository {
+        -Object collection
+        +save(id, data)
+        +oneOrFail(id)
+        +find(criteria)
+    }
+
+    class ReadModel {
+        <<interface>>
+        +string id
+        +any data
+    }
+
+    class EventSubscriber {
+        <<abstract>>
+        #Map handlers
+        +on(message) Promise
+        #registerHandler(eventType, handler)
+    }
+
+    class DomainMessage {
+        +string eventType
+        +event
+        +uuid
+        +Date occurred
+        +number playhead
+        +string idempotencyKey
+    }
+
+    class EventBus {
+        +attach(event, subscriber) EventBus
+    }
+
+    class IEventStoreDBAL {
+        <<interface>>
+        +loadAll(fromPosition) AsyncIterator
+    }
+
+    class IQuery {
+        <<interface>>
+    }
+
+    class IQueryHandler {
+        <<interface>>
+        +handle(request) Promise
+    }
+
+    class IAppResponse {
+        <<interface>>
+        +data
+        +meta
+    }
+
     Projector --|> EventSubscriber : type alias for
     InMemoryProjectionPositionStore ..|> IProjectionPositionStore : implements
 
-    %% Composition
     Projector *-- InMemoryReadModelRepository : uses
     ProjectionManager *-- IEventStoreDBAL : reads from
     ProjectionManager *-- IProjectionPositionStore : tracks with
 
-    %% Dependencies
     Projector ..> DomainMessage : receives
     EventBus ..> Projector : notifies
     ProjectionManager ..> Projector : rebuilds
@@ -140,86 +125,74 @@ classDiagram
 
 ```mermaid
 classDiagram
-    namespace ReadModelLayerComplete {
-        %% Projector Type Alias
-        class Projector {
-            <<type alias>>
-            %% Type alias for EventSubscriber
-        }
-
-        %% Concrete Projector Example Pattern (extends EventSubscriber)
-        class ConcreteProjector {
-            <<example>>
-            -ReadModelRepository repository
-            +Promise~void~ on(DomainMessage message)
-            +void onUserCreated(UserCreated event)
-            +void onUserEmailChanged(UserEmailChanged event)
-            +void onUserDeleted(UserDeleted event)
-        }
-
-        %% Read Model Repository Interface
-        class IReadModelRepository~T~ {
-            <<interface>>
-            +void save(string id, T data)
-            +T oneOrFail(string id)
-            +T[] find(Function criteria)
-            +void delete(string id)
-        }
-
-        %% In-Memory Implementation
-        class InMemoryReadModelRepository {
-            -Object collection
-            +void save(string id, any data)
-            +any oneOrFail(string id)
-            +any find(Function criteria)
-        }
-
-        %% Read Model DTO
-        class ReadModelDTO {
-            <<ValueObject>>
-            +string id
-            +any data
-            +Date updatedAt
-        }
-
-        %% Query Handler Pattern
-        class ReadModelQueryHandler {
-            <<example>>
-            -IReadModelRepository repository
-            +Promise~IAppResponse~ handle(GetUserQuery query)
-        }
-
-        class GetUserQuery {
-            <<example>>
-            +string userId
-        }
-
-        class UserReadModel {
-            <<example>>
-            +string id
-            +string email
-            +string name
-            +Date createdAt
-        }
+    class Projector2 {
+        <<type alias>>
     }
 
-    namespace EventSourcingLayerRef {
-        class EventSubscriber {
-            <<abstract>>
-        }
-        class DomainMessage
+    class ConcreteProjector {
+        <<example>>
+        -ReadModelRepository repository
+        +on(message) Promise
+        +onUserCreated(event)
+        +onUserEmailChanged(event)
+        +onUserDeleted(event)
     }
 
-    %% Inheritance
-    Projector --|> EventSubscriber : extends
-    ConcreteProjector --|> Projector : extends
-    InMemoryReadModelRepository ..|> IReadModelRepository : implements
+    class IReadModelRepository {
+        <<interface>>
+        +save(id, data)
+        +oneOrFail(id)
+        +find(criteria)
+        +delete(id)
+    }
 
-    %% Composition
+    class InMemoryReadModelRepository2 {
+        -Object collection
+        +save(id, data)
+        +oneOrFail(id)
+        +find(criteria)
+    }
+
+    class ReadModelDTO {
+        <<ValueObject>>
+        +string id
+        +any data
+        +Date updatedAt
+    }
+
+    class ReadModelQueryHandler {
+        <<example>>
+        -IReadModelRepository repository
+        +handle(query) Promise
+    }
+
+    class GetUserQuery {
+        <<example>>
+        +string userId
+    }
+
+    class UserReadModel {
+        <<example>>
+        +string id
+        +string email
+        +string name
+        +Date createdAt
+    }
+
+    class EventSubscriber2 {
+        <<abstract>>
+    }
+
+    class DomainMessage2 {
+    }
+
+    Projector2 --|> EventSubscriber2 : extends
+    ConcreteProjector --|> Projector2 : extends
+    InMemoryReadModelRepository2 ..|> IReadModelRepository : implements
+
     ConcreteProjector *-- IReadModelRepository : uses
 
-    %% Dependencies
-    Projector ..> DomainMessage : receives
+    Projector2 ..> DomainMessage2 : receives
     ConcreteProjector ..> UserReadModel : projects to
     ReadModelQueryHandler ..> IReadModelRepository : queries
     ReadModelQueryHandler ..> GetUserQuery : handles
