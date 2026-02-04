@@ -10,7 +10,7 @@
   "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "http://github.com/jorge07/hollywood.git"
+    "url": "https://github.com/jorge07/hollywood.git"
   },
   "dependencies": {
     "config": "^3.3.1",
