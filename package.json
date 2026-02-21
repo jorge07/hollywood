@@ -43,6 +43,14 @@
     "lint": "eslint src/**/*.ts index.ts",
     "lint:fix": "eslint src/**/*.ts index.ts --fix"
   },
+  "files": [
+    "dist/",
+    "src/",
+    "index.ts",
+    "README.md",
+    "CHANGELOG.md",
+    "LLM.txt"
+  ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "tag": "latest"
