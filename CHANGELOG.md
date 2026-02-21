@@ -1,3 +1,10 @@
+## [6.0.1](https://github.com/jorge07/hollywood/compare/v6.0.0...v6.0.1) (2026-02-21)
+
+
+### Bug Fixes
+
+* add files field to package.json to include dist/ in npm publish ([876bcc0](https://github.com/jorge07/hollywood/commit/876bcc0d1a398eb6927225970f6afadfed51a458))
+
 # [6.0.0](https://github.com/jorge07/hollywood/compare/v5.0.4...v6.0.0) (2026-02-04)
 
 
